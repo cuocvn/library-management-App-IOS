@@ -18,7 +18,7 @@
 | **3. Tab 3: Mượn & Trả** | 3.0 Danh sách mượn/trả, 3.1 Tạo phiếu mượn (VIP, ví tiền), 3.2 Trả sách & Phạt Snapshot | ✅ **Đã hoàn thành** |
 | **4. Tab 4: Độc Giả** | 4.0 Danh sách độc giả, 4.1 Chi tiết độc giả & Ví tiền, 4.1.1 Nạp tiền, 4.2 Thêm/Sửa | ✅ **Đã hoàn thành** |
 | **5. Tab 5: Cài Đặt** | 5.0 Cài đặt thư viện (@AppStorage), 5.1 Thể loại, 5.2 NXB, 5.3 Tác giả | ✅ **Đã hoàn thành** |
-| **6. Kiểm thử & Hoàn thiện** | Review toàn bộ luồng, kiểm tra đối soát tài chính, cập nhật tài liệu báo cáo | 🔄 **Đang thực hiện** |
+| **6. Kiểm thử & Hoàn thiện** | Review toàn bộ luồng, kiểm tra đối soát tài chính, cập nhật tài liệu báo cáo | ✅ **Đã hoàn thành** |
 
 ---
 
