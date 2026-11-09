@@ -17,6 +17,10 @@ struct DashboardView: View {
     
     @State private var timeRange: String = "Tuần này"
     
+    // Tương tác chạm logo 5 lần (Easter Egg nạp dữ liệu mẫu)
+    @State private var logoTapCount: Int = 0
+    @State private var showingSeedSuccessAlert: Bool = false
+    
     // KPI Calculations
     private var tongLuotMuon: Int {
         tatCaPhieuMuon.count
@@ -35,19 +39,18 @@ struct DashboardView: View {
         tatCaPhieuMuon.compactMap { $0.tienPhat }.reduce(0, +)
     }
     
-    // Data cho biểu đồ tuần (Mock dữ liệu 7 ngày gần nhất dựa trên phiếu mượn)
+    // Data cho biểu đồ tuần (Số liệu thực tế 100% dựa trên phiếu mượn)
     private var chartData: [WeeklyBorrowData] {
         let calendar = Calendar.current
         var result: [WeeklyBorrowData] = []
         let weekdays = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
         
         for (index, dayName) in weekdays.enumerated() {
-            // Đếm số lượng mượn giả lập theo ngày
             let count = tatCaPhieuMuon.filter {
                 let dayOfWeek = (calendar.component(.weekday, from: $0.ngayMuon) + 5) % 7
                 return dayOfWeek == index
             }.count
-            result.append(WeeklyBorrowData(day: dayName, count: max(count, (index + 2) % 5 + 1)))
+            result.append(WeeklyBorrowData(day: dayName, count: count))
         }
         return result
     }
@@ -63,6 +66,7 @@ struct DashboardView: View {
         return tatCaDocGia.map { dg in
             (docGia: dg, soLuot: counts[dg.maDocGia, default: 0])
         }
+        .filter { $0.soLuot > 0 }
         .sorted { $0.soLuot > $1.soLuot }
         .prefix(10)
         .map { $0 }
@@ -98,11 +102,84 @@ struct DashboardView: View {
                                 .foregroundColor(AppTheme.textSecondary)
                         }
                         Spacer()
-                        Image(systemName: "books.vertical.circle.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(AppTheme.primary)
+                        
+                        // Nút Logo Tương tác: Nhấn 5 lần để nạp dữ liệu mẫu chuẩn (Easter Egg)
+                        Button {
+                            logoTapCount += 1
+                            let impact = UIImpactFeedbackGenerator(style: .medium)
+                            impact.impactOccurred()
+                            
+                            if logoTapCount >= 5 {
+                                logoTapCount = 0
+                                SampleDataService.napDuLieuChuan10Sach(modelContext: modelContext)
+                                showingSeedSuccessAlert = true
+                            }
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .fill(AppTheme.primary.opacity(0.12))
+                                    .frame(width: 48, height: 48)
+                                Image(systemName: "books.vertical.circle.fill")
+                                    .font(.system(size: 38))
+                                    .foregroundColor(AppTheme.primary)
+                            }
+                        }
+                        .buttonStyle(.plain)
                     }
                     .padding(.horizontal)
+                    
+                    // Nếu dữ liệu trống: Hiển thị Thẻ hướng dẫn tương tác nạp mẫu
+                    if tatCaSach.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 48))
+                                .foregroundColor(AppTheme.primary)
+                            
+                            Text("Dữ Liệu Thư Viện Đang Trống")
+                                .font(.headline.weight(.bold))
+                                .foregroundColor(AppTheme.textPrimary)
+                            
+                            Text("Ứng dụng đang ở trạng thái sạch ban đầu. Để trải nghiệm và thử nghiệm với bộ dữ liệu mẫu chuẩn (10 sách, 3 độc giả, phiếu mượn khớp doanh thu 100%), bạn có thể:")
+                                .font(.subheadline)
+                                .foregroundColor(AppTheme.textSecondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                            
+                            HStack(spacing: 8) {
+                                Image(systemName: "hand.tap.fill")
+                                    .foregroundColor(.orange)
+                                Text("Chạm vào biểu tượng Logo ở góc trên 5 lần")
+                                    .font(.caption.bold())
+                                    .foregroundColor(.orange)
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Color.orange.opacity(0.12))
+                            .cornerRadius(10)
+                            
+                            Button {
+                                SampleDataService.napDuLieuChuan10Sach(modelContext: modelContext)
+                                showingSeedSuccessAlert = true
+                            } label: {
+                                Label("Nạp Ngay Bộ Dữ Liệu Mẫu", systemImage: "arrow.down.circle.fill")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 14)
+                                    .background(AppTheme.primary)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(12)
+                            }
+                            .padding(.top, 4)
+                        }
+                        .padding(20)
+                        .background(AppTheme.cardBackground)
+                        .cornerRadius(16)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(AppTheme.borderSubtle, lineWidth: 0.5)
+                        )
+                        .padding(.horizontal)
+                    }
                     
                     // Lưới 4 Thẻ KPI Tài Chính & Hoạt Động
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 14) {
@@ -283,6 +360,11 @@ struct DashboardView: View {
             .background(AppTheme.primaryBackground.ignoresSafeArea())
             .navigationTitle("Trang Chủ")
             .navigationBarTitleDisplayMode(.inline)
+            .alert("🎉 Đã Nạp Dữ Liệu Mẫu Thành Công!", isPresented: $showingSeedSuccessAlert) {
+                Button("Khám phá ngay", role: .cancel) {}
+            } message: {
+                Text("Hệ thống đã nạp chính xác bộ dữ liệu chuẩn gồm:\n• 10 Đầu Sách & 21 Bản sao vật lý\n• 3 Độc Giả (Trần Quốc Bảo VIP, Lê Hoàng Yến, Phạm Minh Tuấn)\n• 6 Phiếu Mượn với số liệu đối soát doanh thu, tiền cọc và tiền phạt khớp toán học 100%!")
+            }
         }
     }
 }

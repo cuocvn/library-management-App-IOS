@@ -4,12 +4,18 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CaiDatView: View {
+    @Environment(\.modelContext) private var modelContext
+    
     @AppStorage("tenThuVien") private var tenThuVien: String = "Thư Viện Số iOS"
     @AppStorage("soNgayMuonMacDinh") private var soNgayMuonMacDinh: Int = 14
     @AppStorage("mucPhatMoiNgay") private var mucPhatMoiNgay: Int = 5000
     @AppStorage("mucCocMacDinh") private var mucCocMacDinh: Int = 50000
+    
+    @State private var showingActionAlert: Bool = false
+    @State private var alertMessage: String = ""
     
     var body: some View {
         NavigationStack {
@@ -59,7 +65,28 @@ struct CaiDatView: View {
                     }
                 }
                 
-                // Section 3: Thông tin đồ án & Hệ thống
+                // Section 3: Quản lý Dữ liệu Mẫu & Thử nghiệm
+                Section(header: Text("Dữ liệu mẫu & Thử nghiệm"), footer: Text("Dữ liệu mẫu chuẩn gồm 10 đầu sách, 3 độc giả và 6 phiếu mượn khớp doanh thu 100%.")) {
+                    Button {
+                        SampleDataService.napDuLieuChuan10Sach(modelContext: modelContext)
+                        alertMessage = "Đã nạp thành công bộ dữ liệu mẫu chuẩn gồm 10 Đầu Sách, 3 Độc Giả và 6 Phiếu Mượn!"
+                        showingActionAlert = true
+                    } label: {
+                        Label("Nạp Dữ Liệu Mẫu Chuẩn (10 Sách, 3 Độc Giả)", systemImage: "sparkles")
+                            .foregroundColor(AppTheme.primary)
+                    }
+                    
+                    Button(role: .destructive) {
+                        SampleDataService.xoaToanBoDuLieu(modelContext: modelContext)
+                        alertMessage = "Đã xóa toàn bộ dữ liệu. Ứng dụng đã trở về trạng thái trống hoàn toàn!"
+                        showingActionAlert = true
+                    } label: {
+                        Label("Xóa Sạch Dữ Liệu (Reset về App trống)", systemImage: "trash.fill")
+                            .foregroundColor(AppTheme.danger)
+                    }
+                }
+                
+                // Section 4: Thông tin đồ án & Hệ thống
                 Section(header: Text("Thông tin đồ án")) {
                     HStack {
                         Text("Đồ án:")
@@ -87,6 +114,11 @@ struct CaiDatView: View {
                 }
             }
             .navigationTitle("Cài Đặt Hệ Thống")
+            .alert("Thông Báo", isPresented: $showingActionAlert) {
+                Button("Đã hiểu", role: .cancel) {}
+            } message: {
+                Text(alertMessage)
+            }
         }
     }
 }

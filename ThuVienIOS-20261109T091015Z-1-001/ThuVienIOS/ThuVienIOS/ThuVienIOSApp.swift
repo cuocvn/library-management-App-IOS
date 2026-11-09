@@ -30,10 +30,6 @@ struct ThuVienIOSApp: App {
     var body: some Scene {
         WindowGroup {
             MainTabView()
-                .onAppear {
-                    // Tự động nạp dữ liệu mẫu ban đầu nếu database trống
-                    SampleDataService.createSampleData(modelContext: sharedModelContainer.mainContext)
-                }
         }
         .modelContainer(sharedModelContainer)
     }
