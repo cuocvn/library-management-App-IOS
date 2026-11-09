@@ -1,0 +1,164 @@
+﻿TÀI LIỆU ĐẶC TẢ ỨNG DỤNG: HỆ THỐNG QUẢN LÝ THƯ VIỆN (iOS)
+1. THÔNG TIN CHUNG
+Tên ứng dụng: Hệ thống Quản lý Thư viện (Library Management System).
+Nền tảng: iOS (iPhone/iPad).
+Ngôn ngữ lập trình: Swift, SwiftUI.
+Cơ sở dữ liệu: SwiftData (Lưu trữ Offline - Local Database).
+Kiến trúc phần mềm: MVVM (Model - View - ViewModel) kết hợp Repository Pattern.
+Môi trường phát triển: Xcode trên macOS.
+Quy ước ngôn ngữ:
+Tên Model/Cột/Hàm trong code: Tiếng Việt KHÔNG DẤU (VD: Sach, ngayMuon, tienCoc).
+Giao diện (UI) và Dữ liệu hiển thị: Tiếng Việt CÓ DẤU (VD: &quot;Quản lý Sách&quot;, &quot;Trần Quốc Bảo&quot;).
+2. KIẾN TRÚC TỔNG THỂ &amp; LUỒNG TRẢI NGHIỆM (UI/UX FLOW)
+Ứng dụng khởi động trực tiếp vào màn hình chính (không có Login/Splash). Giao diện được tổ chức theo dạng Tab Bar (5 Tabs) với tổng cộng 13 màn hình (bao gồm cả màn hình chính và phụ). Hệ thống sử dụng tông màu chủ đạo Indigo Blue, màu Đỏ cho cảnh báo quá hạn, màu Xanh lá cho trạng thái thành công/hoàn tiền, và màu Cam cho doanh thu.
+2.1. Cấu trúc 13 Màn hình (Đánh số thứ tự chuẩn hóa)
+TAB 1: TRANG CHỦ
+1.0 Trang chủ (Dashboard):
+Hiển thị 4 thẻ KPI tài chính &amp; hoạt động (Tổng lượt mượn, Doanh thu phí mượn, Tổng tiền cọc đang giữ, Tổng tiền phạt đã thu).
+Biểu đồ cột (Bar Chart) thể hiện lượt mượn theo tuần.
+Danh sách Top 10 Độc giả mượn nhiều và Top 10 Tác giả mượn nhiều.
+TAB 2: SÁCH
+2.0 Quản lý Kho Sách: Thanh tìm kiếm, bộ lọc thể loại, danh sách thẻ sách (hiển thị trạng thái tồn kho &quot;Còn X/Y&quot;). Nút (+) thêm sách.
+2.1 Chi tiết Sách: Hiển thị thông tin sách, huy hiệu cước phí (&quot;Cọc: 100k | Phí: 10k&quot;), nút &quot;Cho mượn sách&quot;.
+Section &quot;Bản sao vật lý&quot;: Quản lý mã định danh từng cuốn (VD: AI-001) kèm vị trí kệ và trạng thái (Sẵn sàng/Đang mượn/Hỏng).
+Section &quot;Lịch sử mượn&quot;: Danh sách các lượt mượn của đầu sách này.
+2.2 Thêm/Sửa Sách: Form nhập thông tin, phân loại giá trị sách (để tự động gán Cọc/Phí), tổng số lượng (tự sinh mã bản sao), vị trí kệ và chọn ảnh bìa.
+TAB 3: MƯỢN &amp; TRẢ
+3.0 Quản lý Mượn Trả: Bộ lọc trạng thái (Đang mượn, Quá hạn, Đã trả, Tất cả). Danh sách phiếu mượn hiển thị Tên sách + Mã bản sao + Cảnh báo quá hạn. Hỗ trợ vuốt để trả sách.
+3.1 Tạo Phiếu Mượn (Modal): Chọn Đầu sách ➔ Chọn Bản sao khả dụng ➔ Chọn Độc giả ➔ Chọn ngày. Khối &quot;Tài chính&quot; hiển thị Tiền cọc + Phí mượn. Phương thức thanh toán: Tiền mặt hoặc Trừ tài khoản.
+3.2 Trả Sách &amp; Thu Phạt (Modal): Đối soát thời gian mượn/trả. Cảnh báo phạt quá hạn (Đỏ). Bảng quyết toán: Cọc hoàn lại - Phí giữ lại - Phạt ➔ Tổng tiền hoàn lại khách (Xanh). Phương thức hoàn tiền: Tiền mặt hoặc Cộng vào tài khoản.
+TAB 4: ĐỘC GIẢ
+4.0 Quản lý Độc giả: Tìm kiếm, danh sách độc giả kèm huy hiệu VIP (nếu có). Nút (+) thêm độc giả.
+4.1 Chi tiết Độc giả: Hồ sơ, thẻ Tài chính hiển thị &quot;Số dư tài khoản&quot; (kèm nút Nạp tiền). Thống kê sách đang mượn/quá hạn. Lịch sử mượn.
+4.2 Thêm/Sửa Độc giả: Form nhập thông tin cá nhân, chọn loại thẻ (Thẻ thường / Thẻ Hội viên VIP).
+TAB 5: CÀI ĐẶT
+5.0 Cài đặt Thư viện: Cấu hình Quy định mượn (Số ngày mượn, Mức phạt/ngày, Mức cọc mặc định).
+5.1, 5.2, 5.3 Quản lý Danh mục: Quản lý danh sách Thể loại, Nhà xuất bản, Tác giả.
+3. THIẾT KẾ CƠ SỞ DỮ LIỆU (SWIFTDATA)
+Hệ thống sử dụng 6 Model chính và 1 Cấu hình (AppStorage). (Lưu ý: Tiền tệ sử dụng kiểu Int đơn vị VNĐ để tối ưu hóa truy vấn #Predicate trong SwiftData).
+3.1. Sơ đồ quan hệ
+TheLoai, NhaXuatBan, TacGia (1-N) ➔ Sach (1-N) ➔ BanSaoSach (1-N) ➔ PhieuMuon (N-1) ⬅ DocGia
+3.2. Chi tiết các bảng
+1. Bảng Sach (Đầu sách - Metadata)
+maSach (UUID), tenSach (String), namXuatBan (Int).
+phanLoaiGiaTri (String): Truyện tranh, Sách thường, Giáo trình, Sách quý.
+tienCoc (Int), phiMuon (Int).
+daAn (Bool): Cờ xóa mềm.
+Relationships: theLoai, nhaXuatBan, tacGia (N-1). dsBanSao (1-N).
+2. Bảng BanSaoSach (Cuốn sách vật lý)
+maDinhDanh (String): Mã tự sinh (VD: AI-001).
+viTriKe (String): Vị trí lưu trữ (VD: Kệ A3).
+tinhTrang (String): &quot;SanSang&quot;, &quot;DangMuon&quot;, &quot;Hong&quot;.
+Relationships: sach (N-1), dsPhieuMuon (1-N).
+3. Bảng DocGia (Độc giả)
+maDocGia (UUID), hoTen (String), email, soDienThoai, lopKhoa.
+loaiThe (String): &quot;Thuong&quot; hoặc &quot;VIP&quot;.
+soDuTaiKhoan (Int): Số dư ví (dùng để trừ tiền/thanh toán).
+daAn (Bool): Cờ xóa mềm.
+Relationships: dsPhieuMuon (1-N).
+4. Bảng PhieuMuon (Giao dịch)
+maPhieu (UUID), ngayMuon, hanTra, ngayTra (Date?).
+tienCocThucTe (Int), phiMuonThucTe (Int).
+soNgayTre (Int?), tienPhat (Int?): Snapshot lúc trả sách (để bảo toàn dữ liệu lịch sử).
+phuongThucThanhToan (String?): &quot;TienMat&quot; hoặc &quot;TaiKhoan&quot;.
+Relationships: banSao (N-1), docGia (N-1).
+5. Các bảng Danh mục: TheLoai, NhaXuatBan, TacGia (Chỉ chứa ID và Tên, liên kết 1-N với Sach, xóa thì Nullify).
+6. Cấu hình LibrarySettings (@AppStorage)
+tenThuVien, soNgayMuonMacDinh, mucPhatMoiNgay, mucCocMacDinh.
+4. QUY TẮC NGHIỆP VỤ CỐT LÕI (BUSINESS LOGIC)
+4.1. Nghiệp vụ Mượn sách (Checkout)
+Kiểm tra tồn kho: Chỉ cho phép chọn các Bản sao (BanSaoSach) có tinhTrang == &quot;SanSang&quot;.
+Định giá động: Hệ thống tự động lấy tienCoc và phiMuon từ thông tin Sach.
+Ưu đãi VIP: Nếu Độc giả có loaiThe == &quot;VIP&quot;, hệ thống gán tienCocThucTe = 0.
+Thanh toán: Tổng thu = tienCocThucTe + phiMuonThucTe.
+Nếu chọn &quot;Trừ tài khoản&quot;: Kiểm tra soDuTaiKhoan của độc giả có đủ không, nếu đủ thì trừ tiền.
+Nếu chọn &quot;Tiền mặt&quot;: Chỉ ghi nhận thanh toán.
+Cập nhật trạng thái: Đổi tinhTrang của Bản sao thành &quot;DangMuon&quot;.
+4.2. Nghiệp vụ Trả sách (Check-in &amp; Refund)
+Chặn trả 2 lần: Kiểm tra nếu ngayTra != nil thì báo lỗi.
+Tính phạt (Snapshot):
+soNgayTre = max(0, Ngày trả thực tế - Hạn trả).
+tienPhat = soNgayTre * mucPhatMoiNgay.
+Ghi cứng soNgayTre và tienPhat vào Database (Không tính lại động).
+Đối soát tài chính:
+TienHoanLai = tienCocThucTe - tienPhat.
+(Trường hợp âm tiền: Nếu phạt &gt; cọc, khách phải nộp thêm).
+Hoàn tiền:
+Nếu chọn &quot;Cộng vào tài khoản&quot;: soDuTaiKhoan += TienHoanLai.
+Cập nhật trạng thái: Đổi tinhTrang của Bản sao về lại &quot;SanSang&quot;.
+🌟 PHẦN 1: TỔNG QUAN ỨNG DỤNG (EXECUTIVE SUMMARY)
+1. Giới thiệu chung
+Hệ thống Quản lý Thư viện (iOS) là một ứng dụng di động được phát triển bằng ngôn ngữ Swift, sử dụng framework SwiftUI và cơ sở dữ liệu SwiftData. Ứng dụng hoạt động hoàn toàn Offline trên thiết bị, giúp các thủ thư có thể quản lý kho sách, độc giả và đặc biệt là quản lý dòng tiền (tài chính) một cách chuyên nghiệp, nhanh chóng mà không cần kết nối mạng Internet.
+2. Điểm khác biệt &amp; Tính độc đáo (USP - Unique Selling Points)
+Đây là phần bạn dùng để &quot;flex&quot; với giảng viên, vì nó vượt xa một đồ án CRUD (Thêm/Xóa/Sửa) thông thường:
+Quản lý Bản sao Vật lý (Physical Copy Tracking): Không quản lý chung chung &quot;Số lượng&quot;, app quản lý từng cuốn sách cụ thể (Mã AI-001, AI-002...), biết chính xác cuốn nào đang ở kệ nào, ai đang giữ, cuốn nào bị hỏng.
+Hệ sinh thái Tài chính (Fintech Mini):
+Tính năng Ví điện tử nội bộ (Số dư độc giả).
+Tự động hóa Tiền cọc (Deposit) và Phí mượn (Rental Fee) dựa trên giá trị sách.
+Xử lý Đối soát dòng tiền (Trừ phạt - Hoàn cọc) chính xác đến từng đồng.
+Quản lý Hạng thành viên (VIP): Phân quyền độc giả Thường/VIP, tự động miễn giảm tiền cọc cho Hội viên.
+Dashboard Trực quan: Ứng dụng Apple Charts để vẽ biểu đồ doanh thu, thống kê Top 10 Độc giả/Tác giả mượn nhiều nhất, giúp thủ thư đưa ra quyết định nhập sách.
+🗺️ PHẦN 2: SƠ ĐỒ TƯ DUY TỔNG QUAN (MINDMAP 13 MÀN HÌNH)
+Sơ đồ này mô tả toàn bộ luồng đi của App. Cứ nhìn từ trên xuống là biết cách sử dụng.
+text
+📱 ỨNG DỤNG QUẢN LÝ THƯ VIỆN (13 Màn hình)
+│
+├── 🏠 1.0 TRANG CHỦ (Dashboard)
+│   ├── 4 Thẻ KPI (Lượt mượn, Doanh thu, Tiền cọc, Tiền phạt)
+│   ├── Biểu đồ cột (Charts)
+│   └── Top 10 Độc giả &amp; Top 10 Tác giả
+│
+├── 📚 2.0 QUẢN LÝ KHO SÁCH (Tab Sách)
+│   ├── 2.1 Chi tiết Sách ──&gt; Nút &quot;Cho mượn&quot; ──&gt; Nhảy sang 3.1
+│   │   ├── Danh sách Bản sao vật lý (AI-001, AI-002...)
+│   │   └── Lịch sử mượn của đầu sách
+│   └── 2.2 Form Thêm/Sửa Sách
+│       └── Cấu hình Cọc/Phí theo Phân loại giá trị
+│
+├── 🔄 3.0 QUẢN LÝ MƯỢN TRẢ (Tab Mượn/Trả)
+│   ├── 3.1 Tạo Phiếu Mượn (Modal)
+│   │   ├── Chọn Sách ➔ Chọn Bản sao ➔ Chọn Độc giả
+│   │   └── Thanh toán: Tiền mặt / Trừ tài khoản
+│   └── 3.2 Trả Sách &amp; Thu Phạt (Modal)
+│       ├── Tính phạt trễ hạn (Snapshot)
+│       └── Đối soát: Hoàn cọc - Phí - Phạt
+│
+├── 👤 4.0 QUẢN LÝ ĐỘC GIẢ (Tab Độc giả)
+│   ├── 4.1 Chi tiết Độc giả
+│   │   ├── Thẻ Số dư tài khoản (Ví)
+│   │   ├── Huy hiệu Hội viên VIP
+│   │   └── Lịch sử mượn cá nhân
+│   └── 4.2 Form Thêm/Sửa Độc giả
+│
+└── ⚙️ 5.0 CÀI ĐẶT THƯ VIỆN (Tab Cài đặt)
+├── Quy định mượn (Số ngày, Mức phạt, Mức cọc)
+├── 5.1 Quản lý Thể loại
+├── 5.2 Quản lý Nhà xuất bản
+└── 5.3 Quản lý Tác giả
+🏗️ PHẦN 3: KIẾN TRÚC HỆ THỐNG (MÔ HÌNH TỔNG QUAN)
+(Phần này để chứng minh nhóm bạn hiểu về công nghệ phần mềm)
+Giao diện (Frontend): 100% Native iOS (SwiftUI). Sử dụng NavigationStack để điều hướng, TabView cho thanh điều hướng dưới, Bottom Sheet cho các form nhập liệu.
+Dữ liệu (Backend &amp; Database): Offline hoàn toàn. Sử dụng SwiftData - framework cơ sở dữ liệu mới nhất của Apple (iOS 17+).
+Kiến trúc Code:
+MVVM (Model-View-ViewModel): Tách biệt logic hiển thị và xử lý dữ liệu.
+Repository Pattern: Gom toàn bộ các câu lệnh truy vấn Database vào một nơi (Repository), giúp code gọn gàng, dễ bảo trì và nâng cấp (nếu sau này muốn sync lên Cloud).
+Cơ chế Snapshot: Khi trả sách, các thông số soNgayTre, tienPhat, phuongThucThanhToan được &quot;chụp&quot; lại và lưu cứng vào Database. Điều này đảm bảo tính bất biến của lịch sử tài chính (sau này đổi giá phạt, các phiếu cũ không bị tính lại).
+💡 PHẦN 4: MA TRẬN TÍNH NĂNG (FEATURE MATRIX)
+Nhóm Tính Năng
+Mô tả
+Điểm nổi bật
+Quản lý Sách
+CRUD Sách, Bản sao vật lý, Thể loại, NXB, Tác giả
+Tự sinh mã định danh bản sao (Copy ID). Quản lý vị trí kệ.
+Quản lý Độc giả
+CRUD Độc giả, Phân hạng VIP
+Ví tài khoản nội bộ (Nạp tiền, số dư). Huy hiệu VIP.
+Nghiệp vụ Mượn/Trả
+Lập phiếu, Trả sách, Gia hạn
+Quản lý chính xác cuốn sách nào được mượn. Cảnh báo quá hạn.
+Quản lý Tài chính
+Thu tiền cọc, Thu phí mượn, Thu phạt
+Định giá động (Sách đắt -&gt; cọc cao). Thanh toán Tiền mặt / Ví. Miễn cọc cho VIP.
+Thống kê &amp; Báo cáo
+Dashboard, Charts, Top 10
+Biểu đồ doanh thu, Top Độc giả/Tác giả trực quan bằng Apple Charts.

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-fixed-dim": "#ffb4ab", "secondary": "#bb0112", "surface-container-lowest": "#ffffff", "primary-container": "#4338ca", "tertiary-fixed": "#7ffc97", "error": "#ba1a1a", "primary-fixed": "#e3dfff", "surface-container-low": "#f3f3f8", "on-error-container": "#93000a", "background": "#f9f9fe", "on-primary-fixed": "#100069", "tertiary-fixed-dim": "#62df7d", "error-container": "#ffdad6", "on-secondary-fixed": "#410002", "on-tertiary-fixed": "#002109", "on-tertiary-container": "#60dd7c", "on-secondary": "#ffffff", "on-background": "#1a1c1f", "outline": "#777586", "surface-variant": "#e2e2e7", "inverse-surface": "#2e3034", "surface-bright": "#f9f9fe", "on-error": "#ffffff", "on-secondary-container": "#fffbff", "surface-container": "#ededf2", "primary-fixed-dim": "#c3c0ff", "on-primary": "#ffffff", "on-primary-container": "#c1beff", "inverse-on-surface": "#f0f0f5", "on-secondary-fixed-variant": "#93000b", "on-primary-fixed-variant": "#372abf", "secondary-fixed": "#ffdad6", "inverse-primary": "#c3c0ff", "surface-container-highest": "#e2e2e7", "surface-dim": "#d9dade", "surface": "#f9f9fe", "on-tertiary-fixed-variant": "#005320", "on-surface": "#1a1c1f", "on-tertiary": "#ffffff", "on-surface-variant": "#464554", "surface-container-high": "#e8e8ed", "secondary-container": "#e02928", "primary": "#2a14b4", "surface-tint": "#5148d7", "tertiary": "#00451a", "tertiary-container": "#005f26", "outline-variant": "#c7c4d7" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin": "1rem", "gutter": "1rem", "space-md": "0.75rem", "space-lg": "1rem", "space-xl": "1.5rem", "space-sm": "0.5rem", "space-xs": "0.25rem" }, fontFamily: { "body": ["Public Sans"], "title-1": ["Public Sans"], "caption-1": ["Public Sans"], "subheadline": ["Public Sans"], "footnote": ["Public Sans"], "headline": ["Public Sans"], "title-2": ["Public Sans"], "large-title": ["Public Sans"], "title-3": ["Public Sans"], "callout": ["Public Sans"], "caption-2": ["Public Sans"] }, fontSize: { "body": ["17px", { lineHeight: "22px", letterSpacing: "-0.43px", fontWeight: "400" }], "title-1": ["28px", { lineHeight: "34px", letterSpacing: "0.36px", fontWeight: "700" }], "caption-1": ["12px", { lineHeight: "16px", letterSpacing: "0px", fontWeight: "500" }], "subheadline": ["15px", { lineHeight: "20px", letterSpacing: "-0.23px", fontWeight: "400" }], "footnote": ["13px", { lineHeight: "18px", letterSpacing: "-0.08px", fontWeight: "400" }], "headline": ["17px", { lineHeight: "22px", letterSpacing: "-0.43px", fontWeight: "600" }], "title-2": ["22px", { lineHeight: "28px", letterSpacing: "-0.26px", fontWeight: "600" }], "large-title": ["34px", { lineHeight: "41px", letterSpacing: "0.37px", fontWeight: "700" }], "title-3": ["20px", { lineHeight: "25px", letterSpacing: "-0.45px", fontWeight: "600" }], "callout": ["16px", { lineHeight: "21px", letterSpacing: "-0.31px", fontWeight: "400" }], "caption-2": ["11px", { lineHeight: "13px", letterSpacing: "0.07px", fontWeight: "400" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.material-symbols-outlined{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-11 px-6 flex items-center justify-between text-on-surface"><span class="font-headline text-headline font-semibold text-[15px]">9:41</span><div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">signal_cellular_alt</span><span class="material-symbols-outlined text-[16px]">wifi</span><span class="material-symbols-outlined text-[20px]">battery_full</span></div></div><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button class="min-w-[44px] min-h-[44px] -ml-2 flex items-center justify-center text-primary active:opacity-60" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back_ios_new</span></button><h1 class="font-headline text-headline text-on-surface truncate">Chi Tiết Sách</h1></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="flex flex-col relative w-full pt-25 pb-safe bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Top Action Sub-bar mirroring iOS Navigation Accessories -->
+<div class="px-margin pt-space-xs pb-space-sm flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-footnote text-footnote text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">menu_book</span>
+        Hệ thống dữ liệu danh mục
+      </span>
+</div>
+<!-- Add Publisher (+) Trigger -->
+<button aria-label="Thêm Nhà xuất bản" class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm active:scale-95 transition-transform" id="open-sheet-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</button>
+</div>
+<!-- Search & Filter Cupertino style bar -->
+<div class="px-margin mb-space-md">
+<div class="flex items-center bg-surface-container-high rounded-xl px-3 py-2 text-on-surface-variant gap-2 shadow-inner">
+<span class="material-symbols-outlined text-[20px]">search</span>
+<input class="w-full bg-transparent text-on-surface font-subheadline text-subheadline placeholder:text-on-surface-variant/70 focus:outline-none" id="search-publisher-input" placeholder="Tìm kiếm theo tên nhà xuất bản..." type="text"/>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant/50 hidden cursor-pointer" id="clear-search-btn">cancel</span>
+</div>
+</div>
+<!-- Key Metric Summary Cards -->
+<div class="px-margin mb-space-lg grid grid-cols-2 gap-space-sm">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-caption-1 text-caption-1 font-semibold uppercase tracking-wider">Tổng đối tác NXB</span>
+<span class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-primary">domain</span>
+</span>
+</div>
+<div class="flex items-baseline gap-1.5">
+<span class="font-title-2 text-title-2 font-bold text-on-surface" id="publisher-count-badge">6</span>
+<span class="font-caption-2 text-caption-2 text-tertiary-container font-medium">Đang hoạt động</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant mb-1">
+<span class="font-caption-1 text-caption-1 font-semibold uppercase tracking-wider">Đầu sách lưu trữ</span>
+<span class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-primary">auto_stories</span>
+</span>
+</div>
+<div class="flex items-baseline gap-1.5">
+<span class="font-title-2 text-title-2 font-bold text-on-surface" id="book-sum-badge">995</span>
+<span class="font-caption-2 text-caption-2 text-on-surface-variant">Tập sách</span>
+</div>
+</div>
+</div>
+<!-- Inset Grouped Section Header -->
+<div class="px-margin flex items-center justify-between mb-space-xs">
+<span class="font-footnote text-footnote text-on-surface-variant font-medium tracking-wide uppercase">Danh sách Nhà xuất bản</span>
+<span class="font-caption-2 text-caption-2 text-primary font-semibold">Tự động đồng bộ</span>
+</div>
+<!-- List Nhà xuất bản chuẩn iOS Inset Grouped -->
+<div class="px-margin mb-space-xl">
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col" id="publisher-list-container">
+<!-- Item 1: NXB Trẻ -->
+<div class="publisher-item px-space-lg py-space-md flex items-center justify-between active:bg-surface-container-low transition-colors cursor-pointer" data-name="NXB Trẻ">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[20px]">corporate_fare</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline text-headline text-on-surface truncate">NXB Trẻ</span>
+<span class="font-footnote text-footnote text-on-surface-variant">240 đầu sách</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant/60 shrink-0">
+<span class="font-caption-1 text-caption-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-medium">Hoạt động</span>
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Item 2: NXB Kim Đồng -->
+<div class="publisher-item px-space-lg py-space-md flex items-center justify-between active:bg-surface-container-low transition-colors cursor-pointer" data-name="NXB Kim Đồng">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[20px]">child_care</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline text-headline text-on-surface truncate">NXB Kim Đồng</span>
+<span class="font-footnote text-footnote text-on-surface-variant">310 đầu sách</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant/60 shrink-0">
+<span class="font-caption-1 text-caption-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-medium">Hoạt động</span>
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Item 3: NXB Thông Tin & Truyền Thông -->
+<div class="publisher-item px-space-lg py-space-md flex items-center justify-between active:bg-surface-container-low transition-colors cursor-pointer" data-name="NXB Thông Tin &amp; Truyền Thông">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[20px]">rss_feed</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline text-headline text-on-surface truncate">NXB Thông Tin &amp; Truyền Thông</span>
+<span class="font-footnote text-footnote text-on-surface-variant">95 đầu sách</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant/60 shrink-0">
+<span class="font-caption-1 text-caption-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-medium">Hoạt động</span>
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Item 4: NXB Đại học Quốc gia Hà Nội -->
+<div class="publisher-item px-space-lg py-space-md flex items-center justify-between active:bg-surface-container-low transition-colors cursor-pointer" data-name="NXB Đại học Quốc gia Hà Nội">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[20px]">school</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline text-headline text-on-surface truncate">NXB Đại học Quốc gia Hà Nội</span>
+<span class="font-footnote text-footnote text-on-surface-variant">120 đầu sách</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant/60 shrink-0">
+<span class="font-caption-1 text-caption-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-medium">Hoạt động</span>
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Item 5: NXB Phụ Nữ -->
+<div class="publisher-item px-space-lg py-space-md flex items-center justify-between active:bg-surface-container-low transition-colors cursor-pointer" data-name="NXB Phụ Nữ">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[20px]">diversity_1</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline text-headline text-on-surface truncate">NXB Phụ Nữ</span>
+<span class="font-footnote text-footnote text-on-surface-variant">80 đầu sách</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant/60 shrink-0">
+<span class="font-caption-1 text-caption-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-medium">Hoạt động</span>
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+<!-- Item 6: NXB Tổng Hợp TP.HCM -->
+<div class="publisher-item px-space-lg py-space-md flex items-center justify-between active:bg-surface-container-low transition-colors cursor-pointer" data-name="NXB Tổng Hợp TP.HCM">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[20px]">location_city</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline text-headline text-on-surface truncate">NXB Tổng Hợp TP.HCM</span>
+<span class="font-footnote text-footnote text-on-surface-variant">150 đầu sách</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant/60 shrink-0">
+<span class="font-caption-1 text-caption-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-medium">Hoạt động</span>
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- iOS Footnote Guidance -->
+<div class="px-margin mb-space-xl flex items-start gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-outline shrink-0 mt-0.5">info</span>
+<p class="font-footnote text-footnote leading-relaxed">
+      Dữ liệu Nhà xuất bản được liên kết trực tiếp với biểu mẫu nhập kho sách mới và phân mục thống kê nghiệp vụ thư viện.
+    </p>
+</div>
+<!-- Action Toast notification -->
+<div class="fixed bottom-6 left-4 right-4 bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-xl shadow-xl flex items-center justify-between opacity-0 pointer-events-none transition-all duration-300 z-50 transform translate-y-3" id="toast-message">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed">check_circle</span>
+<span class="font-subheadline text-subheadline font-medium" id="toast-text">Đã cập nhật nhà xuất bản</span>
+</div>
+<button class="text-inverse-on-surface/80 hover:text-inverse-on-surface" onclick="hideToast()" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Native Bottom Sheet Modal "Thêm NXB" -->
+<div class="fixed inset-0 bg-on-background/40 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300 flex flex-col justify-end" id="modal-backdrop">
+<!-- Click backdrop to dismiss -->
+<div class="w-full flex-grow" id="modal-scrim-touch"></div>
+<!-- Sheet Card with Grabber Bar -->
+<div class="w-full bg-surface-container-lowest rounded-t-3xl shadow-2xl p-space-lg transform translate-y-full transition-transform duration-300 flex flex-col max-h-[751px]" id="modal-sheet-panel">
+<!-- Grabber Capsule indicator (Cupertino standard 36x5) -->
+<div class="w-full flex justify-center pb-3">
+<div class="w-9 h-1.5 bg-surface-variant rounded-full"></div>
+</div>
+<!-- Modal Header -->
+<div class="flex items-center justify-between mb-space-lg">
+<h2 class="font-title-3 text-title-3 font-bold text-on-surface">Thêm NXB mới</h2>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant active:scale-95 transition-transform" id="modal-close-icon" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Form Inputs Grouped -->
+<div class="flex flex-col gap-space-md mb-space-lg">
+<div>
+<label class="block font-caption-1 text-caption-1 font-semibold text-on-surface-variant uppercase tracking-wider mb-2" for="publisher-name-input">
+            Tên NXB <span class="text-error">*</span>
+</label>
+<div class="bg-surface-container-low rounded-xl p-3 flex items-center gap-2.5 shadow-inner">
+<span class="material-symbols-outlined text-outline text-[20px]">domain_add</span>
+<input autocomplete="off" class="w-full bg-transparent text-on-surface font-body text-body placeholder:text-on-surface-variant/60 focus:outline-none" id="publisher-name-input" placeholder="Nhập tên nhà xuất bản..." type="text"/>
+</div>
+<span class="text-error font-caption-2 text-caption-2 mt-1 hidden block" id="name-error-msg">Vui lòng nhập tên nhà xuất bản hợp lệ.</span>
+</div>
+<div>
+<label class="block font-caption-1 text-caption-1 font-semibold text-on-surface-variant uppercase tracking-wider mb-2" for="publisher-books-input">
+            Số lượng đầu sách ban đầu
+          </label>
+<div class="bg-surface-container-low rounded-xl p-3 flex items-center gap-2.5 shadow-inner">
+<span class="material-symbols-outlined text-outline text-[20px]">library_books</span>
+<input class="w-full bg-transparent text-on-surface font-body text-body placeholder:text-on-surface-variant/60 focus:outline-none" id="publisher-books-input" min="0" placeholder="0" type="number" value="0"/>
+</div>
+</div>
+</div>
+<!-- Action Buttons Modal Group -->
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs pb-space-sm">
+<button class="w-full py-3.5 px-4 rounded-xl bg-surface-container text-on-surface font-headline text-headline text-center active:scale-98 transition-all" id="cancel-sheet-btn" type="button">
+          Hủy
+        </button>
+<!-- Button Indigo (Primary) -->
+<button class="w-full py-3.5 px-4 rounded-xl bg-primary-container text-on-primary font-headline text-headline text-center shadow-md active:scale-98 transition-all flex items-center justify-center gap-2" id="save-sheet-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">check</span>
+<span>Lưu NXB</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function initPublisherManager() {
+    const openBtn = document.getElementById('open-sheet-btn');
+    const closeIcon = document.getElementById('modal-close-icon');
+    const cancelBtn = document.getElementById('cancel-sheet-btn');
+    const saveBtn = document.getElementById('save-sheet-btn');
+    const scrimTouch = document.getElementById('modal-scrim-touch');
+    const backdrop = document.getElementById('modal-backdrop');
+    const sheetPanel = document.getElementById('modal-sheet-panel');
+    const nameInput = document.getElementById('publisher-name-input');
+    const booksInput = document.getElementById('publisher-books-input');
+    const errorMsg = document.getElementById('name-error-msg');
+    const container = document.getElementById('publisher-list-container');
+    const countBadge = document.getElementById('publisher-count-badge');
+    const bookSumBadge = document.getElementById('book-sum-badge');
+    const searchInput = document.getElementById('search-publisher-input');
+    const clearSearch = document.getElementById('clear-search-btn');
+    const toast = document.getElementById('toast-message');
+    const toastText = document.getElementById('toast-text');
+
+    let currentTotalCount = 6;
+    let currentBookCount = 995;
+
+    function openModal() {
+      backdrop.classList.remove('opacity-0', 'pointer-events-none');
+      backdrop.classList.add('opacity-100', 'pointer-events-auto');
+      sheetPanel.classList.remove('translate-y-full');
+      sheetPanel.classList.add('translate-y-0');
+      nameInput.value = '';
+      booksInput.value = '0';
+      errorMsg.classList.add('hidden');
+      setTimeout(() => nameInput.focus(), 250);
+    }
+
+    function closeModal() {
+      sheetPanel.classList.remove('translate-y-0');
+      sheetPanel.classList.add('translate-y-full');
+      backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+      nameInput.blur();
+    }
+
+    function showToast(message) {
+      toastText.textContent = message;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
+      toast.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+      setTimeout(() => {
+        hideToast();
+      }, 3000);
+    }
+
+    window.hideToast = function() {
+      toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
+      toast.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+    };
+
+    function handleSave() {
+      const val = nameInput.value.trim();
+      if (!val) {
+        errorMsg.classList.remove('hidden');
+        nameInput.focus();
+        return;
+      }
+
+      const books = parseInt(booksInput.value, 10) || 0;
+
+      // Add to UI list smoothly
+      const newCard = document.createElement('div');
+      newCard.className = 'publisher-item px-space-lg py-space-md flex items-center justify-between active:bg-surface-container-low transition-colors cursor-pointer border-t border-surface-container-low';
+      newCard.setAttribute('data-name', val);
+      newCard.innerHTML = `
+        <div class="flex items-center gap-space-md min-w-0">
+          <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-primary text-[20px]">bookmarks</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-headline text-headline text-on-surface truncate">${val}</span>
+            <span class="font-footnote text-footnote text-on-surface-variant">${books} đầu sách</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-space-xs text-on-surface-variant/60 shrink-0">
+          <span class="font-caption-1 text-caption-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-medium">Mới thêm</span>
+          <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+        </div>
+      `;
+
+      container.prepend(newCard);
+
+      // Update counters
+      currentTotalCount += 1;
+      currentBookCount += books;
+      countBadge.textContent = currentTotalCount;
+      bookSumBadge.textContent = currentBookCount.toLocaleString('vi-VN');
+
+      closeModal();
+      showToast(`Đã thêm thành công "${val}"`);
+    }
+
+    // Filter Logic
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (query.length > 0) {
+        clearSearch.classList.remove('hidden');
+      } else {
+        clearSearch.classList.add('hidden');
+      }
+
+      const items = container.querySelectorAll('.publisher-item');
+      items.forEach(item => {
+        const title = item.getAttribute('data-name').toLowerCase();
+        if (title.includes(query)) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
+
+    clearSearch.addEventListener('click', () => {
+      searchInput.value = '';
+      clearSearch.classList.add('hidden');
+      const items = container.querySelectorAll('.publisher-item');
+      items.forEach(item => item.classList.remove('hidden'));
+      searchInput.focus();
+    });
+
+    // Modal listeners
+    openBtn.addEventListener('click', openModal);
+    closeIcon.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    scrimTouch.addEventListener('click', closeModal);
+    saveBtn.addEventListener('click', handleSave);
+
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        handleSave();
+      }
+    });
+  })();
+</script></main></body></html>
