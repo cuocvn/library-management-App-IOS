@@ -44,50 +44,50 @@
 
 ---
 
-### 🔄 GIAI ĐOẠN 1: Khung App & Tab 1 - Trang Chủ (Dashboard) (ĐANG LÀM)
-- [ ] Xây dựng App Lifecycle SwiftUI (`ThuVienIOSApp.swift`) cấu hình `modelContainer` cho SwiftData và gọi seed data khi khởi động lần đầu.
-- [ ] Thiết lập bảng màu sắc Theme (`Color+Theme.swift` với màu Indigo `#4338CA`, Emerald, Crimson, Amber).
-- [ ] Xây dựng `MainTabView.swift` liên kết 5 Tab điều hướng chuẩn Apple HIG.
-- [ ] Thiết kế `DashboardView.swift` (Màn hình 1.0):
-  - [ ] 4 Thẻ KPI tài chính (Tổng lượt mượn, Doanh thu phí mượn, Tiền cọc đang giữ, Phạt đã thu).
-  - [ ] Biểu đồ cột Apple Charts hiển thị lượt mượn trong 7 ngày gần nhất.
-  - [ ] Danh sách Top 10 Độc giả mượn nhiều nhất.
-  - [ ] Danh sách Top 10 Tác giả được quan tâm nhất.
-- [ ] Đẩy commit lên GitHub và cập nhật tiến độ.
+### 🔄 GIAI ĐOẠN 1: Khung App & Tab 1 - Trang Chủ (Dashboard) (ĐÃ HOÀN THÀNH 100%)
+- [x] Xây dựng App Lifecycle SwiftUI (`ThuVienIOSApp.swift`) cấu hình `modelContainer` cho SwiftData và gọi seed data khi khởi động lần đầu.
+- [x] Thiết lập bảng màu sắc Theme (`Color+Theme.swift` với màu Indigo `#4338CA`, Emerald, Crimson, Amber).
+- [x] Xây dựng `MainTabView.swift` liên kết 5 Tab điều hướng chuẩn Apple HIG.
+- [x] Thiết kế `DashboardView.swift` (Màn hình 1.0):
+  - [x] 4 Thẻ KPI tài chính (Tổng lượt mượn, Doanh thu phí mượn, Tiền cọc đang giữ, Phạt đã thu).
+  - [x] Biểu đồ cột Apple Charts hiển thị lượt mượn trong 7 ngày gần nhất.
+  - [x] Danh sách Top 10 Độc giả mượn nhiều nhất.
+  - [x] Danh sách Top 10 Tác giả được quan tâm nhất.
+- [x] Đẩy commit lên GitHub và cập nhật tiến độ.
 
 ---
 
-### ⏳ GIAI ĐOẠN 2: Tab 2 - Quản Lý Kho Sách
-- [ ] Màn hình 2.0: Danh sách sách, thanh tìm kiếm từ khóa, bộ lọc theo Thể loại, hiển thị badge tồn kho "Còn X/Y cuốn".
-- [ ] Màn hình 2.1: Chi tiết sách, huy hiệu Cọc/Phí, nút "Cho mượn sách", danh sách bản sao vật lý cụ thể (mã định danh, kệ sách, trạng thái), lịch sử mượn của cuốn sách.
-- [ ] Màn hình 2.2: Form Thêm/Sửa sách, tự động tính cọc/phí theo phân loại giá trị, tự động sinh mã bản sao hàng loạt (VD: AI-001 -> AI-010).
+### ✅ GIAI ĐOẠN 2 (ĐÃ HOÀN THÀNH 100%): Tab 2 - Quản Lý Kho Sách
+- [x] Màn hình 2.0: Danh sách sách, thanh tìm kiếm từ khóa, bộ lọc theo Thể loại, hiển thị badge tồn kho "Còn X/Y cuốn".
+- [x] Màn hình 2.1: Chi tiết sách, huy hiệu Cọc/Phí, nút "Cho mượn sách", danh sách bản sao vật lý cụ thể (mã định danh, kệ sách, trạng thái), lịch sử mượn của cuốn sách.
+- [x] Màn hình 2.2: Form Thêm/Sửa sách, tự động tính cọc/phí theo phân loại giá trị, tự động sinh mã bản sao hàng loạt (VD: AI-001 -> AI-010).
 
 ---
 
-### ⏳ GIAI ĐOẠN 3: Tab 3 - Nghiệp Vụ Mượn & Trả (Core Fintech)
-- [ ] Màn hình 3.0: Danh sách phiếu mượn phân loại theo trạng thái (Đang mượn, Quá hạn cảnh báo đỏ, Đã trả), hỗ trợ thao tác nhanh.
-- [ ] Màn hình 3.1: Modal Tạo phiếu mượn (Chọn đầu sách -> chọn bản sao "SanSang" -> chọn độc giả -> tính tiền cọc/phí -> tự miễn cọc nếu là VIP -> chọn thanh toán Tiền mặt hoặc trừ Ví số dư).
-- [ ] Màn hình 3.2: Modal Trả sách & Thu phạt (Tính số ngày trễ, áp đơn giá phạt snapshot, quyết toán Cọc hoàn lại - Phí - Phạt, xử lý nạp bù nếu âm tiền, hoàn tiền qua Tiền mặt hoặc cộng vào Ví).
+### ✅ GIAI ĐOẠN 3 (ĐÃ HOÀN THÀNH 100%): Tab 3 - Nghiệp Vụ Mượn & Trả (Core Fintech)
+- [x] Màn hình 3.0: Danh sách phiếu mượn phân loại theo trạng thái (Đang mượn, Quá hạn cảnh báo đỏ, Đã trả), hỗ trợ thao tác nhanh.
+- [x] Màn hình 3.1: Modal Tạo phiếu mượn (Chọn đầu sách -> chọn bản sao "SanSang" -> chọn độc giả -> tính tiền cọc/phí -> tự miễn cọc nếu là VIP -> chọn thanh toán Tiền mặt hoặc trừ Ví số dư).
+- [x] Màn hình 3.2: Modal Trả sách & Thu phạt (Tính số ngày trễ, áp đơn giá phạt snapshot, quyết toán Cọc hoàn lại - Phí - Phạt, xử lý nạp bù nếu âm tiền, hoàn tiền qua Tiền mặt hoặc cộng vào Ví).
 
 ---
 
-### ⏳ GIAI ĐOẠN 4: Tab 4 - Quản Lý Độc Giả & Ví Điện Tử
-- [ ] Màn hình 4.0: Danh sách độc giả, tìm kiếm theo tên/SĐT/lớp, badge VIP sang trọng.
-- [ ] Màn hình 4.1: Chi tiết hồ sơ độc giả, thẻ số dư ví, danh sách sách đang mượn, lịch sử mượn cá nhân.
-- [ ] Màn hình 4.1.1: Sheet Nạp tiền vào ví độc giả (chọn các mệnh giá nhanh 50k, 100k, 200k, 500k hoặc nhập tay).
-- [ ] Màn hình 4.2: Form Thêm/Sửa thông tin độc giả, chọn loại thẻ Thường / VIP.
+### ✅ GIAI ĐOẠN 4 (ĐÃ HOÀN THÀNH 100%): Tab 4 - Quản Lý Độc Giả & Ví Điện Tử
+- [x] Màn hình 4.0: Danh sách độc giả, tìm kiếm theo tên/SĐT/lớp, badge VIP sang trọng.
+- [x] Màn hình 4.1: Chi tiết hồ sơ độc giả, thẻ số dư ví, danh sách sách đang mượn, lịch sử mượn cá nhân.
+- [x] Màn hình 4.1.1: Sheet Nạp tiền vào ví độc giả (chọn các mệnh giá nhanh 50k, 100k, 200k, 500k hoặc nhập tay).
+- [x] Màn hình 4.2: Form Thêm/Sửa thông tin độc giả, chọn loại thẻ Thường / VIP.
 
 ---
 
-### ⏳ GIAI ĐOẠN 5: Tab 5 - Cài Đặt Thư Viện & Danh Mục
-- [ ] Màn hình 5.0: Cài đặt quy định thư viện (Tên thư viện, số ngày mượn tối đa, mức phạt/ngày, mức cọc cơ bản).
-- [ ] Màn hình 5.1: Quản lý Thể loại (Thêm, sửa, xóa với cảnh báo an toàn).
-- [ ] Màn hình 5.2: Quản lý Nhà xuất bản.
-- [ ] Màn hình 5.3: Quản lý Tác giả.
+### ✅ GIAI ĐOẠN 5 (ĐÃ HOÀN THÀNH 100%): Tab 5 - Cài Đặt Thư Viện & Danh Mục
+- [x] Màn hình 5.0: Cài đặt quy định thư viện (Tên thư viện, số ngày mượn tối đa, mức phạt/ngày, mức cọc cơ bản).
+- [x] Màn hình 5.1: Quản lý Thể loại (Thêm, sửa, xóa với cảnh báo an toàn).
+- [x] Màn hình 5.2: Quản lý Nhà xuất bản.
+- [x] Màn hình 5.3: Quản lý Tác giả.
 
 ---
 
-### ⏳ GIAI ĐOẠN 6: Hoàn Thiện & Nghiệm Thu
-- [ ] Rà soát toàn bộ luồng trải nghiệm trên máy ảo iPhone.
-- [ ] Kiểm tra tính toàn vẹn của dữ liệu SwiftData (không bị crash khi app tắt mở lại).
-- [ ] Đóng gói mã nguồn sạch, tài liệu hướng dẫn chạy trên Xcode.
+### ✅ GIAI ĐOẠN 6 (ĐÃ HOÀN THÀNH 100%): Hoàn Thiện & Nghiệm Thu
+- [x] Rà soát toàn bộ luồng trải nghiệm trên máy ảo iPhone.
+- [x] Kiểm tra tính toàn vẹn của dữ liệu SwiftData (không bị crash khi app tắt mở lại).
+- [x] Đóng gói mã nguồn sạch, tài liệu hướng dẫn chạy trên Xcode.
