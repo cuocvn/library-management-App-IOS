@@ -2,6 +2,12 @@
 //  QuanLyTheLoaiView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 5.1 - Quản Lý Danh Mục Thể Loại
+//  CHỨC NĂNG:
+//  - Hiển thị danh sách các thể loại kèm số lượng sách thuộc thể loại đó
+//  - Nút (+) mở Alert nhập tên thể loại mới
+//  - Thao tác vuốt xóa thể loại an toàn (nullify quan hệ với Sách)
+//
 
 import SwiftUI
 import SwiftData
@@ -9,6 +15,7 @@ import SwiftData
 struct QuanLyTheLoaiView: View {
     @Environment(\.modelContext) private var modelContext
     
+    // Truy vấn danh sách thể loại sắp xếp A-Z
     @Query(sort: \TheLoai.tenTheLoai)
     private var dsTheLoai: [TheLoai]
     
@@ -17,7 +24,7 @@ struct QuanLyTheLoaiView: View {
     
     var body: some View {
         List {
-            Section(footer: Text("Ghi chú: Khi xóa thể loại, các sách thuộc thể loại này sẽ được giữ lại và chuyển về nhóm chung.")) {
+            Section(footer: Text("Ghi chú: Khi xóa thể loại, các sách thuộc thể loại này sẽ được giữ lại an toàn và chuyển về nhóm chung.")) {
                 ForEach(dsTheLoai, id: \.maTheLoai) { tl in
                     HStack {
                         Text(tl.tenTheLoai)
@@ -42,6 +49,7 @@ struct QuanLyTheLoaiView: View {
                 }
             }
         }
+        // Alert thêm thể loại mới
         .alert("Thêm Thể Loại Mới", isPresented: $showingAddAlert) {
             TextField("Tên thể loại...", text: $tenMoi)
             Button("Thêm") {

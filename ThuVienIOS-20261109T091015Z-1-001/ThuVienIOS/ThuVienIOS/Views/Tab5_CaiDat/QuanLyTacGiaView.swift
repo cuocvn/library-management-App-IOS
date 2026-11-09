@@ -2,6 +2,12 @@
 //  QuanLyTacGiaView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 5.3 - Quản Lý Danh Mục Tác Giả
+//  CHỨC NĂNG:
+//  - Hiển thị danh sách các Tác giả kèm số lượng tác phẩm
+//  - Nút (+) mở Alert thêm Tác giả mới
+//  - Thao tác vuốt xóa Tác giả an toàn
+//
 
 import SwiftUI
 import SwiftData
@@ -17,7 +23,7 @@ struct QuanLyTacGiaView: View {
     
     var body: some View {
         List {
-            Section(footer: Text("Ghi chú: Khi xóa Tác giả, sách của tác giả này sẽ chuyển sang trạng thái chưa cập nhật.")) {
+            Section(footer: Text("Ghi chú: Khi xóa Tác giả, sách của tác giả này sẽ chuyển sang trạng thái chưa cập nhật tác giả an toàn.")) {
                 ForEach(dsTacGia, id: \.maTacGia) { tg in
                     HStack {
                         Text(tg.tenTacGia)
@@ -42,6 +48,7 @@ struct QuanLyTacGiaView: View {
                 }
             }
         }
+        // Alert thêm Tác giả mới
         .alert("Thêm Tác Giả Mới", isPresented: $showingAddAlert) {
             TextField("Tên tác giả...", text: $tenMoi)
             Button("Thêm") {

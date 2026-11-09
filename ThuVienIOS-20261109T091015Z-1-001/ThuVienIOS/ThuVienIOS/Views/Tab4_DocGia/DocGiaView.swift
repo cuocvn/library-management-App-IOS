@@ -2,6 +2,14 @@
 //  DocGiaView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 4.0 - Quản Lý Độc Giả
+//  CHỨC NĂNG:
+//  - Tìm kiếm bạn đọc theo Tên, Số điện thoại hoặc Lớp/Khoa
+//  - Hiển thị danh sách độc giả với huy hiệu VIP vàng sang trọng
+//  - Xem nhanh số dư ví điện tử và số lượng sách đang mượn của từng độc giả
+//  - Thao tác vuốt xóa mềm (daAn = true)
+//  - Nút (+) mở Sheet 4.2 Thêm Độc Giả mới
+//
 
 import SwiftUI
 import SwiftData
@@ -9,14 +17,14 @@ import SwiftData
 struct DocGiaView: View {
     @Environment(\.modelContext) private var modelContext
     
-    // SwiftData Queries
+    // Truy vấn danh sách độc giả chưa bị ẩn, sắp xếp theo tên A-Z
     @Query(filter: #Predicate<DocGia> { !$0.daAn }, sort: \DocGia.hoTen)
     private var dsDocGia: [DocGia]
     
     @State private var searchText: String = ""
     @State private var showingAddSheet: Bool = false
     
-    // Tìm kiếm độc giả
+    // MARK: - Logic tìm kiếm độc giả
     private var filteredDocGia: [DocGia] {
         if searchText.isEmpty {
             return dsDocGia
@@ -77,13 +85,14 @@ struct DocGiaView: View {
                     }
                 }
             }
+            // Sheet Màn hình 4.2: Thêm độc giả mới
             .sheet(isPresented: $showingAddSheet) {
                 ThemSuaDocGiaView()
             }
         }
     }
     
-    // Xóa mềm độc giả
+    // MARK: - Xóa mềm độc giả (bảo toàn lịch sử mượn cũ)
     private func xoaDocGia(at offsets: IndexSet) {
         for index in offsets {
             let dg = filteredDocGia[index]
@@ -93,12 +102,13 @@ struct DocGiaView: View {
     }
 }
 
-// Widget Dòng hiển thị Độc Giả
+// MARK: - Subview: Dòng hiển thị thông tin độc giả trong List
 struct DocGiaRowView: View {
     let docGia: DocGia
     
     var body: some View {
         HStack(spacing: 14) {
+            // Avatar độc giả (màu cam và icon vương miện nếu là VIP)
             ZStack {
                 Circle()
                     .fill(docGia.isVIP ? Color.orange.opacity(0.15) : AppTheme.primary.opacity(0.12))
@@ -114,6 +124,7 @@ struct DocGiaRowView: View {
                         .font(.headline)
                         .foregroundColor(AppTheme.textPrimary)
                     
+                    // Huy hiệu VIP vàng
                     if docGia.isVIP {
                         Text("VIP")
                             .font(.system(size: 10, weight: .bold))
@@ -125,10 +136,12 @@ struct DocGiaRowView: View {
                     }
                 }
                 
+                // Lớp hoặc đơn vị
                 Text(docGia.lopKhoa.isEmpty ? "Độc giả vãng lai" : docGia.lopKhoa)
                     .font(.caption)
                     .foregroundColor(AppTheme.textSecondary)
                 
+                // Thẻ số dư ví và số lượng sách đang mượn
                 HStack(spacing: 6) {
                     Text("Ví: \(AppTheme.formatVND(docGia.soDuTaiKhoan))")
                         .font(.caption2.bold())

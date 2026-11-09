@@ -2,6 +2,14 @@
 //  ChiTietSachView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 2.1 - Chi Tiết Đầu Sách & Quản Lý Bản Sao Vật Lý
+//  CHỨC NĂNG:
+//  - Xem đầy đủ thông tin: Tác giả, NXB, Thể loại, Cọc, Phí mượn, Tồn kho
+//  - Nút "Cho Mượn Đầu Sách Này" -> Nhảy thẳng sang màn hình 3.1 Tạo Phiếu Mượn
+//  - Quản lý danh sách từng bản sao vật lý trên kệ (mã AI-001, vị trí, tình trạng Sẵn sàng/Đang mượn/Hỏng)
+//  - Thêm bản sao mới cho đầu sách này (tự động gợi ý mã bản sao)
+//  - Xem lịch sử các lần mượn của riêng cuốn sách này
+//
 
 import SwiftUI
 import SwiftData
@@ -10,27 +18,27 @@ struct ChiTietSachView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
+    // Đối tượng sách được truyền vào (sử dụng @Bindable để cập nhật hai chiều)
     @Bindable var sach: Sach
     
+    // MARK: - Trạng thái giao diện
     @State private var showingEditSheet: Bool = false
     @State private var showingBorrowSheet: Bool = false
     @State private var selectedBanSaoToBorrow: BanSaoSach?
+    
+    // Thêm bản sao vật lý mới
     @State private var showingAddCopyAlert: Bool = false
     @State private var maBanSaoMoi: String = ""
     @State private var viTriKeMoi: String = "Kệ A1"
-    
-    // Bản sao cần sửa trạng thái
-    @State private var banSaoCanSua: BanSaoSach?
-    @State private var showingTrangThaiSheet: Bool = false
     
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 
-                // Card 1: Thẻ thông tin tổng quan đầu sách
+                // MARK: Card 1 - Thông tin tổng quan đầu sách
                 VStack(spacing: 14) {
                     HStack(alignment: .top, spacing: 16) {
-                        // Icon bìa sách
+                        // Ảnh bìa tượng trưng
                         ZStack {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(AppTheme.primary.opacity(0.1))
@@ -46,6 +54,7 @@ struct ChiTietSachView: View {
                                 .foregroundColor(AppTheme.textPrimary)
                                 .lineLimit(2)
                             
+                            // Tác giả
                             HStack(spacing: 4) {
                                 Image(systemName: "person.fill")
                                     .font(.caption2)
@@ -54,6 +63,7 @@ struct ChiTietSachView: View {
                             }
                             .foregroundColor(AppTheme.textSecondary)
                             
+                            // Nhà xuất bản
                             HStack(spacing: 4) {
                                 Image(systemName: "building.2.fill")
                                     .font(.caption2)
@@ -62,6 +72,7 @@ struct ChiTietSachView: View {
                             }
                             .foregroundColor(AppTheme.textSecondary)
                             
+                            // Thể loại và Phân loại giá trị
                             HStack(spacing: 6) {
                                 Text(sach.theLoai?.tenTheLoai ?? "Thể loại chung")
                                     .font(.caption2.weight(.medium))
@@ -85,7 +96,7 @@ struct ChiTietSachView: View {
                     
                     Divider()
                     
-                    // Huy hiệu tài chính & Tồn kho
+                    // 3 Khối thông số: Tiền Cọc, Phí Mượn, Tồn kho
                     HStack(spacing: 12) {
                         VStack(spacing: 2) {
                             Text("Tiền cọc")
@@ -131,7 +142,8 @@ struct ChiTietSachView: View {
                 )
                 .padding(.horizontal)
                 
-                // Nút hành động: Cho Mượn Sách (theo đặc tả luồng 2.1 -> 3.1)
+                // MARK: Nút Hành Động - Cho Mượn Đầu Sách Này
+                // Tự động mở modal tạo phiếu mượn và điền sẵn sách này (luồng 2.1 -> 3.1)
                 Button {
                     selectedBanSaoToBorrow = sach.dsBanSao.first(where: { $0.tinhTrang == "SanSang" })
                     showingBorrowSheet = true
@@ -152,7 +164,7 @@ struct ChiTietSachView: View {
                 .disabled(sach.soLuongKhaDung == 0)
                 .padding(.horizontal)
                 
-                // Section 2: Quản lý Bản Sao Vật Lý (USP cốt lõi của đồ án)
+                // MARK: Card 2 - Section Quản Lý Bản Sao Vật Lý (Điểm nhấn đồ án)
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
@@ -164,8 +176,10 @@ struct ChiTietSachView: View {
                                 .foregroundColor(AppTheme.textSecondary)
                         }
                         Spacer()
+                        
+                        // Nút thêm bản sao mới
                         Button {
-                            // Tạo mã tự động gợi ý cho bản sao mới
+                            // Tạo mã tự động gợi ý cho bản sao mới (VD: CC-003)
                             let count = sach.dsBanSao.count + 1
                             let prefix = String(sach.tenSach.prefix(2)).uppercased()
                             maBanSaoMoi = String(format: "%@-%03d", prefix, count)
@@ -195,9 +209,11 @@ struct ChiTietSachView: View {
                                             .font(.subheadline.weight(.bold))
                                             .foregroundColor(AppTheme.textPrimary)
                                         
+                                        // Badge trạng thái: Sẵn sàng, Đang mượn, Hỏng
                                         BadgeTinhTrang(tinhTrang: banSao.tinhTrang)
                                     }
                                     
+                                    // Vị trí giá kệ
                                     HStack(spacing: 4) {
                                         Image(systemName: "mappin.and.ellipse")
                                             .font(.caption2)
@@ -209,7 +225,7 @@ struct ChiTietSachView: View {
                                 
                                 Spacer()
                                 
-                                // Menu đổi trạng thái bản sao
+                                // Menu thao tác nhanh cho từng cuốn bản sao
                                 Menu {
                                     if banSao.tinhTrang == "SanSang" {
                                         Button {
@@ -220,15 +236,15 @@ struct ChiTietSachView: View {
                                         }
                                         Divider()
                                     }
-                                    Button("Sẵn sàng") {
+                                    Button("Đổi: Sẵn sàng") {
                                         banSao.tinhTrang = "SanSang"
                                         try? modelContext.save()
                                     }
-                                    Button("Đang mượn") {
+                                    Button("Đổi: Đang mượn") {
                                         banSao.tinhTrang = "DangMuon"
                                         try? modelContext.save()
                                     }
-                                    Button("Hỏng / Thất lạc") {
+                                    Button("Đổi: Hỏng / Thất lạc") {
                                         banSao.tinhTrang = "Hong"
                                         try? modelContext.save()
                                     }
@@ -264,7 +280,7 @@ struct ChiTietSachView: View {
                 )
                 .padding(.horizontal)
                 
-                // Section 3: Lịch sử các lần mượn của đầu sách này
+                // MARK: Card 3 - Lịch sử các lần mượn của đầu sách này
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Lịch Sử Mượn Đầu Sách")
                         .font(.headline)
@@ -321,13 +337,15 @@ struct ChiTietSachView: View {
                 }
             }
         }
+        // Sheet mở form sửa thông tin sách
         .sheet(isPresented: $showingEditSheet) {
             ThemSuaSachView(sachCanSua: sach)
         }
+        // Sheet tạo phiếu mượn (được kích hoạt từ nút "Cho mượn")
         .sheet(isPresented: $showingBorrowSheet) {
             TaoPhieuMuonView(sachBanDau: sach, banSaoBanDau: selectedBanSaoToBorrow)
         }
-        // Alert thêm bản sao vật lý mới
+        // Alert nhập mã bản sao mới
         .alert("Thêm Bản Sao Mới", isPresented: $showingAddCopyAlert) {
             TextField("Mã bản sao (VD: CC-004)", text: $maBanSaoMoi)
             TextField("Vị trí kệ (VD: Kệ A1-04)", text: $viTriKeMoi)
@@ -349,7 +367,7 @@ struct ChiTietSachView: View {
     }
 }
 
-// Widget Badge Trạng Thái Bản Sao
+// MARK: - Widget Badge hiển thị màu sắc tình trạng Bản sao
 struct BadgeTinhTrang: View {
     let tinhTrang: String
     

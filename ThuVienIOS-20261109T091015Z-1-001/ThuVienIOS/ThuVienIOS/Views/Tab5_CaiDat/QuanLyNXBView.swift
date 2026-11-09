@@ -2,6 +2,12 @@
 //  QuanLyNXBView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 5.2 - Quản Lý Danh Mục Nhà Xuất Bản
+//  CHỨC NĂNG:
+//  - Hiển thị danh sách các Nhà xuất bản kèm số lượng đầu sách
+//  - Nút (+) mở Alert thêm NXB mới
+//  - Thao tác vuốt xóa NXB an toàn
+//
 
 import SwiftUI
 import SwiftData
@@ -17,7 +23,7 @@ struct QuanLyNXBView: View {
     
     var body: some View {
         List {
-            Section(footer: Text("Ghi chú: Khi xóa Nhà xuất bản, liên kết trong sách sẽ được gỡ an toàn.")) {
+            Section(footer: Text("Ghi chú: Khi xóa Nhà xuất bản, liên kết trong sách sẽ được gỡ bỏ an toàn mà không làm mất sách.")) {
                 ForEach(dsNXB, id: \.maNXB) { nxb in
                     HStack {
                         Text(nxb.tenNXB)
@@ -42,6 +48,7 @@ struct QuanLyNXBView: View {
                 }
             }
         }
+        // Alert thêm NXB mới
         .alert("Thêm Nhà Xuất Bản Mới", isPresented: $showingAddAlert) {
             TextField("Tên NXB...", text: $tenMoi)
             Button("Thêm") {

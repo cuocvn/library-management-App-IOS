@@ -2,6 +2,17 @@
 //  MuonTraView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 3.0 - Quản Lý Mượn & Trả Sách
+//  CHỨC NĂNG:
+//  - Lọc phiếu mượn theo 4 trạng thái qua Segmented Control:
+//    1. "Đang mượn": Sách đang được mượn và chưa đến hạn trả
+//    2. "Quá hạn": Sách đang mượn nhưng đã trễ hạn quy định (cảnh báo đỏ)
+//    3. "Đã trả": Các phiếu đã hoàn tất trả sách trong quá khứ
+//    4. "Tất cả": Xem toàn bộ giao dịch
+//  - Thao tác vuốt (Swipe) để trả sách nhanh
+//  - Nút (+) mở Sheet 3.1 Tạo Phiếu Mượn mới
+//  - Bấm nút "Trả sách" mở Sheet 3.2 Quyết toán & Thu phạt
+//
 
 import SwiftUI
 import SwiftData
@@ -9,16 +20,16 @@ import SwiftData
 struct MuonTraView: View {
     @Environment(\.modelContext) private var modelContext
     
-    // SwiftData Queries
+    // Truy vấn tất cả phiếu mượn, sắp xếp theo ngày mượn mới nhất lên đầu
     @Query(sort: \PhieuMuon.ngayMuon, order: .reverse)
     private var danhSachPhieu: [PhieuMuon]
     
-    // Trạng thái lọc Tab con
+    // MARK: - Trạng thái lọc Tab con
     @State private var filterStatus: String = "DangMuon" // "DangMuon", "QuaHan", "DaTra", "TatCa"
     @State private var showingCreateSheet: Bool = false
     @State private var phieuCanTra: PhieuMuon?
     
-    // Lọc danh sách theo Tab
+    // MARK: - Logic lọc phiếu mượn theo Segmented Control
     private var filteredPhieu: [PhieuMuon] {
         danhSachPhieu.filter { pm in
             switch filterStatus {
@@ -37,7 +48,7 @@ struct MuonTraView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Segmented Control lọc trạng thái
+                // MARK: 1. Thanh lọc phân loại trạng thái (Segmented Control)
                 Picker("Trạng thái", selection: $filterStatus) {
                     Text("Đang mượn").tag("DangMuon")
                     Text("Quá hạn").tag("QuaHan")
@@ -51,7 +62,7 @@ struct MuonTraView: View {
                 
                 Divider()
                 
-                // Danh sách các phiếu mượn
+                // MARK: 2. Danh sách Phiếu Mượn
                 if filteredPhieu.isEmpty {
                     VStack(spacing: 12) {
                         Spacer()
@@ -67,11 +78,13 @@ struct MuonTraView: View {
                     List {
                         ForEach(filteredPhieu, id: \.maPhieu) { pm in
                             PhieuMuonRowView(phieuMuon: pm) {
+                                // Mở modal trả sách khi bấm nút
                                 phieuCanTra = pm
                             }
                             .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                             .listRowSeparator(.hidden)
                             .listRowBackground(Color.clear)
+                            // Hỗ trợ vuốt sang trái để trả sách nhanh
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 if pm.ngayTra == nil {
                                     Button {
@@ -101,9 +114,11 @@ struct MuonTraView: View {
                     }
                 }
             }
+            // Sheet Màn hình 3.1: Tạo Phiếu Mượn
             .sheet(isPresented: $showingCreateSheet) {
                 TaoPhieuMuonView()
             }
+            // Sheet Màn hình 3.2: Trả Sách & Thu Phạt
             .sheet(item: $phieuCanTra) { pm in
                 TraSachView(phieuMuon: pm)
             }
@@ -111,7 +126,7 @@ struct MuonTraView: View {
     }
 }
 
-// Widget Dòng hiển thị Phiếu Mượn
+// MARK: - Subview: Thẻ hiển thị từng Phiếu Mượn
 struct PhieuMuonRowView: View {
     let phieuMuon: PhieuMuon
     let onTraSach: () -> Void
@@ -120,11 +135,13 @@ struct PhieuMuonRowView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
+                    // Tên cuốn sách
                     Text(phieuMuon.banSao?.sach?.tenSach ?? "Chưa rõ sách")
                         .font(.headline)
                         .foregroundColor(AppTheme.textPrimary)
                         .lineLimit(1)
                     
+                    // Mã bản sao & Tên người mượn
                     HStack(spacing: 6) {
                         Text("Mã bản: \(phieuMuon.banSao?.maDinhDanh ?? "")")
                             .font(.caption.bold())
@@ -141,7 +158,7 @@ struct PhieuMuonRowView: View {
                 
                 Spacer()
                 
-                // Badge trạng thái
+                // Badge trạng thái: Đã trả (xanh lá), Quá hạn (đỏ), Đang mượn (xanh dương)
                 Text(phieuMuon.tinhTrangHienThi)
                     .font(.caption.bold())
                     .padding(.horizontal, 8)
@@ -161,10 +178,12 @@ struct PhieuMuonRowView: View {
             
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
+                    // Hiển thị hạn trả
                     Text("Hạn trả: \(phieuMuon.hanTra.formatted(date: .numeric, time: .omitted))")
                         .font(.caption)
                         .foregroundColor(phieuMuon.isQuaHan && !phieuMuon.daTra ? AppTheme.danger : AppTheme.textSecondary)
                     
+                    // Nếu đã trả thì hiển thị ngày trả
                     if let dTra = phieuMuon.ngayTra {
                         Text("Đã trả ngày: \(dTra.formatted(date: .numeric, time: .omitted))")
                             .font(.caption2)
@@ -174,6 +193,7 @@ struct PhieuMuonRowView: View {
                 
                 Spacer()
                 
+                // Nếu chưa trả: hiển thị nút "Trả sách"
                 if phieuMuon.ngayTra == nil {
                     Button(action: onTraSach) {
                         Text("Trả sách")
@@ -185,6 +205,7 @@ struct PhieuMuonRowView: View {
                             .cornerRadius(8)
                     }
                 } else if let phat = phieuMuon.tienPhat, phat > 0 {
+                    // Nếu đã trả và có tiền phạt thì hiển thị số tiền phạt
                     Text("Phạt: \(AppTheme.formatVND(phat))")
                         .font(.caption.bold())
                         .foregroundColor(AppTheme.danger)

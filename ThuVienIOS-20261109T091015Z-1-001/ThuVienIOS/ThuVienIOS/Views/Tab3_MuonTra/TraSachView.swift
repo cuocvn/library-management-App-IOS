@@ -2,6 +2,16 @@
 //  TraSachView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 3.2 - Modal Trả Sách, Thu Phạt & Hoàn Cọc
+//  CÔNG NGHỆ & ĐIỂM SÁNG ĐỒ ÁN:
+//  - Tự động đối soát thời gian: Ngày trả thực tế vs Hạn trả quy định -> Tính số ngày trễ
+//  - Tính tiền phạt: Số ngày trễ x Đơn giá phạt (lấy từ cài đặt @AppStorage)
+//  - Quyết toán tài chính: Tiền hoàn lại = Tiền cọc - Tiền phạt
+//  - Nếu khách bị phạt vượt tiền cọc: Hiển thị cảnh báo số tiền cần nộp thêm
+//  - Phương thức hoàn tiền: Tiền mặt hoặc Cộng trực tiếp vào ví độc giả
+//  - Cơ chế Snapshot: Lưu cứng tiền phạt và ngày trả vào DB để bảo toàn lịch sử
+//  - Trả trạng thái bản sao sách về lại "SanSang"
+//
 
 import SwiftUI
 import SwiftData
@@ -10,16 +20,19 @@ struct TraSachView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
+    // Phiếu mượn cần thực hiện quyết toán trả sách
     @Bindable var phieuMuon: PhieuMuon
     
-    // Đơn giá phạt từ AppStorage
+    // Đơn giá phạt quá hạn mỗi ngày lấy từ cài đặt hệ thống
     @AppStorage("mucPhatMoiNgay") private var mucPhatMoiNgay: Int = 5000
     
+    // MARK: - Trạng thái của Form
     @State private var ngayTraThucTe: Date = Date()
     @State private var phuongThucHoanTien: String = "TaiKhoan" // "TaiKhoan" hoặc "TienMat"
     @State private var showingSuccessAlert: Bool = false
     
-    // Tính toán số ngày trễ & phạt
+    // MARK: - Logic tính toán số ngày trễ & tiền phạt
+    // Số ngày trễ = max(0, Ngày trả thực tế - Hạn trả)
     private var soNgayTre: Int {
         let calendar = Calendar.current
         let dTra = calendar.startOfDay(for: ngayTraThucTe)
@@ -29,11 +42,13 @@ struct TraSachView: View {
         return max(0, days)
     }
     
+    // Tiền phạt quá hạn = Số ngày trễ x Đơn giá phạt
     private var tienPhat: Int {
         soNgayTre * mucPhatMoiNgay
     }
     
-    // Đối soát tài chính: Tiền hoàn = Tiền cọc - Tiền phạt
+    // Tiền quyết toán = Tiền cọc ban đầu - Tiền phạt
+    // (Nếu dương: thư viện hoàn trả cho khách; Nếu âm: khách phải nộp thêm tiền phạt)
     private var tienQuyetToan: Int {
         phieuMuon.tienCocThucTe - tienPhat
     }
@@ -41,7 +56,7 @@ struct TraSachView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // Section 1: Thông tin phiếu
+                // MARK: 1. Thông tin phiếu mượn
                 Section(header: Text("Thông tin phiếu mượn")) {
                     HStack {
                         Text("Độc giả:")
@@ -66,7 +81,7 @@ struct TraSachView: View {
                     }
                 }
                 
-                // Section 2: Thời hạn & Đối soát ngày trả
+                // MARK: 2. Thời gian đối soát ngày trả
                 Section(header: Text("Thời gian đối soát")) {
                     HStack {
                         Text("Ngày mượn:")
@@ -81,6 +96,7 @@ struct TraSachView: View {
                             .fontWeight(.semibold)
                     }
                     
+                    // Người dùng có thể chọn ngày trả thực tế để test kịch bản trễ hạn
                     DatePicker("Ngày trả thực tế:", selection: $ngayTraThucTe, displayedComponents: .date)
                     
                     HStack {
@@ -97,7 +113,7 @@ struct TraSachView: View {
                     }
                 }
                 
-                // Section 3: Bảng Quyết toán Hoàn tiền / Thu phạt
+                // MARK: 3. Bảng Quyết toán Tài chính Hoàn tiền / Thu phạt
                 Section(header: Text("Bảng quyết toán tài chính")) {
                     HStack {
                         Text("Tiền cọc ban đầu:")
@@ -114,6 +130,7 @@ struct TraSachView: View {
                     
                     Divider()
                     
+                    // Trường hợp 1: Tiền cọc >= Tiền phạt -> Hoàn tiền lại cho khách
                     if tienQuyetToan >= 0 {
                         HStack {
                             Text("Tổng tiền hoàn lại khách:")
@@ -130,7 +147,7 @@ struct TraSachView: View {
                         }
                         .pickerStyle(.segmented)
                     } else {
-                        // Khách phạt vượt quá tiền cọc -> Cần nộp thêm
+                        // Trường hợp 2: Tiền phạt > Tiền cọc -> Khách phải nộp thêm tiền
                         HStack {
                             Text("Khách cần nộp phạt thêm:")
                                 .font(.headline)
@@ -160,28 +177,29 @@ struct TraSachView: View {
         }
     }
     
-    // Nghiệp vụ cốt lõi Trả sách & Snapshot tài chính bất biến
+    // MARK: - Hàm thực hiện trả sách & ghi Snapshot bất biến
     private func thucHienTraSach() {
-        // 1. Chặn trả 2 lần
+        // 1. Chặn trả 2 lần nếu phiếu đã được trả rồi
         guard phieuMuon.ngayTra == nil else { return }
         
-        // 2. Ghi snapshot bất biến vào Database
+        // 2. Ghi Snapshot tài chính cố định vào Database (bất biến sau này)
         phieuMuon.ngayTra = ngayTraThucTe
         phieuMuon.soNgayTre = soNgayTre
         phieuMuon.tienPhat = tienPhat
         phieuMuon.phuongThucHoanTien = phuongThucHoanTien
         
-        // 3. Hoàn tiền nếu có
+        // 3. Xử lý hoàn tiền / cộng ví độc giả nếu chọn "TaiKhoan"
         if let dg = phieuMuon.docGia {
             if tienQuyetToan > 0 && phuongThucHoanTien == "TaiKhoan" {
+                // Hoàn lại tiền cọc thừa vào ví
                 dg.soDuTaiKhoan += tienQuyetToan
             } else if tienQuyetToan < 0 && phuongThucHoanTien == "TaiKhoan" {
-                // Trừ thêm nếu chọn ví
-                dg.soDuTaiKhoan += tienQuyetToan // tienQuyetToan âm -> tự trừ
+                // Trừ thêm nếu bị phạt vượt cọc
+                dg.soDuTaiKhoan += tienQuyetToan
             }
         }
         
-        // 4. Trả trạng thái bản sao sách về "SanSang"
+        // 4. Trả tình trạng cuốn sách vật lý về lại "SanSang" để người khác có thể mượn tiếp
         phieuMuon.banSao?.tinhTrang = "SanSang"
         
         try? modelContext.save()

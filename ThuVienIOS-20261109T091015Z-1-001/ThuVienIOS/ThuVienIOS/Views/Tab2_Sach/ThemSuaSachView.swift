@@ -2,6 +2,11 @@
 //  ThemSuaSachView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 2.2 - Form Thêm Mới hoặc Chỉnh Sửa Sách
+//  TÍNH NĂNG ĐẶC BIỆT CHO SINH VIÊN:
+//  - Tự động gợi ý mức Tiền cọc & Phí mượn theo phân loại giá trị (Truyện tranh, Sách thường, Giáo trình, Sách quý)
+//  - Tự động sinh hàng loạt mã bản sao vật lý ban đầu (VD: người dùng chọn 3 cuốn -> tự tạo CC-001, CC-002, CC-003)
+//
 
 import SwiftUI
 import SwiftData
@@ -10,15 +15,15 @@ struct ThemSuaSachView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
-    // Sách cần chỉnh sửa (nếu nil là thêm mới)
+    // Sách cần chỉnh sửa (nếu nil là thêm mới hoàn toàn)
     var sachCanSua: Sach?
     
-    // Queries danh mục
+    // Danh mục có sẵn để người dùng chọn Picker
     @Query private var dsTheLoai: [TheLoai]
     @Query private var dsNhaXuatBan: [NhaXuatBan]
     @Query private var dsTacGia: [TacGia]
     
-    // Form States
+    // MARK: - Các trường nhập liệu của Form
     @State private var tenSach: String = ""
     @State private var namXuatBan: String = "\(Calendar.current.component(.year, from: Date()))"
     @State private var phanLoaiGiaTri: String = "Sách thường"
@@ -29,12 +34,13 @@ struct ThemSuaSachView: View {
     @State private var selectedNXB: NhaXuatBan?
     @State private var selectedTacGia: TacGia?
     
-    // Tạo bản sao ban đầu khi thêm sách mới
+    // Khởi tạo số lượng bản sao ban đầu khi thêm sách mới
     @State private var soLuongBanSao: Int = 1
     @State private var viTriKe: String = "Kệ A1"
     
     let danhSachPhanLoai = ["Truyện tranh", "Sách thường", "Giáo trình", "Sách quý"]
     
+    // Kiểm tra xem đang ở chế độ Sửa hay Thêm mới
     var isEditMode: Bool {
         sachCanSua != nil
     }
@@ -42,14 +48,14 @@ struct ThemSuaSachView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // Section 1: Thông tin cơ bản
+                // MARK: Section 1 - Thông tin cơ bản
                 Section(header: Text("Thông tin sách")) {
                     TextField("Tên sách *", text: $tenSach)
                     
                     TextField("Năm xuất bản", text: $namXuatBan)
                         .keyboardType(.numberPad)
                     
-                    // Thể loại
+                    // Chọn Thể loại
                     Picker("Thể loại", selection: $selectedTheLoai) {
                         Text("-- Chọn thể loại --").tag(nil as TheLoai?)
                         ForEach(dsTheLoai, id: \.maTheLoai) { tl in
@@ -57,7 +63,7 @@ struct ThemSuaSachView: View {
                         }
                     }
                     
-                    // Tác giả
+                    // Chọn Tác giả
                     Picker("Tác giả", selection: $selectedTacGia) {
                         Text("-- Chọn tác giả --").tag(nil as TacGia?)
                         ForEach(dsTacGia, id: \.maTacGia) { tg in
@@ -65,7 +71,7 @@ struct ThemSuaSachView: View {
                         }
                     }
                     
-                    // Nhà xuất bản
+                    // Chọn Nhà xuất bản
                     Picker("Nhà xuất bản", selection: $selectedNXB) {
                         Text("-- Chọn NXB --").tag(nil as NhaXuatBan?)
                         ForEach(dsNhaXuatBan, id: \.maNXB) { nxb in
@@ -74,13 +80,14 @@ struct ThemSuaSachView: View {
                     }
                 }
                 
-                // Section 2: Định giá & Phân loại
+                // MARK: Section 2 - Định giá & Phân loại giá trị
                 Section(header: Text("Định giá & Phân loại giá trị")) {
                     Picker("Phân loại", selection: $phanLoaiGiaTri) {
                         ForEach(danhSachPhanLoai, id: \.self) { loai in
                             Text(loai).tag(loai)
                         }
                     }
+                    // Tự động gán mức cọc và phí mượn khi phân loại giá trị thay đổi
                     .onChange(of: phanLoaiGiaTri) { _, newValue in
                         tuDongGanGia(theo: newValue)
                     }
@@ -104,7 +111,7 @@ struct ThemSuaSachView: View {
                     }
                 }
                 
-                // Section 3: Khởi tạo bản sao vật lý (Chỉ hiển thị khi thêm mới)
+                // MARK: Section 3 - Khởi tạo bản sao vật lý (Chỉ hiển thị khi thêm mới)
                 if !isEditMode {
                     Section(header: Text("Khởi tạo bản sao vật lý ban đầu"), footer: Text("Hệ thống sẽ tự động sinh mã bản sao (VD: CC-001, CC-002...) tương ứng.")) {
                         Stepper("Số lượng bản sao: \(soLuongBanSao)", value: $soLuongBanSao, in: 1...50)
@@ -126,6 +133,7 @@ struct ThemSuaSachView: View {
                         luuSach()
                     }
                     .fontWeight(.semibold)
+                    // Bắt buộc phải có tên sách mới cho lưu
                     .disabled(tenSach.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
@@ -135,7 +143,7 @@ struct ThemSuaSachView: View {
         }
     }
     
-    // Tự động gán cọc/phí theo phân loại giá trị chuẩn đặc tả
+    // MARK: - Hàm tự động gán cọc/phí theo phân loại giá trị sách chuẩn quy định
     private func tuDongGanGia(theo loai: String) {
         switch loai {
         case "Truyện tranh":
@@ -153,8 +161,10 @@ struct ThemSuaSachView: View {
         }
     }
     
+    // MARK: - Nạp dữ liệu ban đầu vào các ô Text
     private func napThongTinBanDau() {
         if let s = sachCanSua {
+            // Nạp dữ liệu cũ của sách cần sửa
             tenSach = s.tenSach
             namXuatBan = "\(s.namXuatBan)"
             phanLoaiGiaTri = s.phanLoaiGiaTri
@@ -164,20 +174,21 @@ struct ThemSuaSachView: View {
             selectedNXB = s.nhaXuatBan
             selectedTacGia = s.tacGia
         } else {
-            // Mặc định chọn thể loại, nxb, tác giả đầu tiên nếu có
+            // Khi tạo mới: Mặc định chọn mục đầu tiên nếu có
             selectedTheLoai = dsTheLoai.first
             selectedNXB = dsNhaXuatBan.first
             selectedTacGia = dsTacGia.first
         }
     }
     
+    // MARK: - Lưu sách vào SwiftData
     private func luuSach() {
         let namXBInt = Int(namXuatBan) ?? Calendar.current.component(.year, from: Date())
         let tienCocInt = Int(tienCoc) ?? 50000
         let phiMuonInt = Int(phiMuon) ?? 5000
         
         if let s = sachCanSua {
-            // Cập nhật sách hiện tại
+            // Bước 1: Cập nhật thông tin sách hiện tại
             s.tenSach = tenSach
             s.namXuatBan = namXBInt
             s.phanLoaiGiaTri = phanLoaiGiaTri
@@ -187,7 +198,7 @@ struct ThemSuaSachView: View {
             s.nhaXuatBan = selectedNXB
             s.tacGia = selectedTacGia
         } else {
-            // Tạo mới sách
+            // Bước 2: Tạo đối tượng Sách mới
             let sachMoi = Sach(
                 tenSach: tenSach,
                 namXuatBan: namXBInt,
@@ -200,12 +211,12 @@ struct ThemSuaSachView: View {
             )
             modelContext.insert(sachMoi)
             
-            // Tạo tiền tố mã định danh (Ví dụ: "Lập trình Swift" -> "LS")
+            // Bước 3: Tạo tiền tố mã định danh từ 2 từ đầu (VD: "Lập trình" -> "LT")
             let words = tenSach.split(separator: " ").prefix(2)
             var prefix = words.compactMap { $0.first }.map { String($0).uppercased() }.joined()
             if prefix.isEmpty { prefix = "BK" }
             
-            // Tự động sinh danh sách bản sao vật lý
+            // Bước 4: Tự động sinh hàng loạt các cuốn bản sao vật lý ban đầu
             for i in 1...soLuongBanSao {
                 let maCopy = String(format: "%@-%03d", prefix, i)
                 let banSao = BanSaoSach(

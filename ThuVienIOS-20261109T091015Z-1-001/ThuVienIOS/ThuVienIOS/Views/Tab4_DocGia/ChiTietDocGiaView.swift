@@ -2,6 +2,14 @@
 //  ChiTietDocGiaView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 4.1 - Chi Tiết Độc Giả & Ví Điện Tử Cá Nhân
+//  CHỨC NĂNG:
+//  - Xem hồ sơ cá nhân: Họ tên, Lớp/Khoa, Hạng thẻ VIP, SĐT, Email
+//  - Quản lý Ví Tài Khoản: Xem số dư hiện tại, nút mở Sheet 4.1.1 "Nạp Tiền"
+//  - Nút "Lập Phiếu Mượn Cho Độc Giả Này" -> Nhảy sang 3.1 điền sẵn bạn đọc
+//  - Xem danh sách sách độc giả đang giữ (cảnh báo đỏ nếu trễ hạn)
+//  - Xem toàn bộ lịch sử các lần mượn/trả trong quá khứ của độc giả này
+//
 
 import SwiftUI
 import SwiftData
@@ -9,8 +17,10 @@ import SwiftData
 struct ChiTietDocGiaView: View {
     @Environment(\.modelContext) private var modelContext
     
+    // Đối tượng độc giả được truyền vào
     @Bindable var docGia: DocGia
     
+    // MARK: - Trạng thái Sheet
     @State private var showingEditSheet: Bool = false
     @State private var showingNapTienSheet: Bool = false
     @State private var showingBorrowSheet: Bool = false
@@ -19,7 +29,7 @@ struct ChiTietDocGiaView: View {
         ScrollView {
             VStack(spacing: 20) {
                 
-                // Card 1: Thông tin cá nhân & Hạng thẻ
+                // MARK: Card 1 - Thông tin cá nhân & Hạng thẻ
                 VStack(spacing: 14) {
                     HStack(spacing: 16) {
                         ZStack {
@@ -82,7 +92,7 @@ struct ChiTietDocGiaView: View {
                 )
                 .padding(.horizontal)
                 
-                // Card 2: Thẻ Ví Tài Khoản & Nạp Tiền
+                // MARK: Card 2 - Thẻ Ví Tài Khoản & Nút Nạp Tiền
                 VStack(spacing: 12) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
@@ -95,6 +105,7 @@ struct ChiTietDocGiaView: View {
                         }
                         Spacer()
                         
+                        // Nút mở Sheet nạp tiền vào ví
                         Button {
                             showingNapTienSheet = true
                         } label: {
@@ -120,7 +131,7 @@ struct ChiTietDocGiaView: View {
                 )
                 .padding(.horizontal)
                 
-                // Nút hành động: Lập phiếu mượn nhanh cho độc giả
+                // MARK: Nút Hành Động - Lập Phiếu Mượn Cho Độc Giả Này
                 Button {
                     showingBorrowSheet = true
                 } label: {
@@ -139,7 +150,7 @@ struct ChiTietDocGiaView: View {
                 }
                 .padding(.horizontal)
                 
-                // Card 3: Sách Đang Mượn
+                // MARK: Card 3 - Danh sách Sách Đang Mượn
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Sách Đang Mượn (\(docGia.soSachDangMuon))")
                         .font(.headline)
@@ -179,7 +190,7 @@ struct ChiTietDocGiaView: View {
                 )
                 .padding(.horizontal)
                 
-                // Card 4: Lịch Sử Mượn Cá Nhân
+                // MARK: Card 4 - Toàn Bộ Lịch Sử Giao Dịch
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Toàn Bộ Lịch Sử Giao Dịch")
                         .font(.headline)
@@ -231,12 +242,15 @@ struct ChiTietDocGiaView: View {
                 }
             }
         }
+        // Sheet sửa thông tin độc giả
         .sheet(isPresented: $showingEditSheet) {
             ThemSuaDocGiaView(docGiaCanSua: docGia)
         }
+        // Sheet nạp tiền vào ví
         .sheet(isPresented: $showingNapTienSheet) {
             NapTienView(docGia: docGia)
         }
+        // Sheet tạo phiếu mượn cho độc giả này
         .sheet(isPresented: $showingBorrowSheet) {
             TaoPhieuMuonView(docGiaBanDau: docGia)
         }

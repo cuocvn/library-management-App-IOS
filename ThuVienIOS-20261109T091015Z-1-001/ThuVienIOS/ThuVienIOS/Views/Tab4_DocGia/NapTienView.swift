@@ -2,6 +2,13 @@
 //  NapTienView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 4.1.1 - Nạp Tiền Vào Ví Độc Giả (Fintech Mini)
+//  CHỨC NĂNG:
+//  - Hiển thị số dư ví hiện tại của độc giả
+//  - Ô nhập số tiền tùy ý
+//  - 4 nút chọn nhanh các mệnh giá phổ biến: 50k, 100k, 200k, 500k
+//  - Nút "Xác Nhận Nạp Tiền": Cộng trực tiếp tiền vào docGia.soDuTaiKhoan và lưu SwiftData
+//
 
 import SwiftUI
 import SwiftData
@@ -10,8 +17,10 @@ struct NapTienView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
+    // Độc giả cần nạp tiền
     @Bindable var docGia: DocGia
     
+    // Số tiền nạp mặc định gợi ý: 100.000 VNĐ
     @State private var soTienNap: String = "100000"
     let cacMenhGiaNhanh = [50000, 100000, 200000, 500000]
 
@@ -19,7 +28,7 @@ struct NapTienView: View {
         NavigationStack {
             VStack(spacing: 24) {
                 
-                // Card Số Dư Hiện Tại
+                // MARK: 1. Thẻ hiển thị số dư ví hiện tại
                 VStack(spacing: 8) {
                     Text("Số Dư Ví Hiện Tại")
                         .font(.subheadline)
@@ -41,7 +50,7 @@ struct NapTienView: View {
                 )
                 .padding(.horizontal)
                 
-                // Nhập số tiền nạp
+                // MARK: 2. Ô nhập số tiền nạp tùy ý
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Nhập số tiền nạp (VNĐ)")
                         .font(.headline)
@@ -65,7 +74,7 @@ struct NapTienView: View {
                 }
                 .padding(.horizontal)
                 
-                // Mệnh giá nhanh
+                // MARK: 3. Lưới 4 nút chọn nhanh mệnh giá
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Chọn nhanh mệnh giá")
                         .font(.subheadline.weight(.semibold))
@@ -95,7 +104,7 @@ struct NapTienView: View {
                 
                 Spacer()
                 
-                // Nút Xác nhận nạp
+                // MARK: 4. Nút bấm Xác nhận nạp tiền
                 Button {
                     let amount = Int(soTienNap) ?? 0
                     if amount > 0 {

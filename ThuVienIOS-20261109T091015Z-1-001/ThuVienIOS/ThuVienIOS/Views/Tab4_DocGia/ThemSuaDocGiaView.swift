@@ -2,6 +2,12 @@
 //  ThemSuaDocGiaView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 4.2 - Form Thêm Mới hoặc Chỉnh Sửa Độc Giả
+//  CHỨC NĂNG:
+//  - Nhập thông tin: Họ tên, Số điện thoại, Email, Lớp/Khoa
+//  - Phân hạng thành viên: "Thẻ thường" hoặc "🌟 Thẻ Hội viên VIP"
+//  - Khởi tạo số dư ví ban đầu nếu là thêm mới
+//
 
 import SwiftUI
 import SwiftData
@@ -10,8 +16,10 @@ struct ThemSuaDocGiaView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
+    // Độc giả cần sửa (nếu nil là thêm mới)
     var docGiaCanSua: DocGia?
     
+    // MARK: - Các trường nhập liệu
     @State private var hoTen: String = ""
     @State private var soDienThoai: String = ""
     @State private var email: String = ""
@@ -26,6 +34,7 @@ struct ThemSuaDocGiaView: View {
     var body: some View {
         NavigationStack {
             Form {
+                // Section 1: Thông tin cá nhân
                 Section(header: Text("Thông tin cá nhân")) {
                     TextField("Họ và tên *", text: $hoTen)
                     TextField("Số điện thoại", text: $soDienThoai)
@@ -35,6 +44,7 @@ struct ThemSuaDocGiaView: View {
                     TextField("Lớp / Khoa / Đơn vị", text: $lopKhoa)
                 }
                 
+                // Section 2: Hạng thẻ & Số dư ví
                 Section(header: Text("Hạng thẻ & Tài khoản")) {
                     Picker("Loại thẻ", selection: $loaiThe) {
                         Text("Thẻ thường").tag("Thuong")
@@ -53,6 +63,7 @@ struct ThemSuaDocGiaView: View {
                     }
                 }
                 
+                // Ghi chú quyền lợi đặc quyền của Hội viên VIP
                 if loaiThe == "VIP" {
                     Section {
                         HStack {
@@ -93,14 +104,17 @@ struct ThemSuaDocGiaView: View {
         }
     }
     
+    // MARK: - Hàm lưu độc giả vào SwiftData
     private func luuDocGia() {
         if let dg = docGiaCanSua {
+            // Cập nhật thông tin độc giả cũ
             dg.hoTen = hoTen
             dg.soDienThoai = soDienThoai
             dg.email = email
             dg.lopKhoa = lopKhoa
             dg.loaiThe = loaiThe
         } else {
+            // Thêm độc giả mới hoàn toàn
             let soDu = Int(soDuBanDau) ?? 0
             let moi = DocGia(
                 hoTen: hoTen,

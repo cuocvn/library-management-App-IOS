@@ -2,31 +2,43 @@
 //  KhoSachView.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Màn hình 2.0 - Quản lý Kho Sách
+//  CHỨC NĂNG:
+//  - Tìm kiếm sách theo tên hoặc tác giả (searchable)
+//  - Bộ lọc nhanh theo Thể loại (Pill Filter cuộn ngang)
+//  - Hiển thị danh sách sách với huy hiệu tồn kho bản sao vật lý ("Còn X/Y cuốn")
+//  - Thao tác vuốt xóa mềm sách (daAn = true)
+//  - Nút (+) mở Sheet thêm sách mới
+//
 
 import SwiftUI
 import SwiftData
 
 struct KhoSachView: View {
+    // Ngữ cảnh lưu trữ SwiftData để thực hiện thêm/sửa/xóa
     @Environment(\.modelContext) private var modelContext
     
-    // SwiftData Queries
+    // Truy vấn danh sách sách chưa bị xóa mềm, sắp xếp theo thứ tự bảng chữ cái A-Z
     @Query(filter: #Predicate<Sach> { !$0.daAn }, sort: \Sach.tenSach)
     private var danhSachSach: [Sach]
     
+    // Truy vấn tất cả thể loại để đưa lên thanh lọc
     @Query private var dsTheLoai: [TheLoai]
     
-    // State tìm kiếm & bộ lọc
+    // MARK: - Các biến trạng thái giao diện (UI State)
     @State private var searchText: String = ""
     @State private var selectedTheLoai: TheLoai?
     @State private var showingAddSheet: Bool = false
     
-    // Lọc danh sách theo từ khóa & thể loại
+    // MARK: - Logic lọc danh sách theo từ khóa & thể loại
     private var filteredSach: [Sach] {
         danhSachSach.filter { s in
+            // Điều kiện 1: Khớp từ khóa tìm kiếm (tên sách hoặc tên tác giả)
             let matchText = searchText.isEmpty ||
                 s.tenSach.localizedCaseInsensitiveContains(searchText) ||
                 (s.tacGia?.tenTacGia.localizedCaseInsensitiveContains(searchText) ?? false)
             
+            // Điều kiện 2: Khớp thể loại đang chọn (nếu chọn "Tất cả" thì selectedTheLoai == nil)
             let matchTheLoai = selectedTheLoai == nil ||
                 s.theLoai?.maTheLoai == selectedTheLoai?.maTheLoai
             
@@ -37,7 +49,7 @@ struct KhoSachView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Thanh lọc Thể Loại (Pill Filter)
+                // MARK: 1. Thanh lọc Thể Loại (Pill Filter cuộn ngang)
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         FilterPill(
@@ -63,7 +75,7 @@ struct KhoSachView: View {
                 
                 Divider()
                 
-                // Danh Sách Sách
+                // MARK: 2. Danh Sách Sách Hiển Thị
                 if filteredSach.isEmpty {
                     VStack(spacing: 12) {
                         Spacer()
@@ -110,13 +122,14 @@ struct KhoSachView: View {
                     }
                 }
             }
+            // Sheet mở form thêm sách mới
             .sheet(isPresented: $showingAddSheet) {
                 ThemSuaSachView()
             }
         }
     }
     
-    // Xóa mềm sách (đánh dấu cờ daAn = true)
+    // MARK: - Hàm xóa mềm sách (đánh dấu cờ daAn = true để bảo toàn lịch sử mượn cũ)
     private func xoaSach(at offsets: IndexSet) {
         for index in offsets {
             let sach = filteredSach[index]
@@ -126,13 +139,13 @@ struct KhoSachView: View {
     }
 }
 
-// Subview dòng hiển thị từng cuốn sách
+// MARK: - Subview: Dòng hiển thị từng cuốn sách trong List
 struct SachRowView: View {
     let sach: Sach
     
     var body: some View {
         HStack(spacing: 14) {
-            // Icon bìa sách
+            // Icon bìa sách tượng trưng
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(AppTheme.primary.opacity(0.1))
@@ -143,17 +156,19 @@ struct SachRowView: View {
             }
             
             VStack(alignment: .leading, spacing: 4) {
+                // Tên đầu sách
                 Text(sach.tenSach)
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(AppTheme.textPrimary)
                     .lineLimit(1)
                 
+                // Tác giả
                 Text(sach.tacGia?.tenTacGia ?? "Chưa rõ tác giả")
                     .font(.caption)
                     .foregroundColor(AppTheme.textSecondary)
                 
                 HStack(spacing: 6) {
-                    // Thể loại tag
+                    // Nhãn thể loại nhỏ
                     Text(sach.theLoai?.tenTheLoai ?? "Chung")
                         .font(.system(size: 10, weight: .medium))
                         .padding(.horizontal, 6)
@@ -164,7 +179,7 @@ struct SachRowView: View {
                     
                     Spacer()
                     
-                    // Trạng thái tồn kho
+                    // Tình trạng tồn kho bản sao: Xanh nếu còn sách, Đỏ nếu đã hết
                     HStack(spacing: 3) {
                         Circle()
                             .fill(sach.soLuongKhaDung > 0 ? AppTheme.success : AppTheme.danger)
@@ -186,7 +201,7 @@ struct SachRowView: View {
     }
 }
 
-// Widget Filter Pill
+// MARK: - Widget Filter Pill (Nút bấm dạng viên thuốc bo tròn để lọc thể loại)
 struct FilterPill: View {
     let title: String
     let isSelected: Bool
