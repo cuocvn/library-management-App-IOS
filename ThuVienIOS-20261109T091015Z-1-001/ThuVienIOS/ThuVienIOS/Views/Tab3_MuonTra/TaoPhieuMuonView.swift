@@ -17,6 +17,14 @@ struct TaoPhieuMuonView: View {
     @Query(filter: #Predicate<DocGia> { !$0.daAn }, sort: \DocGia.hoTen)
     private var dsDocGia: [DocGia]
     
+    // Tham số khởi tạo tùy chọn
+    var sachBanDau: Sach?
+    var banSaoBanDau: BanSaoSach?
+    var docGiaBanDau: DocGia?
+    
+    // Cài đặt thư viện mặc định
+    @AppStorage("soNgayMuonMacDinh") private var soNgayMuonMacDinh: Int = 14
+    
     // Lựa chọn form
     @State private var selectedSach: Sach?
     @State private var selectedBanSao: BanSaoSach?
@@ -28,6 +36,15 @@ struct TaoPhieuMuonView: View {
     
     @State private var thongBaoLoi: String?
     @State private var showingErrorAlert: Bool = false
+    
+    init(sachBanDau: Sach? = nil, banSaoBanDau: BanSaoSach? = nil, docGiaBanDau: DocGia? = nil) {
+        self.sachBanDau = sachBanDau
+        self.banSaoBanDau = banSaoBanDau
+        self.docGiaBanDau = docGiaBanDau
+        _selectedSach = State(initialValue: sachBanDau)
+        _selectedBanSao = State(initialValue: banSaoBanDau ?? sachBanDau?.dsBanSao.first(where: { $0.tinhTrang == "SanSang" }))
+        _selectedDocGia = State(initialValue: docGiaBanDau)
+    }
     
     // Danh sách bản sao khả dụng (chỉ lấy SanSang)
     private var dsBanSaoKhaDung: [BanSaoSach] {
@@ -188,6 +205,18 @@ struct TaoPhieuMuonView: View {
                 Button("Đã hiểu", role: .cancel) {}
             } message: {
                 Text(thongBaoLoi ?? "")
+            }
+            .onAppear {
+                if let s = sachBanDau, selectedSach == nil {
+                    selectedSach = s
+                    selectedBanSao = banSaoBanDau ?? s.dsBanSao.first(where: { $0.tinhTrang == "SanSang" })
+                }
+                if let dg = docGiaBanDau, selectedDocGia == nil {
+                    selectedDocGia = dg
+                }
+                if soNgayMuon == 14 && soNgayMuonMacDinh != 14 {
+                    soNgayMuon = soNgayMuonMacDinh
+                }
             }
         }
     }

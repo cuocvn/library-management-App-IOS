@@ -13,6 +13,8 @@ struct ChiTietSachView: View {
     @Bindable var sach: Sach
     
     @State private var showingEditSheet: Bool = false
+    @State private var showingBorrowSheet: Bool = false
+    @State private var selectedBanSaoToBorrow: BanSaoSach?
     @State private var showingAddCopyAlert: Bool = false
     @State private var maBanSaoMoi: String = ""
     @State private var viTriKeMoi: String = "Kệ A1"
@@ -129,6 +131,27 @@ struct ChiTietSachView: View {
                 )
                 .padding(.horizontal)
                 
+                // Nút hành động: Cho Mượn Sách (theo đặc tả luồng 2.1 -> 3.1)
+                Button {
+                    selectedBanSaoToBorrow = sach.dsBanSao.first(where: { $0.tinhTrang == "SanSang" })
+                    showingBorrowSheet = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "arrow.up.forward.circle.fill")
+                            .font(.title3)
+                        Text(sach.soLuongKhaDung > 0 ? "Cho Mượn Đầu Sách Này" : "Tạm Hết Sách Sẵn Sàng")
+                            .font(.headline.weight(.bold))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(sach.soLuongKhaDung > 0 ? AppTheme.primary : Color.gray.opacity(0.3))
+                    .foregroundColor(.white)
+                    .cornerRadius(14)
+                    .shadow(color: sach.soLuongKhaDung > 0 ? AppTheme.primary.opacity(0.3) : Color.clear, radius: 5, y: 3)
+                }
+                .disabled(sach.soLuongKhaDung == 0)
+                .padding(.horizontal)
+                
                 // Section 2: Quản lý Bản Sao Vật Lý (USP cốt lõi của đồ án)
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -188,6 +211,15 @@ struct ChiTietSachView: View {
                                 
                                 // Menu đổi trạng thái bản sao
                                 Menu {
+                                    if banSao.tinhTrang == "SanSang" {
+                                        Button {
+                                            selectedBanSaoToBorrow = banSao
+                                            showingBorrowSheet = true
+                                        } label: {
+                                            Label("Cho mượn cuốn này", systemImage: "arrow.up.forward.circle")
+                                        }
+                                        Divider()
+                                    }
                                     Button("Sẵn sàng") {
                                         banSao.tinhTrang = "SanSang"
                                         try? modelContext.save()
@@ -291,6 +323,9 @@ struct ChiTietSachView: View {
         }
         .sheet(isPresented: $showingEditSheet) {
             ThemSuaSachView(sachCanSua: sach)
+        }
+        .sheet(isPresented: $showingBorrowSheet) {
+            TaoPhieuMuonView(sachBanDau: sach, banSaoBanDau: selectedBanSaoToBorrow)
         }
         // Alert thêm bản sao vật lý mới
         .alert("Thêm Bản Sao Mới", isPresented: $showingAddCopyAlert) {

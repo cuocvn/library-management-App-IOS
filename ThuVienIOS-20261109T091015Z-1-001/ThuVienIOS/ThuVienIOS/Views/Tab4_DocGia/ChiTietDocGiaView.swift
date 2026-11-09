@@ -13,6 +13,7 @@ struct ChiTietDocGiaView: View {
     
     @State private var showingEditSheet: Bool = false
     @State private var showingNapTienSheet: Bool = false
+    @State private var showingBorrowSheet: Bool = false
 
     var body: some View {
         ScrollView {
@@ -119,6 +120,25 @@ struct ChiTietDocGiaView: View {
                 )
                 .padding(.horizontal)
                 
+                // Nút hành động: Lập phiếu mượn nhanh cho độc giả
+                Button {
+                    showingBorrowSheet = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "plus.rectangle.on.rectangle")
+                            .font(.headline)
+                        Text("Lập Phiếu Mượn Cho Độc Giả Này")
+                            .font(.headline.weight(.bold))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(AppTheme.primary)
+                    .foregroundColor(.white)
+                    .cornerRadius(14)
+                    .shadow(color: AppTheme.primary.opacity(0.3), radius: 5, y: 3)
+                }
+                .padding(.horizontal)
+                
                 // Card 3: Sách Đang Mượn
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Sách Đang Mượn (\(docGia.soSachDangMuon))")
@@ -216,6 +236,9 @@ struct ChiTietDocGiaView: View {
         }
         .sheet(isPresented: $showingNapTienSheet) {
             NapTienView(docGia: docGia)
+        }
+        .sheet(isPresented: $showingBorrowSheet) {
+            TaoPhieuMuonView(docGiaBanDau: docGia)
         }
     }
 }
