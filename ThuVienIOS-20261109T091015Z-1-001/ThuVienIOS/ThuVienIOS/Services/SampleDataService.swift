@@ -2,6 +2,12 @@
 //  SampleDataService.swift
 //  ThuVienIOS
 //
+//  MÔ TẢ: Dịch vụ nạp dữ liệu mẫu và đặt lại ứng dụng (Demo / Easter Egg)
+//  - Nạp 10 đầu sách chuẩn, 3 độc giả, 6 phiếu mượn khớp số liệu tài chính 100%.
+//  - Nguyên tắc thông minh: Khi nạp dữ liệu mẫu, nếu trong app ĐÃ CÓ dữ liệu từ trước
+//    thì dữ liệu mẫu sẽ được thêm vào mà VẪN GIỮ NGUYÊN các dữ liệu cũ của người dùng.
+//  - Chỉ xóa sạch hoàn toàn khi bấm nút "Xóa Sạch Dữ Liệu" trong Cài Đặt.
+//
 
 import Foundation
 import SwiftData
@@ -10,6 +16,7 @@ import SwiftData
 final class SampleDataService {
     
     // Xóa sạch toàn bộ dữ liệu trong cơ sở dữ liệu để đưa về trạng thái trắng (Reset)
+    // Phục vụ khi người dùng muốn đưa App về trạng thái ban đầu để chuẩn bị demo trước hội đồng
     static func xoaToanBoDuLieu(modelContext: ModelContext) {
         do {
             try modelContext.delete(model: PhieuMuon.self)
@@ -25,36 +32,124 @@ final class SampleDataService {
         }
     }
     
-    // Nạp dữ liệu mẫu chuẩn: Đúng 10 Sách, 3 Độc giả, và các phiếu mượn khớp toán học 100%
+    // Nạp dữ liệu mẫu chuẩn: 10 Sách, 3 Độc giả, và 6 phiếu mượn khớp số liệu
+    // NGUYÊN TẮC: Bổ sung dữ liệu mẫu vào cơ sở dữ liệu hiện có mà KHÔNG xóa mất dữ liệu người dùng đã tạo!
     static func napDuLieuChuan10Sach(modelContext: ModelContext) {
-        // Xóa dữ liệu cũ trước khi nạp để đảm bảo sạch và khớp số liệu
-        xoaToanBoDuLieu(modelContext: modelContext)
+        // Lấy danh sách các đối tượng hiện có để tái sử dụng hoặc tránh trùng lặp
+        var dsTheLoai = (try? modelContext.fetch(FetchDescriptor<TheLoai>())) ?? []
+        var dsNXB = (try? modelContext.fetch(FetchDescriptor<NhaXuatBan>())) ?? []
+        var dsTacGia = (try? modelContext.fetch(FetchDescriptor<TacGia>())) ?? []
+        var dsSach = (try? modelContext.fetch(FetchDescriptor<Sach>())) ?? []
+        var dsBanSao = (try? modelContext.fetch(FetchDescriptor<BanSaoSach>())) ?? []
+        var dsDocGia = (try? modelContext.fetch(FetchDescriptor<DocGia>())) ?? []
+        let dsPhieuMuon = (try? modelContext.fetch(FetchDescriptor<PhieuMuon>())) ?? []
         
-        // 1. Thể loại (4 thể loại)
-        let tlCNTT = TheLoai(tenTheLoai: "Công nghệ thông tin")
-        let tlKinhTe = TheLoai(tenTheLoai: "Kinh tế & Đầu tư")
-        let tlKyNang = TheLoai(tenTheLoai: "Kỹ năng & Phát triển")
-        let tlVanHoc = TheLoai(tenTheLoai: "Văn học & Nghệ thuật")
-        [tlCNTT, tlKinhTe, tlKyNang, tlVanHoc].forEach { modelContext.insert($0) }
+        // 1. Hàm lấy hoặc tạo Thể loại (không trùng tên)
+        func layHoacTaoTheLoai(_ ten: String) -> TheLoai {
+            if let tonTai = dsTheLoai.first(where: { $0.tenTheLoai.caseInsensitiveCompare(ten) == .orderedSame }) {
+                return tonTai
+            }
+            let moi = TheLoai(tenTheLoai: ten)
+            modelContext.insert(moi)
+            dsTheLoai.append(moi)
+            return moi
+        }
         
-        // 2. Nhà xuất bản (4 NXB)
-        let nxbKHTN = NhaXuatBan(tenNXB: "NXB Khoa Học & Kỹ Thuật")
-        let nxbTre = NhaXuatBan(tenNXB: "NXB Trẻ")
-        let nxbLaoDong = NhaXuatBan(tenNXB: "NXB Lao Động - Xã Hội")
-        let nxbKimDong = NhaXuatBan(tenNXB: "NXB Kim Đồng")
-        [nxbKHTN, nxbTre, nxbLaoDong, nxbKimDong].forEach { modelContext.insert($0) }
+        // 2. Hàm lấy hoặc tạo Nhà xuất bản (không trùng tên)
+        func layHoacTaoNXB(_ ten: String) -> NhaXuatBan {
+            if let tonTai = dsNXB.first(where: { $0.tenNXB.caseInsensitiveCompare(ten) == .orderedSame }) {
+                return tonTai
+            }
+            let moi = NhaXuatBan(tenNXB: ten)
+            modelContext.insert(moi)
+            dsNXB.append(moi)
+            return moi
+        }
         
-        // 3. Tác giả (5 tác giả)
-        let tgUncleBob = TacGia(tenTacGia: "Robert C. Martin")
-        let tgPaul = TacGia(tenTacGia: "Paul Hudson")
-        let tgCarnegie = TacGia(tenTacGia: "Dale Carnegie")
-        let tgHousel = TacGia(tenTacGia: "Morgan Housel")
-        let tgAnh = TacGia(tenTacGia: "Nguyễn Nhật Ánh")
-        [tgUncleBob, tgPaul, tgCarnegie, tgHousel, tgAnh].forEach { modelContext.insert($0) }
+        // 3. Hàm lấy hoặc tạo Tác giả (không trùng tên)
+        func layHoacTaoTacGia(_ ten: String) -> TacGia {
+            if let tonTai = dsTacGia.first(where: { $0.tenTacGia.caseInsensitiveCompare(ten) == .orderedSame }) {
+                return tonTai
+            }
+            let moi = TacGia(tenTacGia: ten)
+            modelContext.insert(moi)
+            dsTacGia.append(moi)
+            return moi
+        }
         
-        // 4. Đúng 10 đầu sách & bản sao vật lý
-        // Sách 1: Clean Code
-        let s1 = Sach(
+        // Khởi tạo các Thể loại mẫu
+        let tlCNTT = layHoacTaoTheLoai("Công nghệ thông tin")
+        let tlKinhTe = layHoacTaoTheLoai("Kinh tế & Đầu tư")
+        let tlKyNang = layHoacTaoTheLoai("Kỹ năng & Phát triển")
+        let tlVanHoc = layHoacTaoTheLoai("Văn học & Nghệ thuật")
+        
+        // Khởi tạo các NXB mẫu
+        let nxbKHTN = layHoacTaoNXB("NXB Khoa Học & Kỹ Thuật")
+        let nxbTre = layHoacTaoNXB("NXB Trẻ")
+        let nxbLaoDong = layHoacTaoNXB("NXB Lao Động - Xã Hội")
+        let nxbKimDong = layHoacTaoNXB("NXB Kim Đồng")
+        
+        // Khởi tạo các Tác giả mẫu
+        let tgUncleBob = layHoacTaoTacGia("Robert C. Martin")
+        let tgPaul = layHoacTaoTacGia("Paul Hudson")
+        let tgCarnegie = layHoacTaoTacGia("Dale Carnegie")
+        let tgHousel = layHoacTaoTacGia("Morgan Housel")
+        let tgAnh = layHoacTaoTacGia("Nguyễn Nhật Ánh")
+        
+        // 4. Hàm lấy hoặc thêm Đầu Sách mẫu và Bản sao vật lý
+        func themSachMau(
+            tenSach: String,
+            namXuatBan: Int,
+            phanLoaiGiaTri: String,
+            tienCoc: Double,
+            phiMuon: Double,
+            theLoai: TheLoai,
+            nhaXuatBan: NhaXuatBan,
+            tacGia: TacGia,
+            cacBanSao: [(ma: String, ke: String, tinhTrang: String)]
+        ) -> (Sach, [BanSaoSach]) {
+            let sach: Sach
+            if let daCo = dsSach.first(where: { $0.tenSach == tenSach }) {
+                sach = daCo
+            } else {
+                sach = Sach(
+                    tenSach: tenSach,
+                    namXuatBan: namXuatBan,
+                    phanLoaiGiaTri: phanLoaiGiaTri,
+                    tienCoc: tienCoc,
+                    phiMuon: phiMuon,
+                    theLoai: theLoai,
+                    nhaXuatBan: nhaXuatBan,
+                    tacGia: tacGia
+                )
+                modelContext.insert(sach)
+                dsSach.append(sach)
+            }
+            
+            var ketQuaBanSao: [BanSaoSach] = []
+            for item in cacBanSao {
+                if let bsDaCo = dsBanSao.first(where: { $0.maDinhDanh == item.ma }) {
+                    ketQuaBanSao.append(bsDaCo)
+                } else {
+                    let bsMoi = BanSaoSach(
+                        maDinhDanh: item.ma,
+                        viTriKe: item.ke,
+                        tinhTrang: item.tinhTrang,
+                        sach: sach
+                    )
+                    modelContext.insert(bsMoi)
+                    dsBanSao.append(bsMoi)
+                    if !sach.dsBanSao.contains(where: { $0.maDinhDanh == item.ma }) {
+                        sach.dsBanSao.append(bsMoi)
+                    }
+                    ketQuaBanSao.append(bsMoi)
+                }
+            }
+            return (sach, ketQuaBanSao)
+        }
+        
+        // 10 Đầu Sách Mẫu Chuẩn
+        let (_, bs1) = themSachMau(
             tenSach: "Clean Code - Nghệ thuật viết code sạch",
             namXuatBan: 2023,
             phanLoaiGiaTri: "Giáo trình",
@@ -62,15 +157,11 @@ final class SampleDataService {
             phiMuon: 15000,
             theLoai: tlCNTT,
             nhaXuatBan: nxbKHTN,
-            tacGia: tgUncleBob
+            tacGia: tgUncleBob,
+            cacBanSao: [("CC-001", "Kệ A1-01", "SanSang"), ("CC-002", "Kệ A1-02", "DangMuon")]
         )
-        modelContext.insert(s1)
-        let bs1_1 = BanSaoSach(maDinhDanh: "CC-001", viTriKe: "Kệ A1-01", tinhTrang: "SanSang", sach: s1)
-        let bs1_2 = BanSaoSach(maDinhDanh: "CC-002", viTriKe: "Kệ A1-02", tinhTrang: "DangMuon", sach: s1)
-        [bs1_1, bs1_2].forEach { s1.dsBanSao.append($0); modelContext.insert($0) }
         
-        // Sách 2: SwiftUI & SwiftData Masterclass
-        let s2 = Sach(
+        let (_, bs2) = themSachMau(
             tenSach: "Lập trình iOS với SwiftUI & SwiftData",
             namXuatBan: 2024,
             phanLoaiGiaTri: "Sách quý",
@@ -78,15 +169,11 @@ final class SampleDataService {
             phiMuon: 30000,
             theLoai: tlCNTT,
             nhaXuatBan: nxbKHTN,
-            tacGia: tgPaul
+            tacGia: tgPaul,
+            cacBanSao: [("SW-001", "Kệ A2-01", "DangMuon"), ("SW-002", "Kệ A2-02", "SanSang")]
         )
-        modelContext.insert(s2)
-        let bs2_1 = BanSaoSach(maDinhDanh: "SW-001", viTriKe: "Kệ A2-01", tinhTrang: "DangMuon", sach: s2)
-        let bs2_2 = BanSaoSach(maDinhDanh: "SW-002", viTriKe: "Kệ A2-02", tinhTrang: "SanSang", sach: s2)
-        [bs2_1, bs2_2].forEach { s2.dsBanSao.append($0); modelContext.insert($0) }
         
-        // Sách 3: Đắc Nhân Tâm
-        let s3 = Sach(
+        let (_, bs3) = themSachMau(
             tenSach: "Đắc Nhân Tâm (How to Win Friends)",
             namXuatBan: 2022,
             phanLoaiGiaTri: "Sách thường",
@@ -94,16 +181,11 @@ final class SampleDataService {
             phiMuon: 5000,
             theLoai: tlKyNang,
             nhaXuatBan: nxbTre,
-            tacGia: tgCarnegie
+            tacGia: tgCarnegie,
+            cacBanSao: [("DNT-001", "Kệ B1-01", "DangMuon"), ("DNT-002", "Kệ B1-02", "SanSang"), ("DNT-003", "Kệ B1-03", "SanSang")]
         )
-        modelContext.insert(s3)
-        let bs3_1 = BanSaoSach(maDinhDanh: "DNT-001", viTriKe: "Kệ B1-01", tinhTrang: "DangMuon", sach: s3)
-        let bs3_2 = BanSaoSach(maDinhDanh: "DNT-002", viTriKe: "Kệ B1-02", tinhTrang: "SanSang", sach: s3)
-        let bs3_3 = BanSaoSach(maDinhDanh: "DNT-003", viTriKe: "Kệ B1-03", tinhTrang: "SanSang", sach: s3)
-        [bs3_1, bs3_2, bs3_3].forEach { s3.dsBanSao.append($0); modelContext.insert($0) }
         
-        // Sách 4: Tâm Lý Học Về Tiền
-        let s4 = Sach(
+        let (_, bs4) = themSachMau(
             tenSach: "Tâm Lý Học Về Tiền (The Psychology of Money)",
             namXuatBan: 2023,
             phanLoaiGiaTri: "Sách thường",
@@ -111,15 +193,11 @@ final class SampleDataService {
             phiMuon: 5000,
             theLoai: tlKinhTe,
             nhaXuatBan: nxbLaoDong,
-            tacGia: tgHousel
+            tacGia: tgHousel,
+            cacBanSao: [("TLT-001", "Kệ B2-01", "SanSang"), ("TLT-002", "Kệ B2-02", "SanSang")]
         )
-        modelContext.insert(s4)
-        let bs4_1 = BanSaoSach(maDinhDanh: "TLT-001", viTriKe: "Kệ B2-01", tinhTrang: "SanSang", sach: s4)
-        let bs4_2 = BanSaoSach(maDinhDanh: "TLT-002", viTriKe: "Kệ B2-02", tinhTrang: "SanSang", sach: s4)
-        [bs4_1, bs4_2].forEach { s4.dsBanSao.append($0); modelContext.insert($0) }
         
-        // Sách 5: Mắt Biếc
-        let s5 = Sach(
+        let (_, bs5) = themSachMau(
             tenSach: "Mắt Biếc",
             namXuatBan: 2021,
             phanLoaiGiaTri: "Truyện tranh",
@@ -127,15 +205,11 @@ final class SampleDataService {
             phiMuon: 8000,
             theLoai: tlVanHoc,
             nhaXuatBan: nxbTre,
-            tacGia: tgAnh
+            tacGia: tgAnh,
+            cacBanSao: [("MB-001", "Kệ C1-01", "SanSang"), ("MB-002", "Kệ C1-02", "SanSang")]
         )
-        modelContext.insert(s5)
-        let bs5_1 = BanSaoSach(maDinhDanh: "MB-001", viTriKe: "Kệ C1-01", tinhTrang: "SanSang", sach: s5)
-        let bs5_2 = BanSaoSach(maDinhDanh: "MB-002", viTriKe: "Kệ C1-02", tinhTrang: "SanSang", sach: s5)
-        [bs5_1, bs5_2].forEach { s5.dsBanSao.append($0); modelContext.insert($0) }
         
-        // Sách 6: Cho Tôi Xin Một Vé Đi Tuổi Thơ
-        let s6 = Sach(
+        let (_, _) = themSachMau(
             tenSach: "Cho Tôi Xin Một Vé Đi Tuổi Thơ",
             namXuatBan: 2020,
             phanLoaiGiaTri: "Sách thường",
@@ -143,15 +217,11 @@ final class SampleDataService {
             phiMuon: 5000,
             theLoai: tlVanHoc,
             nhaXuatBan: nxbTre,
-            tacGia: tgAnh
+            tacGia: tgAnh,
+            cacBanSao: [("VTT-001", "Kệ C1-03", "SanSang"), ("VTT-002", "Kệ C1-04", "SanSang")]
         )
-        modelContext.insert(s6)
-        let bs6_1 = BanSaoSach(maDinhDanh: "VTT-001", viTriKe: "Kệ C1-03", tinhTrang: "SanSang", sach: s6)
-        let bs6_2 = BanSaoSach(maDinhDanh: "VTT-002", viTriKe: "Kệ C1-04", tinhTrang: "SanSang", sach: s6)
-        [bs6_1, bs6_2].forEach { s6.dsBanSao.append($0); modelContext.insert($0) }
         
-        // Sách 7: Clean Architecture
-        let s7 = Sach(
+        let (_, bs7) = themSachMau(
             tenSach: "Clean Architecture - Kiến trúc phần mềm sạch",
             namXuatBan: 2022,
             phanLoaiGiaTri: "Giáo trình",
@@ -159,15 +229,11 @@ final class SampleDataService {
             phiMuon: 15000,
             theLoai: tlCNTT,
             nhaXuatBan: nxbKHTN,
-            tacGia: tgUncleBob
+            tacGia: tgUncleBob,
+            cacBanSao: [("CA-001", "Kệ A1-04", "SanSang"), ("CA-002", "Kệ A1-05", "SanSang")]
         )
-        modelContext.insert(s7)
-        let bs7_1 = BanSaoSach(maDinhDanh: "CA-001", viTriKe: "Kệ A1-04", tinhTrang: "SanSang", sach: s7)
-        let bs7_2 = BanSaoSach(maDinhDanh: "CA-002", viTriKe: "Kệ A1-05", tinhTrang: "SanSang", sach: s7)
-        [bs7_1, bs7_2].forEach { s7.dsBanSao.append($0); modelContext.insert($0) }
         
-        // Sách 8: Khởi Nghiệp Tinh Gọn
-        let s8 = Sach(
+        let (_, _) = themSachMau(
             tenSach: "Khởi Nghiệp Tinh Gọn (The Lean Startup)",
             namXuatBan: 2021,
             phanLoaiGiaTri: "Sách thường",
@@ -175,15 +241,11 @@ final class SampleDataService {
             phiMuon: 5000,
             theLoai: tlKinhTe,
             nhaXuatBan: nxbLaoDong,
-            tacGia: tgHousel
+            tacGia: tgHousel,
+            cacBanSao: [("LS-001", "Kệ B2-03", "SanSang"), ("LS-002", "Kệ B2-04", "SanSang")]
         )
-        modelContext.insert(s8)
-        let bs8_1 = BanSaoSach(maDinhDanh: "LS-001", viTriKe: "Kệ B2-03", tinhTrang: "SanSang", sach: s8)
-        let bs8_2 = BanSaoSach(maDinhDanh: "LS-002", viTriKe: "Kệ B2-04", tinhTrang: "SanSang", sach: s8)
-        [bs8_1, bs8_2].forEach { s8.dsBanSao.append($0); modelContext.insert($0) }
         
-        // Sách 9: Quẳng Gánh Lo Đi Và Vui Sống
-        let s9 = Sach(
+        let (_, _) = themSachMau(
             tenSach: "Quẳng Gánh Lo Đi Và Vui Sống",
             namXuatBan: 2022,
             phanLoaiGiaTri: "Sách thường",
@@ -191,15 +253,11 @@ final class SampleDataService {
             phiMuon: 5000,
             theLoai: tlKyNang,
             nhaXuatBan: nxbTre,
-            tacGia: tgCarnegie
+            tacGia: tgCarnegie,
+            cacBanSao: [("QGL-001", "Kệ B1-04", "SanSang"), ("QGL-002", "Kệ B1-05", "SanSang")]
         )
-        modelContext.insert(s9)
-        let bs9_1 = BanSaoSach(maDinhDanh: "QGL-001", viTriKe: "Kệ B1-04", tinhTrang: "SanSang", sach: s9)
-        let bs9_2 = BanSaoSach(maDinhDanh: "QGL-002", viTriKe: "Kệ B1-05", tinhTrang: "SanSang", sach: s9)
-        [bs9_1, bs9_2].forEach { s9.dsBanSao.append($0); modelContext.insert($0) }
         
-        // Sách 10: Kính Vạn Hoa
-        let s10 = Sach(
+        let (_, _) = themSachMau(
             tenSach: "Kính Vạn Hoa - Tập Đặc Biệt",
             namXuatBan: 2023,
             phanLoaiGiaTri: "Truyện tranh",
@@ -207,123 +265,91 @@ final class SampleDataService {
             phiMuon: 8000,
             theLoai: tlVanHoc,
             nhaXuatBan: nxbKimDong,
-            tacGia: tgAnh
+            tacGia: tgAnh,
+            cacBanSao: [("KVH-001", "Kệ C2-01", "SanSang"), ("KVH-002", "Kệ C2-02", "SanSang")]
         )
-        modelContext.insert(s10)
-        let bs10_1 = BanSaoSach(maDinhDanh: "KVH-001", viTriKe: "Kệ C2-01", tinhTrang: "SanSang", sach: s10)
-        let bs10_2 = BanSaoSach(maDinhDanh: "KVH-002", viTriKe: "Kệ C2-02", tinhTrang: "SanSang", sach: s10)
-        [bs10_1, bs10_2].forEach { s10.dsBanSao.append($0); modelContext.insert($0) }
         
-        // 5. Đúng 3 Độc giả
-        let dg1 = DocGia(
-            hoTen: "Trần Quốc Bảo",
-            email: "bao.tran@email.com",
-            soDienThoai: "0901234567",
-            lopKhoa: "CNTT K20",
-            loaiThe: "VIP",
-            soDuTaiKhoan: 300000
-        )
-        let dg2 = DocGia(
-            hoTen: "Lê Hoàng Yến",
-            email: "yen.le@email.com",
-            soDienThoai: "0912345678",
-            lopKhoa: "Kinh Tế K21",
-            loaiThe: "Thuong",
-            soDuTaiKhoan: 150000
-        )
-        let dg3 = DocGia(
-            hoTen: "Phạm Minh Tuấn",
-            email: "tuan.pham@email.com",
-            soDienThoai: "0987654321",
-            lopKhoa: "Ngoại Ngữ K19",
-            loaiThe: "Thuong",
-            soDuTaiKhoan: 80000
-        )
-        [dg1, dg2, dg3].forEach { modelContext.insert($0) }
+        // 5. Hàm lấy hoặc thêm Độc Giả mẫu
+        func layHoacTaoDocGia(hoTen: String, email: String, sdt: String, lop: String, loaiThe: String, soDu: Double) -> DocGia {
+            if let daCo = dsDocGia.first(where: { $0.hoTen == hoTen }) {
+                return daCo
+            }
+            let moi = DocGia(hoTen: hoTen, email: email, soDienThoai: sdt, lopKhoa: lop, loaiThe: loaiThe, soDuTaiKhoan: soDu)
+            modelContext.insert(moi)
+            dsDocGia.append(moi)
+            return moi
+        }
         
-        // 6. Giao dịch Phiếu Mượn (6 phiếu mượn với số liệu khớp chính xác 100%)
+        let dg1 = layHoacTaoDocGia(hoTen: "Trần Quốc Bảo", email: "bao.tran@email.com", sdt: "0901234567", lop: "CNTT K20", loaiThe: "VIP", soDu: 300000)
+        let dg2 = layHoacTaoDocGia(hoTen: "Lê Hoàng Yến", email: "yen.le@email.com", sdt: "0912345678", lop: "Kinh Tế K21", loaiThe: "Thuong", soDu: 150000)
+        let dg3 = layHoacTaoDocGia(hoTen: "Phạm Minh Tuấn", email: "tuan.pham@email.com", sdt: "0987654321", lop: "Ngoại Ngữ K19", loaiThe: "Thuong", soDu: 80000)
+        
+        // 6. Hàm thêm Phiếu Mượn mẫu (chỉ thêm nếu chưa có)
         let now = Date()
         let calendar = Calendar.current
         
+        func themPhieuMuon(
+            banSao: BanSaoSach?,
+            docGia: DocGia?,
+            ngayMuonOffset: Int,
+            hanTraOffset: Int,
+            ngayTraOffset: Int?,
+            tienCoc: Double,
+            phiMuon: Double,
+            soNgayTre: Int = 0,
+            tienPhat: Double = 0,
+            ptThanhToan: String,
+            ptHoanTien: String? = nil
+        ) {
+            guard let bs = banSao, let dg = docGia else { return }
+            let daTonTai = dsPhieuMuon.contains(where: {
+                $0.banSao?.maDinhDanh == bs.maDinhDanh && $0.docGia?.hoTen == dg.hoTen && $0.phiMuonThucTe == phiMuon
+            })
+            if daTonTai { return }
+            
+            let ngayMuon = calendar.date(byAdding: .day, value: ngayMuonOffset, to: now) ?? now
+            let hanTra = calendar.date(byAdding: .day, value: hanTraOffset, to: now) ?? now
+            let ngayTra = ngayTraOffset != nil ? (calendar.date(byAdding: .day, value: ngayTraOffset!, to: now) ?? now) : nil
+            
+            let pm = PhieuMuon(
+                ngayMuon: ngayMuon,
+                hanTra: hanTra,
+                ngayTra: ngayTra,
+                tienCocThucTe: tienCoc,
+                phiMuonThucTe: phiMuon,
+                soNgayTre: soNgayTre,
+                tienPhat: tienPhat,
+                phuongThucThanhToan: ptThanhToan,
+                phuongThucHoanTien: ptHoanTien,
+                banSao: bs,
+                docGia: dg
+            )
+            modelContext.insert(pm)
+        }
+        
         // Phiếu 1: Đang mượn (đúng hạn) - Trần Quốc Bảo (VIP)
-        let pm1 = PhieuMuon(
-            ngayMuon: calendar.date(byAdding: .day, value: -1, to: now) ?? now,
-            hanTra: calendar.date(byAdding: .day, value: 13, to: now) ?? now,
-            tienCocThucTe: 0, // VIP miễn cọc
-            phiMuonThucTe: 15000,
-            phuongThucThanhToan: "TaiKhoan",
-            banSao: bs1_2,
-            docGia: dg1
-        )
+        let bsCC002 = bs1.first(where: { $0.maDinhDanh == "CC-002" })
+        themPhieuMuon(banSao: bsCC002, docGia: dg1, ngayMuonOffset: -1, hanTraOffset: 13, ngayTraOffset: nil, tienCoc: 0, phiMuon: 15000, ptThanhToan: "TaiKhoan")
         
         // Phiếu 2: Đang mượn (QUÁ HẠN 4 NGÀY) - Lê Hoàng Yến
-        let pm2 = PhieuMuon(
-            ngayMuon: calendar.date(byAdding: .day, value: -18, to: now) ?? now,
-            hanTra: calendar.date(byAdding: .day, value: -4, to: now) ?? now,
-            tienCocThucTe: 200000, // Cọc đang giữ
-            phiMuonThucTe: 30000,
-            phuongThucThanhToan: "TienMat",
-            banSao: bs2_1,
-            docGia: dg2
-        )
+        let bsSW001 = bs2.first(where: { $0.maDinhDanh == "SW-001" })
+        themPhieuMuon(banSao: bsSW001, docGia: dg2, ngayMuonOffset: -18, hanTraOffset: -4, ngayTraOffset: nil, tienCoc: 200000, phiMuon: 30000, ptThanhToan: "TienMat")
         
         // Phiếu 3: Đang mượn (đúng hạn) - Phạm Minh Tuấn
-        let pm3 = PhieuMuon(
-            ngayMuon: calendar.date(byAdding: .day, value: -3, to: now) ?? now,
-            hanTra: calendar.date(byAdding: .day, value: 11, to: now) ?? now,
-            tienCocThucTe: 50000, // Cọc đang giữ
-            phiMuonThucTe: 5000,
-            phuongThucThanhToan: "TienMat",
-            banSao: bs3_1,
-            docGia: dg3
-        )
+        let bsDNT001 = bs3.first(where: { $0.maDinhDanh == "DNT-001" })
+        themPhieuMuon(banSao: bsDNT001, docGia: dg3, ngayMuonOffset: -3, hanTraOffset: 11, ngayTraOffset: nil, tienCoc: 50000, phiMuon: 5000, ptThanhToan: "TienMat")
         
         // Phiếu 4: Đã trả đúng hạn - Trần Quốc Bảo (VIP)
-        let pm4 = PhieuMuon(
-            ngayMuon: calendar.date(byAdding: .day, value: -5, to: now) ?? now,
-            hanTra: calendar.date(byAdding: .day, value: 9, to: now) ?? now,
-            ngayTra: calendar.date(byAdding: .day, value: -1, to: now) ?? now,
-            tienCocThucTe: 0,
-            phiMuonThucTe: 5000,
-            soNgayTre: 0,
-            tienPhat: 0,
-            phuongThucThanhToan: "TaiKhoan",
-            phuongThucHoanTien: "TaiKhoan",
-            banSao: bs4_1,
-            docGia: dg1
-        )
+        let bsTLT001 = bs4.first(where: { $0.maDinhDanh == "TLT-001" })
+        themPhieuMuon(banSao: bsTLT001, docGia: dg1, ngayMuonOffset: -5, hanTraOffset: 9, ngayTraOffset: -1, tienCoc: 0, phiMuon: 5000, ptThanhToan: "TaiKhoan", ptHoanTien: "TaiKhoan")
         
         // Phiếu 5: Đã trả (TRỄ 3 NGÀY - THU PHẠT 15.000đ) - Lê Hoàng Yến
-        let pm5 = PhieuMuon(
-            ngayMuon: calendar.date(byAdding: .day, value: -25, to: now) ?? now,
-            hanTra: calendar.date(byAdding: .day, value: -11, to: now) ?? now,
-            ngayTra: calendar.date(byAdding: .day, value: -8, to: now) ?? now,
-            tienCocThucTe: 60000,
-            phiMuonThucTe: 8000,
-            soNgayTre: 3,
-            tienPhat: 15000, // 3 ngày x 5.000đ/ngày
-            phuongThucThanhToan: "TienMat",
-            phuongThucHoanTien: "TienMat",
-            banSao: bs5_1,
-            docGia: dg2
-        )
+        let bsMB001 = bs5.first(where: { $0.maDinhDanh == "MB-001" })
+        themPhieuMuon(banSao: bsMB001, docGia: dg2, ngayMuonOffset: -25, hanTraOffset: -11, ngayTraOffset: -8, tienCoc: 60000, phiMuon: 8000, soNgayTre: 3, tienPhat: 15000, ptThanhToan: "TienMat", ptHoanTien: "TienMat")
         
         // Phiếu 6: Đã trả đúng hạn - Trần Quốc Bảo (VIP)
-        let pm6 = PhieuMuon(
-            ngayMuon: calendar.date(byAdding: .day, value: -2, to: now) ?? now,
-            hanTra: calendar.date(byAdding: .day, value: 12, to: now) ?? now,
-            ngayTra: calendar.date(byAdding: .day, value: -1, to: now) ?? now,
-            tienCocThucTe: 0,
-            phiMuonThucTe: 15000,
-            soNgayTre: 0,
-            tienPhat: 0,
-            phuongThucThanhToan: "TaiKhoan",
-            phuongThucHoanTien: "TaiKhoan",
-            banSao: bs7_1,
-            docGia: dg1
-        )
-        
-        [pm1, pm2, pm3, pm4, pm5, pm6].forEach { modelContext.insert($0) }
+        let bsCA001 = bs7.first(where: { $0.maDinhDanh == "CA-001" })
+        themPhieuMuon(banSao: bsCA001, docGia: dg1, ngayMuonOffset: -2, hanTraOffset: 12, ngayTraOffset: -1, tienCoc: 0, phiMuon: 15000, ptThanhToan: "TaiKhoan", ptHoanTien: "TaiKhoan")
         
         try? modelContext.save()
     }
