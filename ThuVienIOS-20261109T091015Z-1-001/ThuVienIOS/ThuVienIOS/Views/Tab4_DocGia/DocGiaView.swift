@@ -108,14 +108,21 @@ struct DocGiaRowView: View {
     
     var body: some View {
         HStack(spacing: 14) {
-            // Avatar độc giả (màu cam và icon vương miện nếu là VIP)
+            // Avatar độc giả: Khác biệt rõ nét qua màu viền avatar
+            // - VIP: Viền vàng cam ánh kim 2.5px, icon vương miện
+            // - Thường: Viền xám dịu 1.5px, icon người
             ZStack {
                 Circle()
-                    .fill(docGia.isVIP ? Color.orange.opacity(0.15) : AppTheme.primary.opacity(0.12))
+                    .fill(docGia.isVIP ? Color.orange.opacity(0.15) : Color.gray.opacity(0.1))
                     .frame(width: 48, height: 48)
+                
                 Image(systemName: docGia.isVIP ? "crown.fill" : "person.fill")
-                    .font(.title3)
-                    .foregroundColor(docGia.isVIP ? .orange : AppTheme.primary)
+                    .font(.system(size: 20))
+                    .foregroundColor(docGia.isVIP ? .orange : .gray)
+                
+                Circle()
+                    .stroke(docGia.isVIP ? Color.orange : Color.gray.opacity(0.35), lineWidth: docGia.isVIP ? 2.5 : 1.5)
+                    .frame(width: 48, height: 48)
             }
             
             VStack(alignment: .leading, spacing: 3) {
@@ -141,18 +148,24 @@ struct DocGiaRowView: View {
                     .font(.caption)
                     .foregroundColor(AppTheme.textSecondary)
                 
-                // Thẻ số dư ví và số lượng sách đang mượn
+                // Thẻ số dư ví và số lượng sách đang mượn / nợ sách
                 HStack(spacing: 6) {
                     Text("Ví: \(AppTheme.formatVND(docGia.soDuTaiKhoan))")
                         .font(.caption2.bold())
-                        .foregroundColor(AppTheme.primary)
+                        .foregroundColor(docGia.isVIP ? .orange : AppTheme.primary)
                     
                     Text("•")
                         .foregroundColor(AppTheme.textSecondary)
                     
                     Text("Đang mượn: \(docGia.soSachDangMuon)")
                         .font(.caption2)
-                        .foregroundColor(AppTheme.textSecondary)
+                        .foregroundColor(docGia.soSachQuaHan > 0 ? AppTheme.danger : AppTheme.textSecondary)
+                    
+                    if docGia.soSachQuaHan > 0 {
+                        Text("(\(docGia.soSachQuaHan) trễ)")
+                            .font(.caption2.bold())
+                            .foregroundColor(AppTheme.danger)
+                    }
                 }
             }
             

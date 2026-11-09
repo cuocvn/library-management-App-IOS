@@ -3,13 +3,13 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Màn hình 3.1 - Modal Tạo Phiếu Mượn Sách (Nghiệp vụ cốt lõi Fintech)
-//  LUỒNG NGHIỆP VỤ:
-//  1. Chọn Đầu sách -> Hệ thống tự động lọc ra các bản sao vật lý "Sẵn sàng"
-//  2. Chọn Độc giả -> Tự động nhận diện VIP để MIỄN CỌC 100% (cọc = 0đ)
-//  3. Thiết lập hạn mượn (mặc định lấy theo cấu hình thư viện @AppStorage)
-//  4. Quyết toán tài chính: Phí mượn + Tiền cọc = Tổng thu ban đầu
-//  5. Chọn thanh toán: Tiền mặt hoặc Trừ ví tài khoản (kiểm tra số dư trước khi trừ)
-//  6. Cập nhật bản sao sách sang "DangMuon" và lưu phiếu mượn vào SwiftData
+//  LUỒNG NGHIỆP VỤ NÂNG CAO:
+//  1. Chọn Đầu sách & Bản sao vật lý cụ thể ("SanSang")
+//  2. Chọn Độc giả -> Tự động nhận diện VIP (số dư > 0 đ) để MIỄN CỌC 100% (cọc = 0đ)
+//  3. Thiết lập Gói Mượn: 3 ngày, 7 ngày, 10 ngày, 20 ngày, 1 tháng (30 ngày)
+//  4. Mức giá: Hệ thống tự gợi ý theo gói ngày VÀ cho phép TỰ ĐIỀN / SỬA TAY mức phí & tiền cọc
+//  5. Thanh toán TIỀN MẶT: Tách bạch rõ Tiền Cọc (đã thu trước) + Phí Mượn, tự động ghi chú (Note) vào phiếu
+//  6. Thanh toán VÍ: Kiểm tra số dư ví và trừ tiền tự động
 //
 
 import SwiftUI
@@ -20,15 +20,13 @@ struct TaoPhieuMuonView: View {
     @Environment(\.modelContext) private var modelContext
     
     // MARK: - SwiftData Queries
-    // Danh sách sách chưa bị ẩn, sắp xếp A-Z
     @Query(filter: #Predicate<Sach> { !$0.daAn }, sort: \Sach.tenSach)
     private var dsSach: [Sach]
     
-    // Danh sách độc giả chưa bị ẩn, sắp xếp A-Z
     @Query(filter: #Predicate<DocGia> { !$0.daAn }, sort: \DocGia.hoTen)
     private var dsDocGia: [DocGia]
     
-    // Tham số khởi tạo tùy chọn (khi được gọi từ Chi tiết Sách hoặc Chi tiết Độc Giả)
+    // Tham số khởi tạo tùy chọn (khi mở từ Chi tiết Sách hoặc Chi tiết Độc Giả)
     var sachBanDau: Sach?
     var banSaoBanDau: BanSaoSach?
     var docGiaBanDau: DocGia?
@@ -42,12 +40,27 @@ struct TaoPhieuMuonView: View {
     @State private var selectedDocGia: DocGia?
     
     @State private var ngayMuon: Date = Date()
-    @State private var soNgayMuon: Int = 14
+    @State private var soNgayMuon: Int = 7
+    
+    // Trường nhập tay giá tiền (Linh hoạt: tự động gợi ý hoặc tự điền số tiền)
+    @State private var phiMuonNhapTay: String = ""
+    @State private var tienCocNhapTay: String = ""
+    @State private var ghiChuNhapTay: String = ""
+    
     @State private var phuongThucThanhToan: String = "TienMat" // "TienMat" hoặc "TaiKhoan"
     
     // Cảnh báo lỗi
     @State private var thongBaoLoi: String?
     @State private var showingErrorAlert: Bool = false
+    
+    // Các gói thời hạn mượn định sẵn
+    let cacGoiThoiHan: [(ten: String, soNgay: Int, heSo: Double)] = [
+        ("3 ngày", 3, 0.7),
+        ("7 ngày", 7, 1.0),
+        ("10 ngày", 10, 1.3),
+        ("20 ngày", 20, 2.0),
+        ("1 tháng", 30, 2.5)
+    ]
     
     // Constructor hỗ trợ điền sẵn dữ liệu nếu có
     init(sachBanDau: Sach? = nil, banSaoBanDau: BanSaoSach? = nil, docGiaBanDau: DocGia? = nil) {
@@ -61,7 +74,7 @@ struct TaoPhieuMuonView: View {
     
     // MARK: - Thuộc tính tính toán (Computed Properties)
     
-    // Lọc ra danh sách bản sao vật lý đang có tình trạng "SanSang" của đầu sách được chọn
+    // Danh sách bản sao có tình trạng "SanSang"
     private var dsBanSaoKhaDung: [BanSaoSach] {
         guard let s = selectedSach else { return [] }
         return s.dsBanSao.filter { $0.tinhTrang == "SanSang" }
@@ -72,13 +85,22 @@ struct TaoPhieuMuonView: View {
         Calendar.current.date(byAdding: .day, value: soNgayMuon, to: ngayMuon) ?? ngayMuon
     }
     
-    // Phí mượn thực tế lấy từ sách
-    private var phiMuonThucTe: Int {
-        selectedSach?.phiMuon ?? 0
+    // Phí mượn hiệu lực (ưu tiên số người dùng nhập tay, nếu trống thì tính theo gợi ý)
+    private var phiMuonHieuLuc: Int {
+        if let custom = Int(phiMuonNhapTay) {
+            return max(0, custom)
+        }
+        guard let sach = selectedSach else { return 0 }
+        // Tỷ lệ theo ngày mượn: 7 ngày là chuẩn (hệ số 1.0)
+        let heSo = max(0.5, Double(soNgayMuon) / 7.0)
+        return max(1000, Int(round(Double(sach.phiMuon) * heSo / 1000) * 1000))
     }
     
-    // Tiền cọc thực tế: ĐẶC QUYỀN VIP - Nếu độc giả là VIP thì tiền cọc = 0đ
-    private var tienCocThucTe: Int {
+    // Tiền cọc hiệu lực (Hội viên VIP tự động = 0đ, hoặc người dùng nhập tay)
+    private var tienCocHieuLuc: Int {
+        if let custom = Int(tienCocNhapTay) {
+            return max(0, custom)
+        }
         guard let sach = selectedSach else { return 0 }
         if selectedDocGia?.isVIP == true {
             return 0 // Miễn 100% tiền cọc cho Hội viên VIP
@@ -88,7 +110,7 @@ struct TaoPhieuMuonView: View {
     
     // Tổng số tiền cần thanh toán ban đầu = Cọc + Phí mượn
     private var tongThanhToan: Int {
-        tienCocThucTe + phiMuonThucTe
+        tienCocHieuLuc + phiMuonHieuLuc
     }
 
     var body: some View {
@@ -102,9 +124,9 @@ struct TaoPhieuMuonView: View {
                             Text("\(s.tenSach) (\(s.soLuongKhaDung) còn)").tag(s as Sach?)
                         }
                     }
-                    // Khi đổi đầu sách, tự động chọn bản sao sẵn sàng đầu tiên
-                    .onChange(of: selectedSach) { _, _ in
+                    .onChange(of: selectedSach) { _, newSach in
                         selectedBanSao = dsBanSaoKhaDung.first
+                        capNhatGiaGoi(soNgay: soNgayMuon)
                     }
                     
                     if let sach = selectedSach {
@@ -122,22 +144,39 @@ struct TaoPhieuMuonView: View {
                     }
                 }
                 
-                // MARK: BƯỚC 2: Chọn Độc giả & Kiểm tra VIP / Ví tiền
+                // MARK: BƯỚC 2: Chọn Độc giả & Nhận diện VIP (Viền Vàng / Thường Viền Xám)
                 Section(header: Text("2. Thông tin Độc giả")) {
                     Picker("Độc giả", selection: $selectedDocGia) {
                         Text("-- Chọn độc giả --").tag(nil as DocGia?)
                         ForEach(dsDocGia, id: \.maDocGia) { dg in
-                            Text("\(dg.hoTen) \(dg.isVIP ? "[VIP]" : "")").tag(dg as DocGia?)
+                            Text("\(dg.hoTen) \(dg.isVIP ? "🌟 [VIP]" : "")").tag(dg as DocGia?)
+                        }
+                    }
+                    .onChange(of: selectedDocGia) { _, newDg in
+                        if newDg?.isVIP == true {
+                            tienCocNhapTay = "0"
+                        } else if let s = selectedSach {
+                            tienCocNhapTay = String(s.tienCoc)
                         }
                     }
                     
                     if let dg = selectedDocGia {
                         HStack {
-                            Text("Hạng thẻ:")
+                            Text("Hạng độc giả:")
                             Spacer()
-                            Text(dg.isVIP ? "🌟 HỘI VIÊN VIP (Miễn cọc)" : "Thẻ thường")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundColor(dg.isVIP ? .orange : AppTheme.textSecondary)
+                            if dg.isVIP {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "crown.fill")
+                                        .foregroundColor(.orange)
+                                    Text("VIP (Viền vàng - Miễn cọc)")
+                                        .font(.subheadline.bold())
+                                        .foregroundColor(.orange)
+                                }
+                            } else {
+                                Text("Thẻ thường (Viền xám - Có cọc)")
+                                    .font(.subheadline)
+                                    .foregroundColor(AppTheme.textSecondary)
+                            }
                         }
                         
                         HStack {
@@ -145,16 +184,47 @@ struct TaoPhieuMuonView: View {
                             Spacer()
                             Text(AppTheme.formatVND(dg.soDuTaiKhoan))
                                 .font(.subheadline.bold())
-                                .foregroundColor(AppTheme.primary)
+                                .foregroundColor(dg.isVIP ? .orange : AppTheme.primary)
                         }
                     }
                 }
                 
-                // MARK: BƯỚC 3: Thiết lập Thời hạn mượn
-                Section(header: Text("3. Thời hạn mượn")) {
+                // MARK: BƯỚC 3: Chọn Gói Thời Hạn Mượn (3 ngày, 7 ngày, 10 ngày, 20 ngày, 1 tháng)
+                Section(header: Text("3. Gói thời hạn mượn"), footer: Text("Bấm chọn gói mượn nhanh hoặc tùy chỉnh số ngày. Hệ thống sẽ tự động cập nhật mức giá tương ứng.")) {
                     DatePicker("Ngày bắt đầu mượn", selection: $ngayMuon, displayedComponents: .date)
                     
-                    Stepper("Số ngày mượn: \(soNgayMuon) ngày", value: $soNgayMuon, in: 1...60)
+                    // Chips chọn nhanh các gói ngày
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Chọn gói mượn nhanh:")
+                            .font(.caption)
+                            .foregroundColor(AppTheme.textSecondary)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(cacGoiThoiHan, id: \.soNgay) { goi in
+                                    Button {
+                                        soNgayMuon = goi.soNgay
+                                        capNhatGiaGoi(soNgay: goi.soNgay)
+                                    } label: {
+                                        Text(goi.ten)
+                                            .font(.caption.bold())
+                                            .padding(.horizontal, 14)
+                                            .padding(.vertical, 8)
+                                            .background(soNgayMuon == goi.soNgay ? AppTheme.primary : Color.gray.opacity(0.12))
+                                            .foregroundColor(soNgayMuon == goi.soNgay ? .white : AppTheme.textPrimary)
+                                            .cornerRadius(10)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                    
+                    Stepper("Số ngày mượn: \(soNgayMuon) ngày", value: $soNgayMuon, in: 1...90)
+                        .onChange(of: soNgayMuon) { _, newVal in
+                            capNhatGiaGoi(soNgay: newVal)
+                        }
                     
                     HStack {
                         Text("Hạn trả dự kiến:")
@@ -165,42 +235,90 @@ struct TaoPhieuMuonView: View {
                     }
                 }
                 
-                // MARK: BƯỚC 4: Bảng Thanh toán (Fintech Mini)
-                Section(header: Text("4. Quyết toán chi phí")) {
+                // MARK: BƯỚC 4: Bảng Thanh Toán & Cho Phép Tự Điền Giá
+                Section(header: Text("4. Quyết toán chi phí (Có thể tự điền giá)"), footer: Text("Bạn có thể để giá gợi ý theo gói hoặc TỰ ĐIỀN số tiền theo mong muốn.")) {
+                    // Ô tự điền hoặc xem phí mượn
                     HStack {
                         Text("Phí thuê mượn:")
                         Spacer()
-                        Text(AppTheme.formatVND(phiMuonThucTe))
+                        TextField("0", text: $phiMuonNhapTay)
+                            .keyboardType(.numberPad)
+                            .multilineTextAlignment(.trailing)
+                            .font(.subheadline.bold())
+                            .foregroundColor(AppTheme.textPrimary)
+                            .frame(maxWidth: 120)
+                        Text("đ")
                     }
                     
+                    // Ô tự điền hoặc xem tiền cọc
                     HStack {
-                        Text("Tiền cọc:")
+                        Text("Tiền cọc giữ lại:")
                         Spacer()
-                        if selectedDocGia?.isVIP == true {
+                        if selectedDocGia?.isVIP == true && tienCocNhapTay.isEmpty {
                             Text("0 đ (Miễn cọc VIP)")
                                 .foregroundColor(AppTheme.success)
                         } else {
-                            Text(AppTheme.formatVND(tienCocThucTe))
+                            TextField("0", text: $tienCocNhapTay)
+                                .keyboardType(.numberPad)
+                                .multilineTextAlignment(.trailing)
+                                .font(.subheadline.bold())
+                                .foregroundColor(AppTheme.textPrimary)
+                                .frame(maxWidth: 120)
+                            Text("đ")
                         }
                     }
                     
                     Divider()
                     
-                    HStack {
-                        Text("Tổng thu ban đầu:")
-                            .font(.headline)
-                        Spacer()
-                        Text(AppTheme.formatVND(tongThanhToan))
-                            .font(.headline)
-                            .foregroundColor(AppTheme.primary)
-                    }
-                    
-                    // Lựa chọn phương thức thanh toán
+                    // Phương thức thanh toán
                     Picker("Phương thức thanh toán", selection: $phuongThucThanhToan) {
                         Text("💵 Tiền mặt").tag("TienMat")
                         Text("💳 Trừ ví tài khoản").tag("TaiKhoan")
                     }
                     .pickerStyle(.segmented)
+                    
+                    // Chi tiết thanh toán Tiền Mặt / Ví
+                    if phuongThucThanhToan == "TienMat" {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack {
+                                Text("• Tiền cọc đã thu trước:")
+                                Spacer()
+                                Text(AppTheme.formatVND(tienCocHieuLuc))
+                                    .fontWeight(.medium)
+                            }
+                            HStack {
+                                Text("• Phí mượn thu ngay:")
+                                Spacer()
+                                Text(AppTheme.formatVND(phiMuonHieuLuc))
+                                    .fontWeight(.medium)
+                            }
+                            HStack {
+                                Text("Tổng tiền mặt thu lúc giao sách:")
+                                    .font(.headline)
+                                Spacer()
+                                Text(AppTheme.formatVND(tongThanhToan))
+                                    .font(.headline)
+                                    .foregroundColor(AppTheme.primary)
+                            }
+                        }
+                        .padding(10)
+                        .background(Color.orange.opacity(0.1))
+                        .cornerRadius(10)
+                    } else {
+                        HStack {
+                            Text("Tổng trừ từ ví nội bộ:")
+                                .font(.headline)
+                            Spacer()
+                            Text(AppTheme.formatVND(tongThanhToan))
+                                .font(.headline)
+                                .foregroundColor(AppTheme.primary)
+                        }
+                    }
+                }
+                
+                // MARK: BƯỚC 5: Ghi Chú / Note Phiếu Mượn
+                Section(header: Text("5. Ghi chú phiếu mượn (Lưu vào hồ sơ)"), footer: Text("Ghi chú này sẽ được lưu cố định vào phiếu mượn để quản lý và đối soát sau này.")) {
+                    TextField("Nhập ghi chú thêm (VD: Đã thu cọc tiền mặt)", text: $ghiChuNhapTay)
                 }
             }
             .navigationTitle("Tạo Phiếu Mượn")
@@ -233,12 +351,37 @@ struct TaoPhieuMuonView: View {
                 if let dg = docGiaBanDau, selectedDocGia == nil {
                     selectedDocGia = dg
                 }
-                // Đồng bộ hạn mượn theo cài đặt thư viện
-                if soNgayMuon == 14 && soNgayMuonMacDinh != 14 {
-                    soNgayMuon = soNgayMuonMacDinh
+                
+                // Khởi tạo mức giá ban đầu
+                capNhatGiaGoi(soNgay: soNgayMuon)
+                if selectedDocGia?.isVIP == true {
+                    tienCocNhapTay = "0"
+                } else if let s = selectedSach {
+                    tienCocNhapTay = String(s.tienCoc)
                 }
             }
         }
+    }
+    
+    // MARK: - Hàm cập nhật giá gợi ý theo số ngày mượn
+    private func capNhatGiaGoi(soNgay: Int) {
+        guard let s = selectedSach else { return }
+        // Tỷ lệ gợi ý theo gói ngày
+        let heSo: Double
+        switch soNgay {
+        case ...3:
+            heSo = 0.7
+        case 4...7:
+            heSo = 1.0
+        case 8...10:
+            heSo = 1.3
+        case 11...20:
+            heSo = 2.0
+        default: // 21...30+
+            heSo = 2.5
+        }
+        let giaGoiY = max(1000, Int(round(Double(s.phiMuon) * heSo / 1000) * 1000))
+        phiMuonNhapTay = String(giaGoiY)
     }
     
     // MARK: - Hàm nghiệp vụ cốt lõi: Tạo phiếu mượn & Xử lý thanh toán
@@ -268,13 +411,25 @@ struct TaoPhieuMuonView: View {
         // 3. Cập nhật trạng thái cuốn sách thành "DangMuon" (không cho mượn trùng)
         banSao.tinhTrang = "DangMuon"
         
-        // 4. Khởi tạo đối tượng Phiếu Mượn và lưu vào SwiftData
+        // 4. Tạo ghi chú phiếu mượn tự động
+        var note = ghiChuNhapTay.trimmingCharacters(in: .whitespaces)
+        if phuongThucThanhToan == "TienMat" {
+            let noteTienMat = "Tiền mặt: Thu cọc \(AppTheme.formatVND(tienCocHieuLuc)) + Phí \(AppTheme.formatVND(phiMuonHieuLuc)) (Gói \(soNgayMuon) ngày)."
+            note = note.isEmpty ? noteTienMat : "\(note) | \(noteTienMat)"
+        } else {
+            let noteVí = "Trừ ví: \(AppTheme.formatVND(tongThanhToan)) (Gói \(soNgayMuon) ngày)."
+            note = note.isEmpty ? noteVí : "\(note) | \(noteVí)"
+        }
+        
+        // 5. Khởi tạo đối tượng Phiếu Mượn và lưu vào SwiftData
         let phieuMoi = PhieuMuon(
             ngayMuon: ngayMuon,
             hanTra: hanTraDuKien,
-            tienCocThucTe: tienCocThucTe,
-            phiMuonThucTe: phiMuonThucTe,
+            tienCocThucTe: tienCocHieuLuc,
+            phiMuonThucTe: phiMuonHieuLuc,
             phuongThucThanhToan: phuongThucThanhToan,
+            ghiChu: note,
+            daBaoMatSach: false,
             banSao: banSao,
             docGia: docGia
         )

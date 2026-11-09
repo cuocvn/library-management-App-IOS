@@ -44,6 +44,12 @@ final class PhieuMuon {
     // Phương thức hoàn tiền cọc thừa lúc trả: "TienMat" hoặc "TaiKhoan" (cộng ví)
     var phuongThucHoanTien: String?
     
+    // Ghi chú chi tiết cho phiếu (VD: Lưu cọc tiền mặt đã thu, note tình trạng sách)
+    var ghiChu: String? = ""
+    
+    // Đánh dấu nếu khách không trả sách / làm mất sách (lưu vết trong tài khoản)
+    var daBaoMatSach: Bool = false
+    
     // Cuốn sách vật lý cụ thể được mượn
     var banSao: BanSaoSach?
     
@@ -62,6 +68,8 @@ final class PhieuMuon {
         tienPhat: Int? = nil,
         phuongThucThanhToan: String? = "TienMat",
         phuongThucHoanTien: String? = nil,
+        ghiChu: String? = "",
+        daBaoMatSach: Bool = false,
         banSao: BanSaoSach? = nil,
         docGia: DocGia? = nil
     ) {
@@ -75,6 +83,8 @@ final class PhieuMuon {
         self.tienPhat = tienPhat
         self.phuongThucThanhToan = phuongThucThanhToan
         self.phuongThucHoanTien = phuongThucHoanTien
+        self.ghiChu = ghiChu
+        self.daBaoMatSach = daBaoMatSach
         self.banSao = banSao
         self.docGia = docGia
     }
@@ -96,7 +106,9 @@ final class PhieuMuon {
     
     // Nhãn hiển thị trạng thái bằng tiếng Việt trên giao diện
     var tinhTrangHienThi: String {
-        if daTra {
+        if daBaoMatSach {
+            return "Không trả (Mất)"
+        } else if daTra {
             return "Đã trả"
         } else if isQuaHan {
             return "Quá hạn"

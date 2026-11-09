@@ -70,8 +70,20 @@ final class DocGia {
         dsPhieuMuon.filter { $0.ngayTra == nil }.count
     }
     
-    // Kiểm tra xem độc giả có phải là VIP hay không
+    // Đếm số sách bị trễ hạn chưa trả
+    var soSachQuaHan: Int {
+        dsPhieuMuon.filter { $0.ngayTra == nil && $0.isQuaHan }.count
+    }
+    
+    // Đếm số sách báo không trả / làm mất
+    var soSachBaoMat: Int {
+        dsPhieuMuon.filter { $0.daBaoMatSach }.count
+    }
+    
+    // Kiểm tra xem độc giả có phải là VIP hay không:
+    // Quy định: Độc giả có nạp tiền (số dư ví > 0đ) hoặc được xếp hạng "VIP" thì là VIP
+    // Nếu không nạp tiền vào tài khoản (số dư = 0đ) là Thường
     var isVIP: Bool {
-        loaiThe == "VIP"
+        soDuTaiKhoan > 0 || loaiThe == "VIP"
     }
 }

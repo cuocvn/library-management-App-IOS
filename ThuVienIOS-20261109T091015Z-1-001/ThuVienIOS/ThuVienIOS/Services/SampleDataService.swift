@@ -101,8 +101,8 @@ final class SampleDataService {
             tenSach: String,
             namXuatBan: Int,
             phanLoaiGiaTri: String,
-            tienCoc: Double,
-            phiMuon: Double,
+            tienCoc: Int,
+            phiMuon: Int,
             theLoai: TheLoai,
             nhaXuatBan: NhaXuatBan,
             tacGia: TacGia,
@@ -270,7 +270,7 @@ final class SampleDataService {
         )
         
         // 5. Hàm lấy hoặc thêm Độc Giả mẫu
-        func layHoacTaoDocGia(hoTen: String, email: String, sdt: String, lop: String, loaiThe: String, soDu: Double) -> DocGia {
+        func layHoacTaoDocGia(hoTen: String, email: String, sdt: String, lop: String, loaiThe: String, soDu: Int) -> DocGia {
             if let daCo = dsDocGia.first(where: { $0.hoTen == hoTen }) {
                 return daCo
             }
@@ -294,12 +294,13 @@ final class SampleDataService {
             ngayMuonOffset: Int,
             hanTraOffset: Int,
             ngayTraOffset: Int?,
-            tienCoc: Double,
-            phiMuon: Double,
+            tienCoc: Int,
+            phiMuon: Int,
             soNgayTre: Int = 0,
-            tienPhat: Double = 0,
+            tienPhat: Int = 0,
             ptThanhToan: String,
-            ptHoanTien: String? = nil
+            ptHoanTien: String? = nil,
+            ghiChu: String = ""
         ) {
             guard let bs = banSao, let dg = docGia else { return }
             let daTonTai = dsPhieuMuon.contains(where: {
@@ -321,6 +322,8 @@ final class SampleDataService {
                 tienPhat: tienPhat,
                 phuongThucThanhToan: ptThanhToan,
                 phuongThucHoanTien: ptHoanTien,
+                ghiChu: ghiChu,
+                daBaoMatSach: false,
                 banSao: bs,
                 docGia: dg
             )
@@ -329,27 +332,27 @@ final class SampleDataService {
         
         // Phiếu 1: Đang mượn (đúng hạn) - Trần Quốc Bảo (VIP)
         let bsCC002 = bs1.first(where: { $0.maDinhDanh == "CC-002" })
-        themPhieuMuon(banSao: bsCC002, docGia: dg1, ngayMuonOffset: -1, hanTraOffset: 13, ngayTraOffset: nil, tienCoc: 0, phiMuon: 15000, ptThanhToan: "TaiKhoan")
+        themPhieuMuon(banSao: bsCC002, docGia: dg1, ngayMuonOffset: -1, hanTraOffset: 13, ngayTraOffset: nil, tienCoc: 0, phiMuon: 15000, ptThanhToan: "TaiKhoan", ghiChu: "Trừ ví: 15.000 đ (Gói 14 ngày, VIP miễn cọc).")
         
         // Phiếu 2: Đang mượn (QUÁ HẠN 4 NGÀY) - Lê Hoàng Yến
         let bsSW001 = bs2.first(where: { $0.maDinhDanh == "SW-001" })
-        themPhieuMuon(banSao: bsSW001, docGia: dg2, ngayMuonOffset: -18, hanTraOffset: -4, ngayTraOffset: nil, tienCoc: 200000, phiMuon: 30000, ptThanhToan: "TienMat")
+        themPhieuMuon(banSao: bsSW001, docGia: dg2, ngayMuonOffset: -18, hanTraOffset: -4, ngayTraOffset: nil, tienCoc: 200000, phiMuon: 30000, ptThanhToan: "TienMat", ghiChu: "Tiền mặt: Thu cọc 200.000 đ + Phí 30.000 đ. Đã thu cọc trước.")
         
         // Phiếu 3: Đang mượn (đúng hạn) - Phạm Minh Tuấn
         let bsDNT001 = bs3.first(where: { $0.maDinhDanh == "DNT-001" })
-        themPhieuMuon(banSao: bsDNT001, docGia: dg3, ngayMuonOffset: -3, hanTraOffset: 11, ngayTraOffset: nil, tienCoc: 50000, phiMuon: 5000, ptThanhToan: "TienMat")
+        themPhieuMuon(banSao: bsDNT001, docGia: dg3, ngayMuonOffset: -3, hanTraOffset: 11, ngayTraOffset: nil, tienCoc: 50000, phiMuon: 5000, ptThanhToan: "TienMat", ghiChu: "Tiền mặt: Thu cọc 50.000 đ + Phí 5.000 đ. Đã thu cọc trước.")
         
         // Phiếu 4: Đã trả đúng hạn - Trần Quốc Bảo (VIP)
         let bsTLT001 = bs4.first(where: { $0.maDinhDanh == "TLT-001" })
-        themPhieuMuon(banSao: bsTLT001, docGia: dg1, ngayMuonOffset: -5, hanTraOffset: 9, ngayTraOffset: -1, tienCoc: 0, phiMuon: 5000, ptThanhToan: "TaiKhoan", ptHoanTien: "TaiKhoan")
+        themPhieuMuon(banSao: bsTLT001, docGia: dg1, ngayMuonOffset: -5, hanTraOffset: 9, ngayTraOffset: -1, tienCoc: 0, phiMuon: 5000, ptThanhToan: "TaiKhoan", ptHoanTien: "TaiKhoan", ghiChu: "Trừ ví: 5.000 đ. Đã trả đúng hạn.")
         
         // Phiếu 5: Đã trả (TRỄ 3 NGÀY - THU PHẠT 15.000đ) - Lê Hoàng Yến
         let bsMB001 = bs5.first(where: { $0.maDinhDanh == "MB-001" })
-        themPhieuMuon(banSao: bsMB001, docGia: dg2, ngayMuonOffset: -25, hanTraOffset: -11, ngayTraOffset: -8, tienCoc: 60000, phiMuon: 8000, soNgayTre: 3, tienPhat: 15000, ptThanhToan: "TienMat", ptHoanTien: "TienMat")
+        themPhieuMuon(banSao: bsMB001, docGia: dg2, ngayMuonOffset: -25, hanTraOffset: -11, ngayTraOffset: -8, tienCoc: 60000, phiMuon: 8000, soNgayTre: 3, tienPhat: 15000, ptThanhToan: "TienMat", ptHoanTien: "TienMat", ghiChu: "Tiền mặt: Thu cọc 60.000 đ + Phí 8.000 đ. Trả trễ 3 ngày phạt 15.000 đ, hoàn cọc thừa 45.000 đ.")
         
         // Phiếu 6: Đã trả đúng hạn - Trần Quốc Bảo (VIP)
         let bsCA001 = bs7.first(where: { $0.maDinhDanh == "CA-001" })
-        themPhieuMuon(banSao: bsCA001, docGia: dg1, ngayMuonOffset: -2, hanTraOffset: 12, ngayTraOffset: -1, tienCoc: 0, phiMuon: 15000, ptThanhToan: "TaiKhoan", ptHoanTien: "TaiKhoan")
+        themPhieuMuon(banSao: bsCA001, docGia: dg1, ngayMuonOffset: -2, hanTraOffset: 12, ngayTraOffset: -1, tienCoc: 0, phiMuon: 15000, ptThanhToan: "TaiKhoan", ptHoanTien: "TaiKhoan", ghiChu: "Trừ ví: 15.000 đ. Đã trả đúng hạn.")
         
         try? modelContext.save()
     }

@@ -4,11 +4,11 @@
 //
 //  MÔ TẢ: Màn hình 4.1 - Chi Tiết Độc Giả & Ví Điện Tử Cá Nhân
 //  CHỨC NĂNG:
-//  - Xem hồ sơ cá nhân: Họ tên, Lớp/Khoa, Hạng thẻ VIP, SĐT, Email
-//  - Quản lý Ví Tài Khoản: Xem số dư hiện tại, nút mở Sheet 4.1.1 "Nạp Tiền"
+//  - Xem hồ sơ cá nhân: Họ tên, Lớp/Khoa, Hạng thẻ VIP (viền vàng) / Thường (viền xám), SĐT, Email
+//  - Quản lý Ví Tài Khoản: Xem số dư hiện tại, có thể sửa trực tiếp hoặc nạp thêm tiền
+//  - Lưu vết tài khoản: Nếu độc giả mượn chưa trả hoặc trễ hạn, hệ thống lưu vết cảnh báo đỏ
 //  - Nút "Lập Phiếu Mượn Cho Độc Giả Này" -> Nhảy sang 3.1 điền sẵn bạn đọc
-//  - Xem danh sách sách độc giả đang giữ (cảnh báo đỏ nếu trễ hạn)
-//  - Xem toàn bộ lịch sử các lần mượn/trả trong quá khứ của độc giả này
+//  - Xem danh sách sách độc giả đang giữ và toàn bộ lịch sử giao dịch
 //
 
 import SwiftUI
@@ -20,10 +20,12 @@ struct ChiTietDocGiaView: View {
     // Đối tượng độc giả được truyền vào
     @Bindable var docGia: DocGia
     
-    // MARK: - Trạng thái Sheet
+    // MARK: - Trạng thái Sheet & Dialog
     @State private var showingEditSheet: Bool = false
     @State private var showingNapTienSheet: Bool = false
     @State private var showingBorrowSheet: Bool = false
+    @State private var showingQuickEditBalanceAlert: Bool = false
+    @State private var quickBalanceInput: String = ""
 
     var body: some View {
         ScrollView {
@@ -32,13 +34,17 @@ struct ChiTietDocGiaView: View {
                 // MARK: Card 1 - Thông tin cá nhân & Hạng thẻ
                 VStack(spacing: 14) {
                     HStack(spacing: 16) {
+                        // Avatar độc giả: Viền vàng cam (VIP) hoặc viền xám (Thường)
                         ZStack {
                             Circle()
-                                .fill(docGia.isVIP ? Color.orange.opacity(0.15) : AppTheme.primary.opacity(0.12))
+                                .fill(docGia.isVIP ? Color.orange.opacity(0.15) : Color.gray.opacity(0.1))
                                 .frame(width: 64, height: 64)
                             Image(systemName: docGia.isVIP ? "crown.fill" : "person.fill")
                                 .font(.title)
-                                .foregroundColor(docGia.isVIP ? .orange : AppTheme.primary)
+                                .foregroundColor(docGia.isVIP ? .orange : .gray)
+                            Circle()
+                                .stroke(docGia.isVIP ? Color.orange : Color.gray.opacity(0.35), lineWidth: docGia.isVIP ? 3 : 2)
+                                .frame(width: 64, height: 64)
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
@@ -54,6 +60,14 @@ struct ChiTietDocGiaView: View {
                                         .padding(.vertical, 2)
                                         .background(Color.orange.opacity(0.2))
                                         .foregroundColor(.orange)
+                                        .cornerRadius(4)
+                                } else {
+                                    Text("Thường")
+                                        .font(.caption2)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Color.gray.opacity(0.15))
+                                        .foregroundColor(.gray)
                                         .cornerRadius(4)
                                 }
                             }
@@ -92,35 +106,89 @@ struct ChiTietDocGiaView: View {
                 )
                 .padding(.horizontal)
                 
-                // MARK: Card 2 - Thẻ Ví Tài Khoản & Nút Nạp Tiền
+                // MARK: Cảnh báo Lưu Vết Vi Phạm (Nếu độc giả chưa trả hoặc làm mất sách)
+                if docGia.soSachQuaHan > 0 || docGia.soSachBaoMat > 0 {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(AppTheme.danger)
+                            Text("Lưu Vết Vi Phạm Trên Tài Khoản")
+                                .font(.subheadline.bold())
+                                .foregroundColor(AppTheme.danger)
+                        }
+                        
+                        if docGia.soSachQuaHan > 0 {
+                            Text("• Độc giả đang giữ \(docGia.soSachQuaHan) cuốn sách đã quá hạn nhưng chưa mang trả!")
+                                .font(.caption)
+                                .foregroundColor(AppTheme.danger)
+                        }
+                        
+                        if docGia.soSachBaoMat > 0 {
+                            Text("• Độc giả có \(docGia.soSachBaoMat) lần báo không trả / làm mất sách (đã bị giam cọc).")
+                                .font(.caption)
+                                .foregroundColor(AppTheme.danger)
+                        }
+                    }
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(AppTheme.danger.opacity(0.1))
+                    .cornerRadius(14)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(AppTheme.danger.opacity(0.3), lineWidth: 1)
+                    )
+                    .padding(.horizontal)
+                }
+                
+                // MARK: Card 2 - Thẻ Ví Tài Khoản & Sửa Số Dư / Nạp Tiền
                 VStack(spacing: 12) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Ví Tài Khoản")
+                            Text("Ví Tài Khoản Nội Bộ")
                                 .font(.subheadline)
                                 .foregroundColor(AppTheme.textSecondary)
                             Text(AppTheme.formatVND(docGia.soDuTaiKhoan))
                                 .font(.system(size: 26, weight: .bold, design: .rounded))
-                                .foregroundColor(AppTheme.primary)
+                                .foregroundColor(docGia.isVIP ? .orange : AppTheme.primary)
                         }
                         Spacer()
                         
-                        // Nút mở Sheet nạp tiền vào ví
-                        Button {
-                            showingNapTienSheet = true
-                        } label: {
-                            HStack(spacing: 6) {
-                                Image(systemName: "plus.circle.fill")
-                                Text("Nạp Tiền")
+                        HStack(spacing: 8) {
+                            // Nút Sửa trực tiếp số tiền ví
+                            Button {
+                                quickBalanceInput = String(docGia.soDuTaiKhoan)
+                                showingQuickEditBalanceAlert = true
+                            } label: {
+                                Image(systemName: "pencil")
+                                    .font(.subheadline.bold())
+                                    .padding(8)
+                                    .background(Color.gray.opacity(0.15))
+                                    .foregroundColor(AppTheme.textPrimary)
+                                    .clipShape(Circle())
                             }
-                            .font(.subheadline.bold())
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(AppTheme.primary)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                            
+                            // Nút mở Sheet nạp tiền vào ví
+                            Button {
+                                showingNapTienSheet = true
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "plus.circle.fill")
+                                    Text("Nạp")
+                                }
+                                .font(.subheadline.bold())
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(AppTheme.primary)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                            }
                         }
                     }
+                    
+                    Text("Ghi chú: Số dư > 0 đ là Hội viên VIP (viền vàng, miễn cọc 100%). Số dư 0 đ là Thường.")
+                        .font(.caption2)
+                        .foregroundColor(AppTheme.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(16)
                 .background(AppTheme.cardBackground)
@@ -152,7 +220,7 @@ struct ChiTietDocGiaView: View {
                 
                 // MARK: Card 3 - Danh sách Sách Đang Mượn
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Sách Đang Mượn (\(docGia.soSachDangMuon))")
+                    Text("Sách Đang Giữ Chưa Trả (\(docGia.soSachDangMuon))")
                         .font(.headline)
                         .foregroundColor(AppTheme.textPrimary)
                     
@@ -165,17 +233,27 @@ struct ChiTietDocGiaView: View {
                     } else {
                         ForEach(dangMuon, id: \.maPhieu) { pm in
                             HStack {
-                                VStack(alignment: .leading, spacing: 2) {
+                                VStack(alignment: .leading, spacing: 3) {
                                     Text(pm.banSao?.sach?.tenSach ?? "Chưa rõ")
                                         .font(.subheadline.bold())
-                                    Text("Bản: \(pm.banSao?.maDinhDanh ?? "") • Hạn: \(pm.hanTra.formatted(date: .numeric, time: .omitted))")
+                                    Text("Mã bản: \(pm.banSao?.maDinhDanh ?? "") • Hạn trả: \(pm.hanTra.formatted(date: .numeric, time: .omitted))")
                                         .font(.caption)
                                         .foregroundColor(pm.isQuaHan ? AppTheme.danger : AppTheme.textSecondary)
+                                    
+                                    if let note = pm.ghiChu, !note.isEmpty {
+                                        Text("Note: \(note)")
+                                            .font(.caption2)
+                                            .foregroundColor(.orange)
+                                    }
                                 }
                                 Spacer()
-                                Text(pm.isQuaHan ? "Quá hạn" : "Đang giữ")
+                                Text(pm.isQuaHan ? "Quá hạn" : "Đang mượn")
                                     .font(.caption.bold())
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(pm.isQuaHan ? AppTheme.danger.opacity(0.12) : AppTheme.primary.opacity(0.12))
                                     .foregroundColor(pm.isQuaHan ? AppTheme.danger : AppTheme.primary)
+                                    .cornerRadius(6)
                             }
                             Divider()
                         }
@@ -203,17 +281,24 @@ struct ChiTietDocGiaView: View {
                     } else {
                         ForEach(docGia.dsPhieuMuon, id: \.maPhieu) { pm in
                             HStack {
-                                VStack(alignment: .leading, spacing: 2) {
+                                VStack(alignment: .leading, spacing: 3) {
                                     Text(pm.banSao?.sach?.tenSach ?? "")
                                         .font(.subheadline.weight(.medium))
-                                    Text("Ngày mượn: \(pm.ngayMuon.formatted(date: .numeric, time: .omitted))")
+                                    Text("Mượn: \(pm.ngayMuon.formatted(date: .numeric, time: .omitted))")
                                         .font(.caption)
                                         .foregroundColor(AppTheme.textSecondary)
+                                    
+                                    if let note = pm.ghiChu, !note.isEmpty {
+                                        Text(note)
+                                            .font(.caption2)
+                                            .foregroundColor(AppTheme.textSecondary)
+                                            .lineLimit(1)
+                                    }
                                 }
                                 Spacer()
                                 Text(pm.tinhTrangHienThi)
                                     .font(.caption.bold())
-                                    .foregroundColor(pm.daTra ? AppTheme.success : (pm.isQuaHan ? AppTheme.danger : AppTheme.primary))
+                                    .foregroundColor(pm.daBaoMatSach ? AppTheme.danger : (pm.daTra ? AppTheme.success : (pm.isQuaHan ? AppTheme.danger : AppTheme.primary)))
                             }
                             Divider()
                         }
@@ -242,7 +327,7 @@ struct ChiTietDocGiaView: View {
                 }
             }
         }
-        // Sheet sửa thông tin độc giả
+        // Sheet sửa thông tin độc giả (bao gồm sửa cả số tiền ví)
         .sheet(isPresented: $showingEditSheet) {
             ThemSuaDocGiaView(docGiaCanSua: docGia)
         }
@@ -253,6 +338,22 @@ struct ChiTietDocGiaView: View {
         // Sheet tạo phiếu mượn cho độc giả này
         .sheet(isPresented: $showingBorrowSheet) {
             TaoPhieuMuonView(docGiaBanDau: docGia)
+        }
+        // Alert sửa nhanh số dư ví
+        .alert("Chỉnh Sửa Số Dư Ví", isPresented: $showingQuickEditBalanceAlert) {
+            TextField("Số dư ví (VNĐ)", text: $quickBalanceInput)
+                .keyboardType(.numberPad)
+            Button("Hủy", role: .cancel) {}
+            Button("Cập nhật") {
+                let soTienMoi = max(0, Int(quickBalanceInput) ?? 0)
+                docGia.soDuTaiKhoan = soTienMoi
+                if soTienMoi > 0 {
+                    docGia.loaiThe = "VIP"
+                }
+                try? modelContext.save()
+            }
+        } message: {
+            Text("Nhập số tiền mới trong ví cho độc giả \(docGia.hoTen). (Nếu > 0 đ tự động hưởng VIP).")
         }
     }
 }

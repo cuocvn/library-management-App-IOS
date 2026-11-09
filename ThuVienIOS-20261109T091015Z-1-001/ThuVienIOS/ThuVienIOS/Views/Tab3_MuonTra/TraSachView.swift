@@ -5,12 +5,12 @@
 //  MÔ TẢ: Màn hình 3.2 - Modal Trả Sách, Thu Phạt & Hoàn Cọc
 //  CÔNG NGHỆ & ĐIỂM SÁNG ĐỒ ÁN:
 //  - Tự động đối soát thời gian: Ngày trả thực tế vs Hạn trả quy định -> Tính số ngày trễ
-//  - Tính tiền phạt: Số ngày trễ x Đơn giá phạt (lấy từ cài đặt @AppStorage)
+//  - Tính tiền phạt: Số ngày trễ x Đơn giá phạt (tính theo ngày)
 //  - Quyết toán tài chính: Tiền hoàn lại = Tiền cọc - Tiền phạt
 //  - Nếu khách bị phạt vượt tiền cọc: Hiển thị cảnh báo số tiền cần nộp thêm
 //  - Phương thức hoàn tiền: Tiền mặt hoặc Cộng trực tiếp vào ví độc giả
+//  - NẾU KHÁCH KHÔNG TRẢ: Có nút "Báo Không Trả / Mất Sách" -> Giữ lại tiền cọc và lưu vết vi phạm vào tài khoản độc giả!
 //  - Cơ chế Snapshot: Lưu cứng tiền phạt và ngày trả vào DB để bảo toàn lịch sử
-//  - Trả trạng thái bản sao sách về lại "SanSang"
 //
 
 import SwiftUI
@@ -29,10 +29,9 @@ struct TraSachView: View {
     // MARK: - Trạng thái của Form
     @State private var ngayTraThucTe: Date = Date()
     @State private var phuongThucHoanTien: String = "TaiKhoan" // "TaiKhoan" hoặc "TienMat"
-    @State private var showingSuccessAlert: Bool = false
+    @State private var showingConfirmMatSachAlert: Bool = false
     
     // MARK: - Logic tính toán số ngày trễ & tiền phạt
-    // Số ngày trễ = max(0, Ngày trả thực tế - Hạn trả)
     private var soNgayTre: Int {
         let calendar = Calendar.current
         let dTra = calendar.startOfDay(for: ngayTraThucTe)
@@ -42,13 +41,12 @@ struct TraSachView: View {
         return max(0, days)
     }
     
-    // Tiền phạt quá hạn = Số ngày trễ x Đơn giá phạt
+    // Tiền phạt quá hạn = Số ngày trễ x Đơn giá phạt mỗi ngày
     private var tienPhat: Int {
         soNgayTre * mucPhatMoiNgay
     }
     
     // Tiền quyết toán = Tiền cọc ban đầu - Tiền phạt
-    // (Nếu dương: thư viện hoàn trả cho khách; Nếu âm: khách phải nộp thêm tiền phạt)
     private var tienQuyetToan: Int {
         phieuMuon.tienCocThucTe - tienPhat
     }
@@ -56,7 +54,7 @@ struct TraSachView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // MARK: 1. Thông tin phiếu mượn
+                // MARK: 1. Thông tin phiếu mượn & Ghi chú cọc
                 Section(header: Text("Thông tin phiếu mượn")) {
                     HStack {
                         Text("Độc giả:")
@@ -79,10 +77,22 @@ struct TraSachView: View {
                             .font(.subheadline.bold())
                             .foregroundColor(AppTheme.primary)
                     }
+                    
+                    if let note = phieuMuon.ghiChu, !note.isEmpty {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Ghi chú mượn lúc trước:")
+                                .font(.caption)
+                                .foregroundColor(AppTheme.textSecondary)
+                            Text(note)
+                                .font(.caption.bold())
+                                .foregroundColor(.orange)
+                        }
+                        .padding(.vertical, 2)
+                    }
                 }
                 
-                // MARK: 2. Thời gian đối soát ngày trả
-                Section(header: Text("Thời gian đối soát")) {
+                // MARK: 2. Thời gian đối soát ngày trả & Tính trễ theo ngày
+                Section(header: Text("Thời gian đối soát (Phạt tính theo ngày)")) {
                     HStack {
                         Text("Ngày mượn:")
                         Spacer()
@@ -96,14 +106,13 @@ struct TraSachView: View {
                             .fontWeight(.semibold)
                     }
                     
-                    // Người dùng có thể chọn ngày trả thực tế để test kịch bản trễ hạn
                     DatePicker("Ngày trả thực tế:", selection: $ngayTraThucTe, displayedComponents: .date)
                     
                     HStack {
                         Text("Số ngày quá hạn:")
                         Spacer()
                         if soNgayTre > 0 {
-                            Text("\(soNgayTre) ngày")
+                            Text("\(soNgayTre) ngày trễ")
                                 .font(.subheadline.bold())
                                 .foregroundColor(AppTheme.danger)
                         } else {
@@ -116,13 +125,14 @@ struct TraSachView: View {
                 // MARK: 3. Bảng Quyết toán Tài chính Hoàn tiền / Thu phạt
                 Section(header: Text("Bảng quyết toán tài chính")) {
                     HStack {
-                        Text("Tiền cọc ban đầu:")
+                        Text("Tiền cọc ban đầu (đã thu trước):")
                         Spacer()
                         Text(AppTheme.formatVND(phieuMuon.tienCocThucTe))
+                            .fontWeight(.medium)
                     }
                     
                     HStack {
-                        Text("Phí phạt quá hạn (\(soNgayTre) ngày):")
+                        Text("Phí phạt trễ hạn (\(soNgayTre) ngày x \(AppTheme.formatVND(mucPhatMoiNgay))/ngày):")
                         Spacer()
                         Text("- \(AppTheme.formatVND(tienPhat))")
                             .foregroundColor(soNgayTre > 0 ? AppTheme.danger : AppTheme.textSecondary)
@@ -141,9 +151,9 @@ struct TraSachView: View {
                                 .foregroundColor(AppTheme.success)
                         }
                         
-                        Picker("Phương thức hoàn tiền", selection: $phuongThucHoanTien) {
-                            Text("💳 Cộng vào ví").tag("TaiKhoan")
-                            Text("💵 Tiền mặt").tag("TienMat")
+                        Picker("Phương thức hoàn tiền cọc thừa", selection: $phuongThucHoanTien) {
+                            Text("💳 Cộng lại vào ví").tag("TaiKhoan")
+                            Text("💵 Hoàn tiền mặt").tag("TienMat")
                         }
                         .pickerStyle(.segmented)
                     } else {
@@ -156,6 +166,19 @@ struct TraSachView: View {
                                 .font(.headline)
                                 .foregroundColor(AppTheme.danger)
                         }
+                    }
+                }
+                
+                // MARK: 4. Xử Lý Khách Không Trả Sách / Làm Mất Sách
+                Section(header: Text("Xử lý sự cố không trả sách"), footer: Text("Nếu bạn đọc làm mất hoặc không trả sách, thư viện sẽ giữ lại toàn bộ số tiền cọc đã thu và lưu vết vi phạm vào hồ sơ tài khoản của độc giả.")) {
+                    Button(role: .destructive) {
+                        showingConfirmMatSachAlert = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "exclamationmark.shield.fill")
+                            Text("Báo Khách Không Trả Sách / Làm Mất Sách")
+                        }
+                        .foregroundColor(AppTheme.danger)
                     }
                 }
             }
@@ -174,33 +197,56 @@ struct TraSachView: View {
                     .fontWeight(.bold)
                 }
             }
+            .alert("Xác Nhận Khách Không Trả Sách?", isPresented: $showingConfirmMatSachAlert) {
+                Button("Hủy", role: .cancel) {}
+                Button("Xác Nhận (Giữ Cọc & Lưu Vết)", role: .destructive) {
+                    thucHienBaoMatSach()
+                }
+            } message: {
+                Text("Hệ thống sẽ giữ lại toàn bộ số tiền cọc (\(AppTheme.formatVND(phieuMuon.tienCocThucTe))), đánh dấu sách bị hư hỏng/thất lạc, và lưu vết vi phạm vào hồ sơ tài khoản của độc giả \(phieuMuon.docGia?.hoTen ?? "").")
+            }
         }
     }
     
-    // MARK: - Hàm thực hiện trả sách & ghi Snapshot bất biến
+    // MARK: - Hàm thực hiện trả sách bình thường
     private func thucHienTraSach() {
-        // 1. Chặn trả 2 lần nếu phiếu đã được trả rồi
         guard phieuMuon.ngayTra == nil else { return }
         
-        // 2. Ghi Snapshot tài chính cố định vào Database (bất biến sau này)
         phieuMuon.ngayTra = ngayTraThucTe
         phieuMuon.soNgayTre = soNgayTre
         phieuMuon.tienPhat = tienPhat
         phieuMuon.phuongThucHoanTien = phuongThucHoanTien
         
-        // 3. Xử lý hoàn tiền / cộng ví độc giả nếu chọn "TaiKhoan"
+        // Xử lý hoàn tiền cọc thừa nếu hoàn vào ví
         if let dg = phieuMuon.docGia {
             if tienQuyetToan > 0 && phuongThucHoanTien == "TaiKhoan" {
-                // Hoàn lại tiền cọc thừa vào ví
                 dg.soDuTaiKhoan += tienQuyetToan
             } else if tienQuyetToan < 0 && phuongThucHoanTien == "TaiKhoan" {
-                // Trừ thêm nếu bị phạt vượt cọc
                 dg.soDuTaiKhoan += tienQuyetToan
             }
         }
         
-        // 4. Trả tình trạng cuốn sách vật lý về lại "SanSang" để người khác có thể mượn tiếp
+        // Trả tình trạng cuốn sách vật lý về lại "SanSang"
         phieuMuon.banSao?.tinhTrang = "SanSang"
+        
+        try? modelContext.save()
+        dismiss()
+    }
+    
+    // MARK: - Hàm xử lý khi khách KHÔNG TRẢ SÁCH (Báo mất sách)
+    private func thucHienBaoMatSach() {
+        guard phieuMuon.ngayTra == nil else { return }
+        
+        phieuMuon.ngayTra = Date()
+        phieuMuon.daBaoMatSach = true
+        phieuMuon.ghiChu = (phieuMuon.ghiChu ?? "") + " [BÁO MẤT: Khách không trả sách, thư viện giữ toàn bộ cọc \(AppTheme.formatVND(phieuMuon.tienCocThucTe))]"
+        
+        // Chuyển bản sao vật lý sang trạng thái "Hong" (thất lạc / hư hại)
+        phieuMuon.banSao?.tinhTrang = "Hong"
+        
+        // Toàn bộ tiền cọc bị giữ lại, không hoàn trả
+        phieuMuon.soNgayTre = soNgayTre
+        phieuMuon.tienPhat = 0
         
         try? modelContext.save()
         dismiss()

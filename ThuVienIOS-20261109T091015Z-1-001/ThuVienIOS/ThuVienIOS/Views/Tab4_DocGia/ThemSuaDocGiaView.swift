@@ -25,7 +25,7 @@ struct ThemSuaDocGiaView: View {
     @State private var email: String = ""
     @State private var lopKhoa: String = ""
     @State private var loaiThe: String = "Thuong" // "Thuong", "VIP"
-    @State private var soDuBanDau: String = "0"
+    @State private var soDuText: String = "0"
     
     var isEditMode: Bool {
         docGiaCanSua != nil
@@ -44,32 +44,40 @@ struct ThemSuaDocGiaView: View {
                     TextField("Lớp / Khoa / Đơn vị", text: $lopKhoa)
                 }
                 
-                // Section 2: Hạng thẻ & Số dư ví
-                Section(header: Text("Hạng thẻ & Tài khoản")) {
-                    Picker("Loại thẻ", selection: $loaiThe) {
-                        Text("Thẻ thường").tag("Thuong")
-                        Text("🌟 Thẻ Hội viên VIP").tag("VIP")
+                // Section 2: Hạng thẻ & Số dư ví (Cho phép sửa số tiền bất kỳ lúc nào)
+                Section(header: Text("Hạng thẻ & Ví tài khoản"), footer: Text("Quy định: Có nạp tiền vào tài khoản (> 0 đ) tự động là Hội viên VIP (viền vàng, miễn cọc 100%). Không nạp tiền (bằng 0 đ) là Độc giả thường (viền xám). Bạn có thể chỉnh sửa số tiền ví bất cứ lúc nào.")) {
+                    HStack {
+                        Text("Số dư ví tài khoản:")
+                        Spacer()
+                        TextField("0", text: $soDuText)
+                            .keyboardType(.numberPad)
+                            .multilineTextAlignment(.trailing)
+                            .font(.headline)
+                            .foregroundColor(AppTheme.primary)
+                            .onChange(of: soDuText) { _, newVal in
+                                let val = Int(newVal) ?? 0
+                                if val > 0 {
+                                    loaiThe = "VIP"
+                                } else {
+                                    loaiThe = "Thuong"
+                                }
+                            }
+                        Text("đ")
                     }
                     
-                    if !isEditMode {
-                        HStack {
-                            Text("Số dư nạp ban đầu:")
-                            Spacer()
-                            TextField("0", text: $soDuBanDau)
-                                .keyboardType(.numberPad)
-                                .multilineTextAlignment(.trailing)
-                            Text("đ")
-                        }
+                    Picker("Hạng thẻ", selection: $loaiThe) {
+                        Text("Thẻ thường (Viền xám)").tag("Thuong")
+                        Text("🌟 Thẻ Hội viên VIP (Viền vàng)").tag("VIP")
                     }
                 }
                 
                 // Ghi chú quyền lợi đặc quyền của Hội viên VIP
-                if loaiThe == "VIP" {
+                if loaiThe == "VIP" || (Int(soDuText) ?? 0) > 0 {
                     Section {
                         HStack {
                             Image(systemName: "crown.fill")
                                 .foregroundColor(.orange)
-                            Text("Hội viên VIP được miễn hoàn toàn tiền cọc khi mượn tất cả các đầu sách!")
+                            Text("Hội viên VIP (Số dư > 0đ) được miễn 100% tiền cọc khi mượn tất cả các sách!")
                                 .font(.caption)
                                 .foregroundColor(AppTheme.textSecondary)
                         }
@@ -99,6 +107,7 @@ struct ThemSuaDocGiaView: View {
                     email = dg.email
                     lopKhoa = dg.lopKhoa
                     loaiThe = dg.loaiThe
+                    soDuText = String(dg.soDuTaiKhoan)
                 }
             }
         }
@@ -106,23 +115,26 @@ struct ThemSuaDocGiaView: View {
     
     // MARK: - Hàm lưu độc giả vào SwiftData
     private func luuDocGia() {
+        let soDu = max(0, Int(soDuText) ?? 0)
+        let hangThe = (soDu > 0) ? "VIP" : loaiThe
+        
         if let dg = docGiaCanSua {
             // Cập nhật thông tin độc giả cũ
             dg.hoTen = hoTen
             dg.soDienThoai = soDienThoai
             dg.email = email
             dg.lopKhoa = lopKhoa
-            dg.loaiThe = loaiThe
+            dg.soDuTaiKhoan = soDu
+            dg.loaiThe = hangThe
         } else {
             // Thêm độc giả mới hoàn toàn
-            let soDu = Int(soDuBanDau) ?? 0
             let moi = DocGia(
                 hoTen: hoTen,
                 email: email,
                 soDienThoai: soDienThoai,
                 lopKhoa: lopKhoa,
-                loaiThe: loaiThe,
-                soDuTaiKhoan: max(0, soDu)
+                loaiThe: hangThe,
+                soDuTaiKhoan: soDu
             )
             modelContext.insert(moi)
         }
