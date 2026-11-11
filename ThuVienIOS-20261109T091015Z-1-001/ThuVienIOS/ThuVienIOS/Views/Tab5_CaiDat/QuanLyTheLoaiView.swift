@@ -3,21 +3,17 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Màn hình 5.1 - Quản Lý Danh Mục Thể Loại
-//  CHỨC NĂNG:
-//  - Hiển thị danh sách các thể loại kèm số lượng sách thuộc thể loại đó
-//  - Nút (+) mở Alert nhập tên thể loại mới
-//  - Thao tác vuốt xóa thể loại an toàn (nullify quan hệ với Sách)
+//  Tương thích: iOS 16.0+ / Xcode 14.2+
 //
 
 import SwiftUI
-import SwiftData
 
 struct QuanLyTheLoaiView: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
-    // Truy vấn danh sách thể loại sắp xếp A-Z
-    @Query(sort: \TheLoai.tenTheLoai)
-    private var dsTheLoai: [TheLoai]
+    private var dsTheLoai: [TheLoai] {
+        dataManager.dsTheLoai.sorted { $0.tenTheLoai < $1.tenTheLoai }
+    }
     
     @State private var showingAddAlert: Bool = false
     @State private var tenMoi: String = ""
@@ -40,7 +36,7 @@ struct QuanLyTheLoaiView: View {
         }
         .navigationTitle("Quản Lý Thể Loại")
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     tenMoi = ""
                     showingAddAlert = true
@@ -55,8 +51,7 @@ struct QuanLyTheLoaiView: View {
             Button("Thêm") {
                 if !tenMoi.trimmingCharacters(in: .whitespaces).isEmpty {
                     let tl = TheLoai(tenTheLoai: tenMoi.trimmingCharacters(in: .whitespaces))
-                    modelContext.insert(tl)
-                    try? modelContext.save()
+                    dataManager.themTheLoai(tl)
                 }
             }
             Button("Hủy", role: .cancel) {}
@@ -66,8 +61,7 @@ struct QuanLyTheLoaiView: View {
     private func xoaTheLoai(at offsets: IndexSet) {
         for index in offsets {
             let item = dsTheLoai[index]
-            modelContext.delete(item)
+            dataManager.xoaTheLoai(item)
         }
-        try? modelContext.save()
     }
 }

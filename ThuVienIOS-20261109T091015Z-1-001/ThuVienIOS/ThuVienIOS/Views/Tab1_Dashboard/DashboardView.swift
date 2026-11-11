@@ -4,16 +4,15 @@
 //
 
 import SwiftUI
-import SwiftData
 import Charts
 
 struct DashboardView: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
-    // SwiftData Queries
-    @Query private var tatCaSach: [Sach]
-    @Query private var tatCaDocGia: [DocGia]
-    @Query private var tatCaPhieuMuon: [PhieuMuon]
+    // Dữ liệu từ DataManager
+    private var tatCaSach: [Sach] { dataManager.dsSach }
+    private var tatCaDocGia: [DocGia] { dataManager.dsDocGia }
+    private var tatCaPhieuMuon: [PhieuMuon] { dataManager.dsPhieuMuon }
     
     @State private var timeRange: String = "Tuần này"
     
@@ -111,7 +110,7 @@ struct DashboardView: View {
                             
                             if logoTapCount >= 5 {
                                 logoTapCount = 0
-                                SampleDataService.napDuLieuChuan10Sach(modelContext: modelContext)
+                                dataManager.napDuLieuMau()
                                 showingSeedSuccessAlert = true
                             }
                         } label: {
@@ -158,7 +157,7 @@ struct DashboardView: View {
                             .cornerRadius(10)
                             
                             Button {
-                                SampleDataService.napDuLieuChuan10Sach(modelContext: modelContext)
+                                dataManager.napDuLieuMau()
                                 showingSeedSuccessAlert = true
                             } label: {
                                 Label("Nạp Ngay Bộ Dữ Liệu Mẫu", systemImage: "arrow.down.circle.fill")

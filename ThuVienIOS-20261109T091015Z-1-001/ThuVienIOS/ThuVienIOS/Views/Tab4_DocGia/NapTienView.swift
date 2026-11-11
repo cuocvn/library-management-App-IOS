@@ -11,14 +11,13 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct NapTienView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
     // Độc giả cần nạp tiền
-    @Bindable var docGia: DocGia
+    @ObservedObject var docGia: DocGia
     
     // Số tiền nạp mặc định gợi ý: 100.000 VNĐ
     @State private var soTienNap: String = "100000"
@@ -109,7 +108,7 @@ struct NapTienView: View {
                     let amount = Int(soTienNap) ?? 0
                     if amount > 0 {
                         docGia.soDuTaiKhoan += amount
-                        try? modelContext.save()
+                        dataManager.save()
                         dismiss()
                     }
                 } label: {

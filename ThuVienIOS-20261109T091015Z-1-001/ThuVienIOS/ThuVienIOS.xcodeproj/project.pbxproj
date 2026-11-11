@@ -16,6 +16,7 @@
 		CE21B0013330A1C4F100FB8283 /* TacGia.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A000CF30A1C4F100FB8283 /* TacGia.swift */; };
 		CE21B0013430A1C4F100FB8283 /* TheLoai.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A000D030A1C4F100FB8283 /* TheLoai.swift */; };
 		CE21B0013530A1C4F100FB8283 /* LibrarySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A000D130A1C4F100FB8283 /* LibrarySettings.swift */; };
+		CE21B0019930A1C4F100FB8283 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A0009930A1C4F100FB8283 /* DataManager.swift */; };
 		CE21B0013630A1C4F100FB8283 /* SampleDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A000D230A1C4F100FB8283 /* SampleDataService.swift */; };
 		CE21B0013730A1C4F100FB8283 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A000D330A1C4F100FB8283 /* AppTheme.swift */; };
 		CE21B0013830A1C4F100FB8283 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A000D430A1C4F100FB8283 /* MainTabView.swift */; };
@@ -34,7 +35,6 @@
 		CE21B0014530A1C4F100FB8283 /* QuanLyNXBView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A000E130A1C4F100FB8283 /* QuanLyNXBView.swift */; };
 		CE21B0014630A1C4F100FB8283 /* QuanLyTacGiaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A000E230A1C4F100FB8283 /* QuanLyTacGiaView.swift */; };
 		CE21B0014730A1C4F100FB8283 /* QuanLyTheLoaiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21A000E330A1C4F100FB8283 /* QuanLyTheLoaiView.swift */; };
-		CE21C04330A1C4F100FB8283 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE21C04130A1C4F100FB8283 /* Main.storyboard */; };
 		CE21C04530A1C4F300FB8283 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE21C04430A1C4F300FB8283 /* Assets.xcassets */; };
 		CE21C04830A1C4F300FB8283 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE21C04630A1C4F300FB8283 /* LaunchScreen.storyboard */; };
 		CE21C05330A1C4F400FB8283 /* ThuVienIOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21C05230A1C4F400FB8283 /* ThuVienIOSTests.swift */; };
@@ -69,6 +69,7 @@
 		CE21A000CF30A1C4F100FB8283 /* TacGia.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/TacGia.swift"; sourceTree = "<group>"; };
 		CE21A000D030A1C4F100FB8283 /* TheLoai.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/TheLoai.swift"; sourceTree = "<group>"; };
 		CE21A000D130A1C4F100FB8283 /* LibrarySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/LibrarySettings.swift"; sourceTree = "<group>"; };
+		CE21A0009930A1C4F100FB8283 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/DataManager.swift"; sourceTree = "<group>"; };
 		CE21A000D230A1C4F100FB8283 /* SampleDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/SampleDataService.swift"; sourceTree = "<group>"; };
 		CE21A000D330A1C4F100FB8283 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme/AppTheme.swift"; sourceTree = "<group>"; };
 		CE21A000D430A1C4F100FB8283 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/MainTabView.swift"; sourceTree = "<group>"; };
@@ -88,7 +89,6 @@
 		CE21A000E230A1C4F100FB8283 /* QuanLyTacGiaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Tab5_CaiDat/QuanLyTacGiaView.swift"; sourceTree = "<group>"; };
 		CE21A000E330A1C4F100FB8283 /* QuanLyTheLoaiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Tab5_CaiDat/QuanLyTheLoaiView.swift"; sourceTree = "<group>"; };
 		CE21C03830A1C4F100FB8283 /* ThuVienIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThuVienIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE21C04230A1C4F100FB8283 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CE21C04430A1C4F300FB8283 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE21C04730A1C4F300FB8283 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CE21C04930A1C4F300FB8283 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -156,6 +156,7 @@
 				CE21A000CF30A1C4F100FB8283 /* TacGia.swift */,
 				CE21A000D030A1C4F100FB8283 /* TheLoai.swift */,
 				CE21A000D130A1C4F100FB8283 /* LibrarySettings.swift */,
+				CE21A0009930A1C4F100FB8283 /* DataManager.swift */,
 				CE21A000D230A1C4F100FB8283 /* SampleDataService.swift */,
 				CE21A000D330A1C4F100FB8283 /* AppTheme.swift */,
 				CE21A000D430A1C4F100FB8283 /* MainTabView.swift */,
@@ -174,7 +175,6 @@
 				CE21A000E130A1C4F100FB8283 /* QuanLyNXBView.swift */,
 				CE21A000E230A1C4F100FB8283 /* QuanLyTacGiaView.swift */,
 				CE21A000E330A1C4F100FB8283 /* QuanLyTheLoaiView.swift */,
-				CE21C04130A1C4F100FB8283 /* Main.storyboard */,
 				CE21C04430A1C4F300FB8283 /* Assets.xcassets */,
 				CE21C04630A1C4F300FB8283 /* LaunchScreen.storyboard */,
 				CE21C04930A1C4F300FB8283 /* Info.plist */,
@@ -305,7 +305,6 @@
 			files = (
 				CE21C04830A1C4F300FB8283 /* LaunchScreen.storyboard in Resources */,
 				CE21C04530A1C4F300FB8283 /* Assets.xcassets in Resources */,
-				CE21C04330A1C4F100FB8283 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +338,7 @@
 				CE21B0013330A1C4F100FB8283 /* TacGia.swift in Sources */,
 				CE21B0013430A1C4F100FB8283 /* TheLoai.swift in Sources */,
 				CE21B0013530A1C4F100FB8283 /* LibrarySettings.swift in Sources */,
+				CE21B0019930A1C4F100FB8283 /* DataManager.swift in Sources */,
 				CE21B0013630A1C4F100FB8283 /* SampleDataService.swift in Sources */,
 				CE21B0013730A1C4F100FB8283 /* AppTheme.swift in Sources */,
 				CE21B0013830A1C4F100FB8283 /* MainTabView.swift in Sources */,
@@ -393,14 +393,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		CE21C04130A1C4F100FB8283 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CE21C04230A1C4F100FB8283 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		CE21C04630A1C4F300FB8283 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -462,7 +454,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -516,7 +508,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -537,7 +529,6 @@
 				INFOPLIST_FILE = ThuVienIOS/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -564,7 +555,6 @@
 				INFOPLIST_FILE = ThuVienIOS/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -588,7 +578,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = vn.edu.tdc.ThuVienIOSTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -607,7 +597,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = vn.edu.tdc.ThuVienIOSTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -1,0 +1,24 @@
+========================================================================
+ HƯỚNG DẪN MỞ VÀ CHẠY DỰ ÁN TRÊN XCODE 14.2 (macOS 13 VENTURA)
+========================================================================
+
+1. CÁCH MỞ DỰ ÁN:
+   - Giải nén file zip ThuVienIOS_ChayNgay.zip ra Desktop của máy ảo macOS.
+   - Mở thư mục "ThuVienIOS_ChayNgay".
+   - Nhấp đúp chuột trực tiếp vào file có icon màu xanh: 
+     --> "ThuVienIOS.xcodeproj"
+   (LƯU Ý: Không kéo cả thư mục thả vào Xcode, mà hãy nhấp đúp file ThuVienIOS.xcodeproj).
+
+2. CHỌN MÁY ẢO VÀ CHẠY:
+   - Ở thanh công cụ trên cùng Xcode, chọn Target "ThuVienIOS" và máy ảo iOS (ví dụ: iPhone 14 Pro hoặc iPhone 14 - iOS 16.2/16.0).
+   - Nhấn nút Run (nút tam giác Play) hoặc bấm phím tắt: Command + R.
+
+3. TÍNH NĂNG MỚI ĐÃ CẬP NHẬT:
+   - Tự động tạo và lưu Thể loại, Tác giả, Nhà xuất bản mới:
+     + Trong màn hình "Thêm Sách" / "Sửa Sách", bên dưới mỗi danh sách chọn (Picker) có thêm ô gõ:
+       "Hoặc gõ tên thể loại mới..." / "Hoặc gõ tên tác giả mới..." / "Hoặc gõ tên NXB mới..."
+     + Bạn có thể bấm nút "Thêm" để thêm ngay vào danh sách, HOẶC cứ gõ tên rồi bấm "Lưu" sách, hệ thống sẽ tự động lưu Thể loại/Tác giả mới vào cơ sở dữ liệu.
+     + Lần sau khi thêm cuốn sách khác, các thể loại/tác giả vừa nhập sẽ hiển thị sẵn trong Picker để chọn lại ngay lập tức!
+   - Quản lý danh mục chuyên sâu:
+     + Tại Tab 5 "Cài đặt", bạn cũng có thể vào "Quản lý thể loại" hoặc "Quản lý tác giả" để xem danh sách, bấm dấu "+" để tạo mới hoặc vuốt để xóa.
+========================================================================

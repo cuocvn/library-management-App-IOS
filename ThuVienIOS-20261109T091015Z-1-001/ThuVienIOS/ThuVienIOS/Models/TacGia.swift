@@ -3,28 +3,28 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Model quản lý Tác Giả (Ví dụ: Robert C. Martin, Nguyễn Nhật Ánh...)
-//  CÔNG NGHỆ: SwiftData (@Model)
+//  Tương thích: iOS 16.0+ / Xcode 14.2+
 //
 
 import Foundation
-import SwiftData
 
-@Model
-final class TacGia {
-    // Khóa chính duy nhất của Tác giả
-    @Attribute(.unique) var maTacGia: UUID
-    
-    // Tên tác giả (VD: "Nguyễn Nhật Ánh")
-    var tenTacGia: String
-    
-    // Mối quan hệ 1-Nhiều: Một tác giả có thể có nhiều tác phẩm sách.
-    // deleteRule: .nullify -> Khi xóa tác giả, sách vẫn được giữ lại an toàn.
-    @Relationship(deleteRule: .nullify, inverse: \Sach.tacGia)
+final class TacGia: Identifiable, ObservableObject, Hashable {
+    var maTacGia: UUID
+    @Published var tenTacGia: String
     var dsSach: [Sach] = []
     
-    // Hàm khởi tạo
+    var id: UUID { maTacGia }
+    
     init(maTacGia: UUID = UUID(), tenTacGia: String) {
         self.maTacGia = maTacGia
         self.tenTacGia = tenTacGia
+    }
+    
+    static func == (lhs: TacGia, rhs: TacGia) -> Bool {
+        lhs.maTacGia == rhs.maTacGia
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(maTacGia)
     }
 }

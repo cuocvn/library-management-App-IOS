@@ -10,11 +10,10 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ThemSuaDocGiaView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
     // Độc giả cần sửa (nếu nil là thêm mới)
     var docGiaCanSua: DocGia?
@@ -54,7 +53,7 @@ struct ThemSuaDocGiaView: View {
                             .multilineTextAlignment(.trailing)
                             .font(.headline)
                             .foregroundColor(AppTheme.primary)
-                            .onChange(of: soDuText) { _, newVal in
+                            .onChange(of: soDuText) { newVal in
                                 let val = Int(newVal) ?? 0
                                 if val > 0 {
                                     loaiThe = "VIP"
@@ -126,6 +125,7 @@ struct ThemSuaDocGiaView: View {
             dg.lopKhoa = lopKhoa
             dg.soDuTaiKhoan = soDu
             dg.loaiThe = hangThe
+            dataManager.save()
         } else {
             // Thêm độc giả mới hoàn toàn
             let moi = DocGia(
@@ -136,10 +136,9 @@ struct ThemSuaDocGiaView: View {
                 loaiThe: hangThe,
                 soDuTaiKhoan: soDu
             )
-            modelContext.insert(moi)
+            dataManager.themDocGia(moi)
         }
         
-        try? modelContext.save()
         dismiss()
     }
 }

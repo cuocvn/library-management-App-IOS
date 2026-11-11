@@ -13,18 +13,18 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct TaoPhieuMuonView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
-    // MARK: - SwiftData Queries
-    @Query(filter: #Predicate<Sach> { !$0.daAn }, sort: \Sach.tenSach)
-    private var dsSach: [Sach]
+    private var dsSach: [Sach] {
+        dataManager.dsSach.filter { !$0.daAn }.sorted { $0.tenSach < $1.tenSach }
+    }
     
-    @Query(filter: #Predicate<DocGia> { !$0.daAn }, sort: \DocGia.hoTen)
-    private var dsDocGia: [DocGia]
+    private var dsDocGia: [DocGia] {
+        dataManager.dsDocGia.filter { !$0.daAn }.sorted { $0.hoTen < $1.hoTen }
+    }
     
     // Tham số khởi tạo tùy chọn (khi mở từ Chi tiết Sách hoặc Chi tiết Độc Giả)
     var sachBanDau: Sach?
@@ -124,7 +124,7 @@ struct TaoPhieuMuonView: View {
                             Text("\(s.tenSach) (\(s.soLuongKhaDung) còn)").tag(s as Sach?)
                         }
                     }
-                    .onChange(of: selectedSach) { _, newSach in
+                    .onChange(of: selectedSach) { newSach in
                         selectedBanSao = dsBanSaoKhaDung.first
                         capNhatGiaGoi(soNgay: soNgayMuon)
                     }
@@ -152,7 +152,7 @@ struct TaoPhieuMuonView: View {
                             Text("\(dg.hoTen) \(dg.isVIP ? "🌟 [VIP]" : "")").tag(dg as DocGia?)
                         }
                     }
-                    .onChange(of: selectedDocGia) { _, newDg in
+                    .onChange(of: selectedDocGia) { newDg in
                         if newDg?.isVIP == true {
                             tienCocNhapTay = "0"
                         } else if let s = selectedSach {
@@ -222,7 +222,7 @@ struct TaoPhieuMuonView: View {
                     .padding(.vertical, 4)
                     
                     Stepper("Số ngày mượn: \(soNgayMuon) ngày", value: $soNgayMuon, in: 1...90)
-                        .onChange(of: soNgayMuon) { _, newVal in
+                        .onChange(of: soNgayMuon) { newVal in
                             capNhatGiaGoi(soNgay: newVal)
                         }
                     
@@ -421,7 +421,7 @@ struct TaoPhieuMuonView: View {
             note = note.isEmpty ? noteVí : "\(note) | \(noteVí)"
         }
         
-        // 5. Khởi tạo đối tượng Phiếu Mượn và lưu vào SwiftData
+        // 5. Khởi tạo đối tượng Phiếu Mượn và lưu vào DataManager
         let phieuMoi = PhieuMuon(
             ngayMuon: ngayMuon,
             hanTra: hanTraDuKien,
@@ -434,11 +434,7 @@ struct TaoPhieuMuonView: View {
             docGia: docGia
         )
         
-        modelContext.insert(phieuMoi)
-        banSao.dsPhieuMuon.append(phieuMoi)
-        docGia.dsPhieuMuon.append(phieuMoi)
-        
-        try? modelContext.save()
+        dataManager.themPhieuMuon(phieuMoi)
         dismiss()
     }
 }

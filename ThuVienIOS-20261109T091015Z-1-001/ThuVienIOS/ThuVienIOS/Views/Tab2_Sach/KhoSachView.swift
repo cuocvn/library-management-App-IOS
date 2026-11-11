@@ -12,18 +12,17 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct KhoSachView: View {
-    // Ngữ cảnh lưu trữ SwiftData để thực hiện thêm/sửa/xóa
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
-    // Truy vấn danh sách sách chưa bị xóa mềm, sắp xếp theo thứ tự bảng chữ cái A-Z
-    @Query(filter: #Predicate<Sach> { !$0.daAn }, sort: \Sach.tenSach)
-    private var danhSachSach: [Sach]
+    private var danhSachSach: [Sach] {
+        dataManager.dsSach.filter { !$0.daAn }.sorted { $0.tenSach < $1.tenSach }
+    }
     
-    // Truy vấn tất cả thể loại để đưa lên thanh lọc
-    @Query private var dsTheLoai: [TheLoai]
+    private var dsTheLoai: [TheLoai] {
+        dataManager.dsTheLoai
+    }
     
     // MARK: - Các biến trạng thái giao diện (UI State)
     @State private var searchText: String = ""
@@ -112,7 +111,7 @@ struct KhoSachView: View {
             .navigationTitle("Kho Sách")
             .searchable(text: $searchText, prompt: "Tìm theo tên sách, tác giả...")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showingAddSheet = true
                     } label: {
@@ -135,7 +134,7 @@ struct KhoSachView: View {
             let sach = filteredSach[index]
             sach.daAn = true
         }
-        try? modelContext.save()
+        dataManager.save()
     }
 }
 

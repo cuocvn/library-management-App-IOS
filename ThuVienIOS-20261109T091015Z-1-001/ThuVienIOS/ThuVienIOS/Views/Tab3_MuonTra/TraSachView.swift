@@ -14,14 +14,13 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct TraSachView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
     // Phiếu mượn cần thực hiện quyết toán trả sách
-    @Bindable var phieuMuon: PhieuMuon
+    @ObservedObject var phieuMuon: PhieuMuon
     
     // Đơn giá phạt quá hạn mỗi ngày lấy từ cài đặt hệ thống
     @AppStorage("mucPhatMoiNgay") private var mucPhatMoiNgay: Int = 5000
@@ -229,7 +228,7 @@ struct TraSachView: View {
         // Trả tình trạng cuốn sách vật lý về lại "SanSang"
         phieuMuon.banSao?.tinhTrang = "SanSang"
         
-        try? modelContext.save()
+        dataManager.save()
         dismiss()
     }
     
@@ -248,7 +247,7 @@ struct TraSachView: View {
         phieuMuon.soNgayTre = soNgayTre
         phieuMuon.tienPhat = 0
         
-        try? modelContext.save()
+        dataManager.save()
         dismiss()
     }
 }

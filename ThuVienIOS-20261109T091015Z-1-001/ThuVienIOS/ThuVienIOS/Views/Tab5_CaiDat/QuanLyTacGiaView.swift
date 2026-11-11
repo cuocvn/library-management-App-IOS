@@ -3,20 +3,17 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Màn hình 5.3 - Quản Lý Danh Mục Tác Giả
-//  CHỨC NĂNG:
-//  - Hiển thị danh sách các Tác giả kèm số lượng tác phẩm
-//  - Nút (+) mở Alert thêm Tác giả mới
-//  - Thao tác vuốt xóa Tác giả an toàn
+//  Tương thích: iOS 16.0+ / Xcode 14.2+
 //
 
 import SwiftUI
-import SwiftData
 
 struct QuanLyTacGiaView: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
-    @Query(sort: \TacGia.tenTacGia)
-    private var dsTacGia: [TacGia]
+    private var dsTacGia: [TacGia] {
+        dataManager.dsTacGia.sorted { $0.tenTacGia < $1.tenTacGia }
+    }
     
     @State private var showingAddAlert: Bool = false
     @State private var tenMoi: String = ""
@@ -39,7 +36,7 @@ struct QuanLyTacGiaView: View {
         }
         .navigationTitle("Tác Giả")
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     tenMoi = ""
                     showingAddAlert = true
@@ -54,8 +51,7 @@ struct QuanLyTacGiaView: View {
             Button("Thêm") {
                 if !tenMoi.trimmingCharacters(in: .whitespaces).isEmpty {
                     let tg = TacGia(tenTacGia: tenMoi.trimmingCharacters(in: .whitespaces))
-                    modelContext.insert(tg)
-                    try? modelContext.save()
+                    dataManager.themTacGia(tg)
                 }
             }
             Button("Hủy", role: .cancel) {}
@@ -65,8 +61,7 @@ struct QuanLyTacGiaView: View {
     private func xoaTacGia(at offsets: IndexSet) {
         for index in offsets {
             let item = dsTacGia[index]
-            modelContext.delete(item)
+            dataManager.xoaTacGia(item)
         }
-        try? modelContext.save()
     }
 }

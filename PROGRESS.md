@@ -89,5 +89,14 @@
 
 ### ✅ GIAI ĐOẠN 6 (ĐÃ HOÀN THÀNH 100%): Hoàn Thiện & Nghiệm Thu
 - [x] Rà soát toàn bộ luồng trải nghiệm trên máy ảo iPhone.
-- [x] Kiểm tra tính toàn vẹn của dữ liệu SwiftData (không bị crash khi app tắt mở lại).
+- [x] Kiểm tra tính toàn vẹn của dữ liệu (không bị crash khi app tắt mở lại).
 - [x] Đóng gói mã nguồn sạch, tài liệu hướng dẫn chạy trên Xcode.
+
+---
+
+### ✅ GIAI ĐOẠN 7 (ĐÃ HOÀN THÀNH 100%): Tối Ưu Tương Thích Xcode 14.2 (iOS 16) & Nâng Cấp Thêm Thể Loại/Tác Giả Trực Tiếp
+- [x] Hạ Deployment Target xuống **iOS 16.0** tương thích hoàn toàn macOS 13 Ventura / Xcode 14.2 (không còn phụ thuộc SwiftData iOS 17).
+- [x] Triển khai tầng lưu trữ `DataManager.swift` chuẩn Offline Local JSON (`library_database_v16.json`), hỗ trợ Reactive State qua `@EnvironmentObject` mượt mà trên 5 Tab.
+- [x] Khắc phục triệt để lỗi UIKit Storyboard (`Main.storyboard`, `LaunchScreen.storyboard`) và lỗi `SceneDelegate` khi chạy Xcode 14.2.
+- [x] Cập nhật tính năng: Thêm nhanh Thể loại, Tác giả, Nhà xuất bản bằng cách gõ tên trực tiếp trong màn hình Thêm/Sửa Sách (`ThemSuaSachView`), tự động lưu vào cơ sở dữ liệu để chọn lại ở các lần sau.
+- [x] Đóng gói và đẩy phiên bản hoàn chỉnh lên GitHub.

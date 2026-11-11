@@ -3,77 +3,48 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Dịch vụ nạp dữ liệu mẫu và đặt lại ứng dụng (Demo / Easter Egg)
-//  - Nạp 10 đầu sách chuẩn, 3 độc giả, 6 phiếu mượn khớp số liệu tài chính 100%.
-//  - Nguyên tắc thông minh: Khi nạp dữ liệu mẫu, nếu trong app ĐÃ CÓ dữ liệu từ trước
-//    thì dữ liệu mẫu sẽ được thêm vào mà VẪN GIỮ NGUYÊN các dữ liệu cũ của người dùng.
-//  - Chỉ xóa sạch hoàn toàn khi bấm nút "Xóa Sạch Dữ Liệu" trong Cài Đặt.
+//  Tương thích: iOS 16.0+ / Xcode 14.2+
 //
 
 import Foundation
-import SwiftData
 
 @MainActor
 final class SampleDataService {
     
     // Xóa sạch toàn bộ dữ liệu trong cơ sở dữ liệu để đưa về trạng thái trắng (Reset)
-    // Phục vụ khi người dùng muốn đưa App về trạng thái ban đầu để chuẩn bị demo trước hội đồng
-    static func xoaToanBoDuLieu(modelContext: ModelContext) {
-        do {
-            try modelContext.delete(model: PhieuMuon.self)
-            try modelContext.delete(model: BanSaoSach.self)
-            try modelContext.delete(model: Sach.self)
-            try modelContext.delete(model: DocGia.self)
-            try modelContext.delete(model: TheLoai.self)
-            try modelContext.delete(model: NhaXuatBan.self)
-            try modelContext.delete(model: TacGia.self)
-            try modelContext.save()
-        } catch {
-            print("Lỗi khi xóa dữ liệu: \(error)")
-        }
+    static func xoaToanBoDuLieu(dataManager: DataManager) {
+        dataManager.xoaToanBoDuLieu()
     }
     
     // Nạp dữ liệu mẫu chuẩn: 10 Sách, 3 Độc giả, và 6 phiếu mượn khớp số liệu
-    // NGUYÊN TẮC: Bổ sung dữ liệu mẫu vào cơ sở dữ liệu hiện có mà KHÔNG xóa mất dữ liệu người dùng đã tạo!
-    static func napDuLieuChuan10Sach(modelContext: ModelContext) {
-        // Lấy danh sách các đối tượng hiện có để tái sử dụng hoặc tránh trùng lặp
-        var dsTheLoai = (try? modelContext.fetch(FetchDescriptor<TheLoai>())) ?? []
-        var dsNXB = (try? modelContext.fetch(FetchDescriptor<NhaXuatBan>())) ?? []
-        var dsTacGia = (try? modelContext.fetch(FetchDescriptor<TacGia>())) ?? []
-        var dsSach = (try? modelContext.fetch(FetchDescriptor<Sach>())) ?? []
-        var dsBanSao = (try? modelContext.fetch(FetchDescriptor<BanSaoSach>())) ?? []
-        var dsDocGia = (try? modelContext.fetch(FetchDescriptor<DocGia>())) ?? []
-        let dsPhieuMuon = (try? modelContext.fetch(FetchDescriptor<PhieuMuon>())) ?? []
-        
+    static func napDuLieuChuan10Sach(dataManager: DataManager) {
         // 1. Hàm lấy hoặc tạo Thể loại (không trùng tên)
         func layHoacTaoTheLoai(_ ten: String) -> TheLoai {
-            if let tonTai = dsTheLoai.first(where: { $0.tenTheLoai.caseInsensitiveCompare(ten) == .orderedSame }) {
+            if let tonTai = dataManager.dsTheLoai.first(where: { $0.tenTheLoai.caseInsensitiveCompare(ten) == .orderedSame }) {
                 return tonTai
             }
             let moi = TheLoai(tenTheLoai: ten)
-            modelContext.insert(moi)
-            dsTheLoai.append(moi)
+            dataManager.dsTheLoai.append(moi)
             return moi
         }
         
         // 2. Hàm lấy hoặc tạo Nhà xuất bản (không trùng tên)
         func layHoacTaoNXB(_ ten: String) -> NhaXuatBan {
-            if let tonTai = dsNXB.first(where: { $0.tenNXB.caseInsensitiveCompare(ten) == .orderedSame }) {
+            if let tonTai = dataManager.dsNXB.first(where: { $0.tenNXB.caseInsensitiveCompare(ten) == .orderedSame }) {
                 return tonTai
             }
             let moi = NhaXuatBan(tenNXB: ten)
-            modelContext.insert(moi)
-            dsNXB.append(moi)
+            dataManager.dsNXB.append(moi)
             return moi
         }
         
         // 3. Hàm lấy hoặc tạo Tác giả (không trùng tên)
         func layHoacTaoTacGia(_ ten: String) -> TacGia {
-            if let tonTai = dsTacGia.first(where: { $0.tenTacGia.caseInsensitiveCompare(ten) == .orderedSame }) {
+            if let tonTai = dataManager.dsTacGia.first(where: { $0.tenTacGia.caseInsensitiveCompare(ten) == .orderedSame }) {
                 return tonTai
             }
             let moi = TacGia(tenTacGia: ten)
-            modelContext.insert(moi)
-            dsTacGia.append(moi)
+            dataManager.dsTacGia.append(moi)
             return moi
         }
         
@@ -109,7 +80,7 @@ final class SampleDataService {
             cacBanSao: [(ma: String, ke: String, tinhTrang: String)]
         ) -> (Sach, [BanSaoSach]) {
             let sach: Sach
-            if let daCo = dsSach.first(where: { $0.tenSach == tenSach }) {
+            if let daCo = dataManager.dsSach.first(where: { $0.tenSach == tenSach }) {
                 sach = daCo
             } else {
                 sach = Sach(
@@ -122,13 +93,15 @@ final class SampleDataService {
                     nhaXuatBan: nhaXuatBan,
                     tacGia: tacGia
                 )
-                modelContext.insert(sach)
-                dsSach.append(sach)
+                dataManager.dsSach.append(sach)
+                theLoai.dsSach.append(sach)
+                nhaXuatBan.dsSach.append(sach)
+                tacGia.dsSach.append(sach)
             }
             
             var ketQuaBanSao: [BanSaoSach] = []
             for item in cacBanSao {
-                if let bsDaCo = dsBanSao.first(where: { $0.maDinhDanh == item.ma }) {
+                if let bsDaCo = dataManager.dsBanSao.first(where: { $0.maDinhDanh == item.ma }) {
                     ketQuaBanSao.append(bsDaCo)
                 } else {
                     let bsMoi = BanSaoSach(
@@ -137,8 +110,7 @@ final class SampleDataService {
                         tinhTrang: item.tinhTrang,
                         sach: sach
                     )
-                    modelContext.insert(bsMoi)
-                    dsBanSao.append(bsMoi)
+                    dataManager.dsBanSao.append(bsMoi)
                     if !sach.dsBanSao.contains(where: { $0.maDinhDanh == item.ma }) {
                         sach.dsBanSao.append(bsMoi)
                     }
@@ -162,7 +134,7 @@ final class SampleDataService {
         )
         
         let (_, bs2) = themSachMau(
-            tenSach: "Lập trình iOS với SwiftUI & SwiftData",
+            tenSach: "Lập trình iOS với SwiftUI",
             namXuatBan: 2024,
             phanLoaiGiaTri: "Sách quý",
             tienCoc: 200000,
@@ -271,12 +243,11 @@ final class SampleDataService {
         
         // 5. Hàm lấy hoặc thêm Độc Giả mẫu
         func layHoacTaoDocGia(hoTen: String, email: String, sdt: String, lop: String, loaiThe: String, soDu: Int) -> DocGia {
-            if let daCo = dsDocGia.first(where: { $0.hoTen == hoTen }) {
+            if let daCo = dataManager.dsDocGia.first(where: { $0.hoTen == hoTen }) {
                 return daCo
             }
             let moi = DocGia(hoTen: hoTen, email: email, soDienThoai: sdt, lopKhoa: lop, loaiThe: loaiThe, soDuTaiKhoan: soDu)
-            modelContext.insert(moi)
-            dsDocGia.append(moi)
+            dataManager.dsDocGia.append(moi)
             return moi
         }
         
@@ -284,7 +255,7 @@ final class SampleDataService {
         let dg2 = layHoacTaoDocGia(hoTen: "Lê Hoàng Yến", email: "yen.le@email.com", sdt: "0912345678", lop: "Kinh Tế K21", loaiThe: "Thuong", soDu: 150000)
         let dg3 = layHoacTaoDocGia(hoTen: "Phạm Minh Tuấn", email: "tuan.pham@email.com", sdt: "0987654321", lop: "Ngoại Ngữ K19", loaiThe: "Thuong", soDu: 80000)
         
-        // 6. Hàm thêm Phiếu Mượn mẫu (chỉ thêm nếu chưa có)
+        // 6. Hàm thêm Phiếu Mượn mẫu
         let now = Date()
         let calendar = Calendar.current
         
@@ -303,7 +274,7 @@ final class SampleDataService {
             ghiChu: String = ""
         ) {
             guard let bs = banSao, let dg = docGia else { return }
-            let daTonTai = dsPhieuMuon.contains(where: {
+            let daTonTai = dataManager.dsPhieuMuon.contains(where: {
                 $0.banSao?.maDinhDanh == bs.maDinhDanh && $0.docGia?.hoTen == dg.hoTen && $0.phiMuonThucTe == phiMuon
             })
             if daTonTai { return }
@@ -327,7 +298,9 @@ final class SampleDataService {
                 banSao: bs,
                 docGia: dg
             )
-            modelContext.insert(pm)
+            dataManager.dsPhieuMuon.append(pm)
+            bs.dsPhieuMuon.append(pm)
+            dg.dsPhieuMuon.append(pm)
         }
         
         // Phiếu 1: Đang mượn (đúng hạn) - Trần Quốc Bảo (VIP)
@@ -354,6 +327,6 @@ final class SampleDataService {
         let bsCA001 = bs7.first(where: { $0.maDinhDanh == "CA-001" })
         themPhieuMuon(banSao: bsCA001, docGia: dg1, ngayMuonOffset: -2, hanTraOffset: 12, ngayTraOffset: -1, tienCoc: 0, phiMuon: 15000, ptThanhToan: "TaiKhoan", ptHoanTien: "TaiKhoan", ghiChu: "Trừ ví: 15.000 đ. Đã trả đúng hạn.")
         
-        try? modelContext.save()
+        dataManager.save()
     }
 }

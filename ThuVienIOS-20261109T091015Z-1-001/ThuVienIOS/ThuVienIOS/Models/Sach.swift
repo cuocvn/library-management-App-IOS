@@ -3,51 +3,28 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Model quản lý Đầu Sách (Metadata tổng quan của tác phẩm)
-//  VÍ DỤ: "Clean Code" là 1 đầu sách, trong đó có thể có 3 cuốn bản sao vật lý trên kệ.
-//  CÔNG NGHỆ: SwiftData (@Model)
+//  Tương thích: iOS 16.0+ / Xcode 14.2+
 //
 
 import Foundation
-import SwiftData
 
-@Model
-final class Sach {
-    // Khóa chính định danh duy nhất của đầu sách
-    @Attribute(.unique) var maSach: UUID
+final class Sach: Identifiable, ObservableObject, Hashable {
+    var maSach: UUID
+    @Published var tenSach: String
+    @Published var namXuatBan: Int
+    @Published var phanLoaiGiaTri: String
+    @Published var tienCoc: Int
+    @Published var phiMuon: Int
+    @Published var daAn: Bool
+    @Published var hinhAnh: Data?
     
-    // Tên đầu sách
-    var tenSach: String
+    @Published var theLoai: TheLoai?
+    @Published var nhaXuatBan: NhaXuatBan?
+    @Published var tacGia: TacGia?
+    @Published var dsBanSao: [BanSaoSach] = []
     
-    // Năm xuất bản
-    var namXuatBan: Int
+    var id: UUID { maSach }
     
-    // Phân loại giá trị sách: "Truyện tranh", "Sách thường", "Giáo trình", "Sách quý"
-    // Dùng để tự động tính tiền cọc và phí mượn phù hợp
-    var phanLoaiGiaTri: String
-    
-    // Tiền cọc cơ bản của cuốn sách (đơn vị: VNĐ)
-    var tienCoc: Int
-    
-    // Phí mượn cơ bản cho mỗi lần mượn (đơn vị: VNĐ)
-    var phiMuon: Int
-    
-    // Cờ xóa mềm (Soft Delete): true nghĩa là sách đã bị ẩn/xóa, không hiện trên danh sách chính
-    var daAn: Bool
-    
-    // Ảnh bìa sách dạng nhị phân (nếu người dùng tải ảnh từ máy lên)
-    var hinhAnh: Data?
-    
-    // Mối quan hệ liên kết đến Thể Loại, Nhà Xuất Bản, Tác Giả (N - 1)
-    var theLoai: TheLoai?
-    var nhaXuatBan: NhaXuatBan?
-    var tacGia: TacGia?
-    
-    // Mối quan hệ 1-Nhiều: Một đầu sách quản lý danh sách các cuốn bản sao vật lý thực tế.
-    // deleteRule: .cascade -> Khi xóa đầu sách, toàn bộ các bản sao của nó cũng được xóa theo.
-    @Relationship(deleteRule: .cascade, inverse: \BanSaoSach.sach)
-    var dsBanSao: [BanSaoSach] = []
-    
-    // Hàm khởi tạo (Constructor)
     init(
         maSach: UUID = UUID(),
         tenSach: String,
@@ -74,15 +51,19 @@ final class Sach {
         self.tacGia = tacGia
     }
     
-    // MARK: - Các thuộc tính tính toán (Computed Properties)
-    
-    // Số lượng cuốn vật lý đang có tình trạng "SanSang" (có thể cho mượn ngay)
     var soLuongKhaDung: Int {
         dsBanSao.filter { $0.tinhTrang == "SanSang" }.count
     }
     
-    // Tổng số lượng bản sao vật lý mà thư viện đang sở hữu
     var tongSoBanSao: Int {
         dsBanSao.count
+    }
+    
+    static func == (lhs: Sach, rhs: Sach) -> Bool {
+        lhs.maSach == rhs.maSach
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(maSach)
     }
 }

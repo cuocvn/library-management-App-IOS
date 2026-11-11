@@ -3,60 +3,30 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Model quản lý Giao dịch Mượn & Trả Sách
-//  ĐIỂM NHẤN: Áp dụng cơ chế "Snapshot tài chính bất biến".
-//  Khi trả sách, số ngày trễ và tiền phạt được "chụp" lại và lưu cố định vào phiếu.
-//  Nếu sau này thủ thư thay đổi đơn giá phạt trong cài đặt, lịch sử cũ vẫn bảo toàn 100%.
+//  Tương thích: iOS 16.0+ / Xcode 14.2+
 //
 
 import Foundation
-import SwiftData
 
-@Model
-final class PhieuMuon {
-    // Khóa chính định danh duy nhất của phiếu mượn
-    @Attribute(.unique) var maPhieu: UUID
+final class PhieuMuon: Identifiable, ObservableObject, Hashable {
+    var maPhieu: UUID
+    @Published var ngayMuon: Date
+    @Published var hanTra: Date
+    @Published var ngayTra: Date?
+    @Published var tienCocThucTe: Int
+    @Published var phiMuonThucTe: Int
+    @Published var soNgayTre: Int?
+    @Published var tienPhat: Int?
+    @Published var phuongThucThanhToan: String?
+    @Published var phuongThucHoanTien: String?
+    @Published var ghiChu: String?
+    @Published var daBaoMatSach: Bool
     
-    // Ngày bắt đầu mượn sách
-    var ngayMuon: Date
+    @Published var banSao: BanSaoSach?
+    @Published var docGia: DocGia?
     
-    // Hạn chót phải trả sách theo quy định
-    var hanTra: Date
+    var id: UUID { maPhieu }
     
-    // Ngày trả sách thực tế (nil nếu sách đang được mượn, chưa trả)
-    var ngayTra: Date?
-    
-    // Tiền cọc thực tế thu của lần mượn này (VNĐ). Sẽ bằng 0 nếu độc giả là VIP.
-    var tienCocThucTe: Int
-    
-    // Phí mượn thực tế thu của lần mượn này (VNĐ)
-    var phiMuonThucTe: Int
-    
-    // MARK: - Snapshot Tài Chính Lúc Trả Sách (Bảo toàn lịch sử bất biến)
-    // Số ngày bạn đọc bị trễ hạn lúc trả sách
-    var soNgayTre: Int?
-    
-    // Số tiền phạt quá hạn đã thu (Số ngày trễ x Đơn giá phạt)
-    var tienPhat: Int?
-    
-    // Phương thức thanh toán lúc mượn: "TienMat" hoặc "TaiKhoan" (trừ ví)
-    var phuongThucThanhToan: String?
-    
-    // Phương thức hoàn tiền cọc thừa lúc trả: "TienMat" hoặc "TaiKhoan" (cộng ví)
-    var phuongThucHoanTien: String?
-    
-    // Ghi chú chi tiết cho phiếu (VD: Lưu cọc tiền mặt đã thu, note tình trạng sách)
-    var ghiChu: String? = ""
-    
-    // Đánh dấu nếu khách không trả sách / làm mất sách (lưu vết trong tài khoản)
-    var daBaoMatSach: Bool = false
-    
-    // Cuốn sách vật lý cụ thể được mượn
-    var banSao: BanSaoSach?
-    
-    // Độc giả thực hiện mượn sách
-    var docGia: DocGia?
-    
-    // Hàm khởi tạo
     init(
         maPhieu: UUID = UUID(),
         ngayMuon: Date = Date(),
@@ -89,14 +59,10 @@ final class PhieuMuon {
         self.docGia = docGia
     }
     
-    // MARK: - Các thuộc tính tính toán (Computed Properties)
-    
-    // Kiểm tra xem phiếu mượn đã hoàn tất trả sách hay chưa
     var daTra: Bool {
         ngayTra != nil
     }
     
-    // Kiểm tra xem phiếu mượn có bị quá hạn hay không
     var isQuaHan: Bool {
         if let ngayTra = ngayTra {
             return ngayTra > hanTra
@@ -104,7 +70,6 @@ final class PhieuMuon {
         return Date() > hanTra
     }
     
-    // Nhãn hiển thị trạng thái bằng tiếng Việt trên giao diện
     var tinhTrangHienThi: String {
         if daBaoMatSach {
             return "Không trả (Mất)"
@@ -115,5 +80,13 @@ final class PhieuMuon {
         } else {
             return "Đang mượn"
         }
+    }
+    
+    static func == (lhs: PhieuMuon, rhs: PhieuMuon) -> Bool {
+        lhs.maPhieu == rhs.maPhieu
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(maPhieu)
     }
 }

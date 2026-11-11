@@ -12,14 +12,13 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ChiTietSachView: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     @Environment(\.dismiss) private var dismiss
     
-    // Đối tượng sách được truyền vào (sử dụng @Bindable để cập nhật hai chiều)
-    @Bindable var sach: Sach
+    // Đối tượng sách được truyền vào
+    @ObservedObject var sach: Sach
     
     // MARK: - Trạng thái giao diện
     @State private var showingEditSheet: Bool = false
@@ -238,23 +237,23 @@ struct ChiTietSachView: View {
                                     }
                                     Button("Đổi: Sẵn sàng") {
                                         banSao.tinhTrang = "SanSang"
-                                        try? modelContext.save()
+                                        dataManager.save()
                                     }
                                     Button("Đổi: Đang mượn") {
                                         banSao.tinhTrang = "DangMuon"
-                                        try? modelContext.save()
+                                        dataManager.save()
                                     }
                                     Button("Đổi: Hỏng / Thất lạc") {
                                         banSao.tinhTrang = "Hong"
-                                        try? modelContext.save()
+                                        dataManager.save()
                                     }
                                     Divider()
                                     Button("Xóa bản sao này", role: .destructive) {
                                         if let index = sach.dsBanSao.firstIndex(where: { $0.maDinhDanh == banSao.maDinhDanh }) {
                                             sach.dsBanSao.remove(at: index)
                                         }
-                                        modelContext.delete(banSao)
-                                        try? modelContext.save()
+                                        dataManager.dsBanSao.removeAll { $0.maDinhDanh == banSao.maDinhDanh }
+                                        dataManager.save()
                                     }
                                 } label: {
                                     Image(systemName: "ellipsis.circle")
@@ -331,7 +330,7 @@ struct ChiTietSachView: View {
         .navigationTitle("Chi Tiết Sách")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Sửa") {
                     showingEditSheet = true
                 }
@@ -357,9 +356,7 @@ struct ChiTietSachView: View {
                         tinhTrang: "SanSang",
                         sach: sach
                     )
-                    modelContext.insert(moi)
-                    sach.dsBanSao.append(moi)
-                    try? modelContext.save()
+                    dataManager.themBanSao(moi)
                 }
             }
             Button("Hủy", role: .cancel) {}

@@ -3,20 +3,17 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Màn hình 5.2 - Quản Lý Danh Mục Nhà Xuất Bản
-//  CHỨC NĂNG:
-//  - Hiển thị danh sách các Nhà xuất bản kèm số lượng đầu sách
-//  - Nút (+) mở Alert thêm NXB mới
-//  - Thao tác vuốt xóa NXB an toàn
+//  Tương thích: iOS 16.0+ / Xcode 14.2+
 //
 
 import SwiftUI
-import SwiftData
 
 struct QuanLyNXBView: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
-    @Query(sort: \NhaXuatBan.tenNXB)
-    private var dsNXB: [NhaXuatBan]
+    private var dsNXB: [NhaXuatBan] {
+        dataManager.dsNXB.sorted { $0.tenNXB < $1.tenNXB }
+    }
     
     @State private var showingAddAlert: Bool = false
     @State private var tenMoi: String = ""
@@ -39,7 +36,7 @@ struct QuanLyNXBView: View {
         }
         .navigationTitle("Nhà Xuất Bản")
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     tenMoi = ""
                     showingAddAlert = true
@@ -54,8 +51,7 @@ struct QuanLyNXBView: View {
             Button("Thêm") {
                 if !tenMoi.trimmingCharacters(in: .whitespaces).isEmpty {
                     let nxb = NhaXuatBan(tenNXB: tenMoi.trimmingCharacters(in: .whitespaces))
-                    modelContext.insert(nxb)
-                    try? modelContext.save()
+                    dataManager.themNXB(nxb)
                 }
             }
             Button("Hủy", role: .cancel) {}
@@ -65,8 +61,7 @@ struct QuanLyNXBView: View {
     private func xoaNXB(at offsets: IndexSet) {
         for index in offsets {
             let item = dsNXB[index]
-            modelContext.delete(item)
+            dataManager.xoaNXB(item)
         }
-        try? modelContext.save()
     }
 }

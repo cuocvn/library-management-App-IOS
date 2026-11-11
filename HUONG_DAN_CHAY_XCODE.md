@@ -1,9 +1,9 @@
 # HƯỚNG DẪN CÀI ĐẶT & CHẠY ỨNG DỤNG TRÊN XCODE
 
 Dự án: **Hệ Thống Quản Lý Thư Viện (Library Management System - iOS)**  
-Ngôn ngữ: **Swift, SwiftUI**  
-Cơ sở dữ liệu: **SwiftData (Offline Local DB)**  
-Hỗ trợ: **iOS 17.0+**
+Ngôn ngữ: **Swift 5.7+, SwiftUI**  
+Cơ sở dữ liệu: **Offline Local JSON Database (`DataManager.swift`)**  
+Tương thích: **iOS 16.0+ / Xcode 14.2+ (macOS 13 Ventura) & Xcode 15/16 (iOS 17+)**  
 
 ---
 
@@ -11,20 +11,19 @@ Hỗ trợ: **iOS 17.0+**
 
 ### Bước 1: Mở Project
 1. Mở phần mềm **Xcode** trên máy Mac.
-2. Chọn `Open Existing Project...` (hoặc nhấn `File > Open...`).
-3. Điều hướng đến thư mục:
+2. Nhấp đúp chuột trực tiếp vào file:
    ```
    ThuVienIOS-20261109T091015Z-1-001/ThuVienIOS/ThuVienIOS.xcodeproj
    ```
-   và nhấn **Open**.
+   *(Lưu ý: Không kéo thả thư mục vào icon Xcode, hãy nhấp đúp file `.xcodeproj`)*.
 
 ### Bước 2: Chọn Thiết Bị / Máy Ảo (Simulator)
-- Trên thanh công cụ trên cùng của Xcode (Scheme Selector), bấm vào mục chọn thiết bị.
-- Chọn một thiết bị **iOS 17 trở lên** (Ví dụ: `iPhone 15 Pro`, `iPhone 16`, `iPad Pro`).
+- Trên thanh công cụ trên cùng của Xcode (Scheme Selector), chọn Target **ThuVienIOS**.
+- Chọn máy ảo: **iPhone 14**, **iPhone 14 Pro**, **iPhone 15**, hoặc bất kỳ simulator nào từ iOS 16.0 trở lên.
 
 ### Bước 3: Build & Chạy (Run)
 - Nhấn tổ hợp phím **`Cmd + R`** (hoặc bấm nút ▶️ **Run** ở góc trên bên trái).
-- Ứng dụng sẽ tự động compile, liên kết SwiftData ModelContainer, tự động nạp dữ liệu mẫu ban đầu sinh động và hiển thị màn hình Dashboard.
+- Ứng dụng sẽ tự động compile, khởi tạo `DataManager` lưu trữ offline, tự động nạp dữ liệu mẫu ban đầu sinh động và hiển thị màn hình Dashboard.
 
 ---
 
@@ -37,8 +36,8 @@ Hỗ trợ: **iOS 17.0+**
 
 2. **Tab 2: Kho Sách**
    - Danh sách sách với bộ lọc nhanh theo Thể loại (Pill Filter) và thanh tìm kiếm từ khóa.
-   - Xem chi tiết đầu sách, **theo dõi từng cuốn bản sao vật lý trên giá kệ** (mã AI-001, vị trí kệ, tình trạng Sẵn sàng / Đang mượn / Hỏng).
-   - Thêm & sửa sách, tự động áp giá cọc/phí theo loại giá trị và tự sinh mã bản sao.
+   - Xem chi tiết đầu sách, theo dõi từng cuốn bản sao vật lý trên giá kệ (mã AI-001, vị trí kệ, tình trạng Sẵn sàng / Đang mượn / Hỏng).
+   - **Tính năng mới**: Thêm nhanh Thể loại, Tác giả, Nhà xuất bản bằng cách gõ tên trực tiếp trong form Thêm/Sửa sách. Dữ liệu mới sẽ tự động lưu và xuất hiện trong danh sách chọn (Picker) cho các lần sau.
 
 3. **Tab 3: Mượn & Trả Sách (Fintech Mini)**
    - Danh sách phiếu mượn phân loại theo trạng thái (Đang mượn, Quá hạn, Đã trả).
@@ -53,4 +52,4 @@ Hỗ trợ: **iOS 17.0+**
 
 5. **Tab 5: Cài Đặt Thư Viện**
    - Cấu hình hạn mượn mặc định, mức phạt trễ hạn mỗi ngày qua `@AppStorage`.
-   - Quản lý danh mục Thể loại, Nhà xuất bản, Tác giả.
+   - Quản lý danh mục Thể loại, Nhà xuất bản, Tác giả (thêm mới bằng dấu `+`, vuốt để xóa).

@@ -4,10 +4,9 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct CaiDatView: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
     @AppStorage("tenThuVien") private var tenThuVien: String = "Thư Viện Số iOS"
     @AppStorage("soNgayMuonMacDinh") private var soNgayMuonMacDinh: Int = 14
@@ -68,7 +67,7 @@ struct CaiDatView: View {
                 // Section 3: Quản lý Dữ liệu Mẫu & Thử nghiệm
                 Section(header: Text("Dữ liệu mẫu & Thử nghiệm"), footer: Text("Dữ liệu mẫu chuẩn gồm 10 đầu sách, 3 độc giả và 6 phiếu mượn khớp doanh thu 100%. Khi nạp mẫu sẽ giữ nguyên dữ liệu cũ của bạn. Dùng 'Xóa Sạch' khi cần đưa App về trạng thái trống ban đầu để biểu diễn demo.")) {
                     Button {
-                        SampleDataService.napDuLieuChuan10Sach(modelContext: modelContext)
+                        dataManager.napDuLieuMau()
                         alertMessage = "Đã nạp thành công bộ dữ liệu mẫu chuẩn gồm 10 Đầu Sách, 3 Độc Giả và 6 Phiếu Mượn!"
                         showingActionAlert = true
                     } label: {
@@ -77,7 +76,7 @@ struct CaiDatView: View {
                     }
                     
                     Button(role: .destructive) {
-                        SampleDataService.xoaToanBoDuLieu(modelContext: modelContext)
+                        dataManager.xoaToanBoDuLieu()
                         alertMessage = "Đã xóa toàn bộ dữ liệu. Ứng dụng đã trở về trạng thái trống hoàn toàn!"
                         showingActionAlert = true
                     } label: {
@@ -99,7 +98,7 @@ struct CaiDatView: View {
                     HStack {
                         Text("Nền tảng:")
                         Spacer()
-                        Text("SwiftUI • SwiftData (iOS 17+)")
+                        Text("SwiftUI • Local Database (iOS 16+)")
                             .font(.footnote)
                             .foregroundColor(AppTheme.textSecondary)
                     }

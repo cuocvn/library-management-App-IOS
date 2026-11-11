@@ -15,14 +15,13 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct MuonTraView: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
-    // Truy vấn tất cả phiếu mượn, sắp xếp theo ngày mượn mới nhất lên đầu
-    @Query(sort: \PhieuMuon.ngayMuon, order: .reverse)
-    private var danhSachPhieu: [PhieuMuon]
+    private var danhSachPhieu: [PhieuMuon] {
+        dataManager.dsPhieuMuon.sorted { $0.ngayMuon > $1.ngayMuon }
+    }
     
     // MARK: - Trạng thái lọc Tab con
     @State private var filterStatus: String = "DangMuon" // "DangMuon", "QuaHan", "DaTra", "TatCa"
@@ -104,7 +103,7 @@ struct MuonTraView: View {
             .background(AppTheme.primaryBackground.ignoresSafeArea())
             .navigationTitle("Mượn & Trả Sách")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showingCreateSheet = true
                     } label: {

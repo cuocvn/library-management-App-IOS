@@ -3,28 +3,28 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Model quản lý Nhà Xuất Bản (Ví dụ: NXB Trẻ, NXB Kim Đồng...)
-//  CÔNG NGHỆ: SwiftData (@Model)
+//  Tương thích: iOS 16.0+ / Xcode 14.2+
 //
 
 import Foundation
-import SwiftData
 
-@Model
-final class NhaXuatBan {
-    // Khóa chính duy nhất của Nhà Xuất Bản
-    @Attribute(.unique) var maNXB: UUID
-    
-    // Tên Nhà Xuất Bản (VD: "NXB Trẻ")
-    var tenNXB: String
-    
-    // Mối quan hệ 1-Nhiều: Một NXB có thể xuất bản nhiều cuốn sách.
-    // deleteRule: .nullify -> Khi xóa NXB, sách vẫn được giữ lại an toàn.
-    @Relationship(deleteRule: .nullify, inverse: \Sach.nhaXuatBan)
+final class NhaXuatBan: Identifiable, ObservableObject, Hashable {
+    var maNXB: UUID
+    @Published var tenNXB: String
     var dsSach: [Sach] = []
     
-    // Hàm khởi tạo
+    var id: UUID { maNXB }
+    
     init(maNXB: UUID = UUID(), tenNXB: String) {
         self.maNXB = maNXB
         self.tenNXB = tenNXB
+    }
+    
+    static func == (lhs: NhaXuatBan, rhs: NhaXuatBan) -> Bool {
+        lhs.maNXB == rhs.maNXB
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(maNXB)
     }
 }

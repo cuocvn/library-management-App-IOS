@@ -12,13 +12,12 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ChiTietDocGiaView: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
     // Đối tượng độc giả được truyền vào
-    @Bindable var docGia: DocGia
+    @ObservedObject var docGia: DocGia
     
     // MARK: - Trạng thái Sheet & Dialog
     @State private var showingEditSheet: Bool = false
@@ -321,7 +320,7 @@ struct ChiTietDocGiaView: View {
         .navigationTitle("Hồ Sơ Độc Giả")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Sửa") {
                     showingEditSheet = true
                 }
@@ -350,7 +349,7 @@ struct ChiTietDocGiaView: View {
                 if soTienMoi > 0 {
                     docGia.loaiThe = "VIP"
                 }
-                try? modelContext.save()
+                dataManager.save()
             }
         } message: {
             Text("Nhập số tiền mới trong ví cho độc giả \(docGia.hoTen). (Nếu > 0 đ tự động hưởng VIP).")

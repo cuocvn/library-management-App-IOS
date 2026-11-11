@@ -3,29 +3,28 @@
 //  ThuVienIOS
 //
 //  MÔ TẢ: Model quản lý Thể Loại Sách (Ví dụ: CNTT, Kinh tế, Văn học...)
-//  CÔNG NGHỆ: SwiftData (@Model) - Tương đương 1 bảng (Table) trong Database
+//  Tương thích: iOS 16.0+ / Xcode 14.2+
 //
 
 import Foundation
-import SwiftData
 
-@Model
-final class TheLoai {
-    // Khóa chính duy nhất của thể loại
-    @Attribute(.unique) var maTheLoai: UUID
-    
-    // Tên thể loại hiển thị (VD: "Công nghệ thông tin")
-    var tenTheLoai: String
-    
-    // Mối quan hệ 1-Nhiều: Một thể loại có thể chứa nhiều cuốn sách.
-    // deleteRule: .nullify -> Khi xóa thể loại, các sách thuộc thể loại này sẽ không bị xóa mất
-    // mà chỉ chuyển trường `theLoai` về nil (nhóm chung) để bảo toàn dữ liệu sách an toàn.
-    @Relationship(deleteRule: .nullify, inverse: \Sach.theLoai)
+final class TheLoai: Identifiable, ObservableObject, Hashable {
+    var maTheLoai: UUID
+    @Published var tenTheLoai: String
     var dsSach: [Sach] = []
     
-    // Hàm khởi tạo (Constructor)
+    var id: UUID { maTheLoai }
+    
     init(maTheLoai: UUID = UUID(), tenTheLoai: String) {
         self.maTheLoai = maTheLoai
         self.tenTheLoai = tenTheLoai
+    }
+    
+    static func == (lhs: TheLoai, rhs: TheLoai) -> Bool {
+        lhs.maTheLoai == rhs.maTheLoai
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(maTheLoai)
     }
 }

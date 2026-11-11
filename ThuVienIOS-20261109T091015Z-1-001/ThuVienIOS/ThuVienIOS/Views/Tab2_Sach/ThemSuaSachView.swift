@@ -9,19 +9,18 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ThemSuaSachView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
     // Sách cần chỉnh sửa (nếu nil là thêm mới hoàn toàn)
     var sachCanSua: Sach?
     
     // Danh mục có sẵn để người dùng chọn Picker
-    @Query private var dsTheLoai: [TheLoai]
-    @Query private var dsNhaXuatBan: [NhaXuatBan]
-    @Query private var dsTacGia: [TacGia]
+    private var dsTheLoai: [TheLoai] { dataManager.dsTheLoai }
+    private var dsNhaXuatBan: [NhaXuatBan] { dataManager.dsNXB }
+    private var dsTacGia: [TacGia] { dataManager.dsTacGia }
     
     // MARK: - Các trường nhập liệu của Form
     @State private var tenSach: String = ""
@@ -33,6 +32,11 @@ struct ThemSuaSachView: View {
     @State private var selectedTheLoai: TheLoai?
     @State private var selectedNXB: NhaXuatBan?
     @State private var selectedTacGia: TacGia?
+    
+    // Nhập nhanh trực tiếp Thể loại / Tác giả / NXB mới bằng tay
+    @State private var theLoaiMoiNhapTay: String = ""
+    @State private var tacGiaMoiNhapTay: String = ""
+    @State private var nxbMoiNhapTay: String = ""
     
     // Khởi tạo số lượng bản sao ban đầu khi thêm sách mới
     @State private var soLuongBanSao: Int = 1
@@ -56,27 +60,102 @@ struct ThemSuaSachView: View {
                         .keyboardType(.numberPad)
                     
                     // Chọn Thể loại
-                    Picker("Thể loại", selection: $selectedTheLoai) {
-                        Text("-- Chọn thể loại --").tag(nil as TheLoai?)
-                        ForEach(dsTheLoai, id: \.maTheLoai) { tl in
-                            Text(tl.tenTheLoai).tag(tl as TheLoai?)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Picker("Thể loại", selection: $selectedTheLoai) {
+                            Text("-- Chọn thể loại --").tag(nil as TheLoai?)
+                            ForEach(dsTheLoai, id: \.maTheLoai) { tl in
+                                Text(tl.tenTheLoai).tag(tl as TheLoai?)
+                            }
                         }
+                        
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(AppTheme.primary)
+                                .font(.subheadline)
+                            TextField("Hoặc gõ tên thể loại mới...", text: $theLoaiMoiNhapTay)
+                                .font(.subheadline)
+                            if !theLoaiMoiNhapTay.trimmingCharacters(in: .whitespaces).isEmpty {
+                                Button("Thêm") {
+                                    let tl = dataManager.layHoacTaoTheLoai(theLoaiMoiNhapTay)
+                                    selectedTheLoai = tl
+                                    theLoaiMoiNhapTay = ""
+                                }
+                                .font(.caption.bold())
+                                .buttonStyle(.borderless)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(AppTheme.primary)
+                                .foregroundColor(.white)
+                                .cornerRadius(6)
+                            }
+                        }
+                        .padding(.top, 2)
                     }
                     
                     // Chọn Tác giả
-                    Picker("Tác giả", selection: $selectedTacGia) {
-                        Text("-- Chọn tác giả --").tag(nil as TacGia?)
-                        ForEach(dsTacGia, id: \.maTacGia) { tg in
-                            Text(tg.tenTacGia).tag(tg as TacGia?)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Picker("Tác giả", selection: $selectedTacGia) {
+                            Text("-- Chọn tác giả --").tag(nil as TacGia?)
+                            ForEach(dsTacGia, id: \.maTacGia) { tg in
+                                Text(tg.tenTacGia).tag(tg as TacGia?)
+                            }
                         }
+                        
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(AppTheme.primary)
+                                .font(.subheadline)
+                            TextField("Hoặc gõ tên tác giả mới...", text: $tacGiaMoiNhapTay)
+                                .font(.subheadline)
+                            if !tacGiaMoiNhapTay.trimmingCharacters(in: .whitespaces).isEmpty {
+                                Button("Thêm") {
+                                    let tg = dataManager.layHoacTaoTacGia(tacGiaMoiNhapTay)
+                                    selectedTacGia = tg
+                                    tacGiaMoiNhapTay = ""
+                                }
+                                .font(.caption.bold())
+                                .buttonStyle(.borderless)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(AppTheme.primary)
+                                .foregroundColor(.white)
+                                .cornerRadius(6)
+                            }
+                        }
+                        .padding(.top, 2)
                     }
                     
                     // Chọn Nhà xuất bản
-                    Picker("Nhà xuất bản", selection: $selectedNXB) {
-                        Text("-- Chọn NXB --").tag(nil as NhaXuatBan?)
-                        ForEach(dsNhaXuatBan, id: \.maNXB) { nxb in
-                            Text(nxb.tenNXB).tag(nxb as NhaXuatBan?)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Picker("Nhà xuất bản", selection: $selectedNXB) {
+                            Text("-- Chọn NXB --").tag(nil as NhaXuatBan?)
+                            ForEach(dsNhaXuatBan, id: \.maNXB) { nxb in
+                                Text(nxb.tenNXB).tag(nxb as NhaXuatBan?)
+                            }
                         }
+                        
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(AppTheme.primary)
+                                .font(.subheadline)
+                            TextField("Hoặc gõ tên NXB mới...", text: $nxbMoiNhapTay)
+                                .font(.subheadline)
+                            if !nxbMoiNhapTay.trimmingCharacters(in: .whitespaces).isEmpty {
+                                Button("Thêm") {
+                                    let nxb = dataManager.layHoacTaoNXB(nxbMoiNhapTay)
+                                    selectedNXB = nxb
+                                    nxbMoiNhapTay = ""
+                                }
+                                .font(.caption.bold())
+                                .buttonStyle(.borderless)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(AppTheme.primary)
+                                .foregroundColor(.white)
+                                .cornerRadius(6)
+                            }
+                        }
+                        .padding(.top, 2)
                     }
                 }
                 
@@ -88,7 +167,7 @@ struct ThemSuaSachView: View {
                         }
                     }
                     // Tự động gán mức cọc và phí mượn khi phân loại giá trị thay đổi
-                    .onChange(of: phanLoaiGiaTri) { _, newValue in
+                    .onChange(of: phanLoaiGiaTri) { newValue in
                         tuDongGanGia(theo: newValue)
                     }
                     
@@ -181,11 +260,29 @@ struct ThemSuaSachView: View {
         }
     }
     
-    // MARK: - Lưu sách vào SwiftData
+    // MARK: - Lưu sách vào DataManager (Lưu file JSON)
     private func luuSach() {
         let namXBInt = Int(namXuatBan) ?? Calendar.current.component(.year, from: Date())
         let tienCocInt = Int(tienCoc) ?? 50000
         let phiMuonInt = Int(phiMuon) ?? 5000
+        
+        // Tự động kiểm tra: Nếu người dùng có gõ Thể loại mới thì tạo ngay và ưu tiên dùng
+        var finalTheLoai = selectedTheLoai
+        if !theLoaiMoiNhapTay.trimmingCharacters(in: .whitespaces).isEmpty {
+            finalTheLoai = dataManager.layHoacTaoTheLoai(theLoaiMoiNhapTay)
+        }
+        
+        // Tự động kiểm tra: Nếu người dùng có gõ Tác giả mới thì tạo ngay và ưu tiên dùng
+        var finalTacGia = selectedTacGia
+        if !tacGiaMoiNhapTay.trimmingCharacters(in: .whitespaces).isEmpty {
+            finalTacGia = dataManager.layHoacTaoTacGia(tacGiaMoiNhapTay)
+        }
+        
+        // Tự động kiểm tra: Nếu người dùng có gõ NXB mới thì tạo ngay và ưu tiên dùng
+        var finalNXB = selectedNXB
+        if !nxbMoiNhapTay.trimmingCharacters(in: .whitespaces).isEmpty {
+            finalNXB = dataManager.layHoacTaoNXB(nxbMoiNhapTay)
+        }
         
         if let s = sachCanSua {
             // Bước 1: Cập nhật thông tin sách hiện tại
@@ -194,9 +291,10 @@ struct ThemSuaSachView: View {
             s.phanLoaiGiaTri = phanLoaiGiaTri
             s.tienCoc = tienCocInt
             s.phiMuon = phiMuonInt
-            s.theLoai = selectedTheLoai
-            s.nhaXuatBan = selectedNXB
-            s.tacGia = selectedTacGia
+            s.theLoai = finalTheLoai
+            s.nhaXuatBan = finalNXB
+            s.tacGia = finalTacGia
+            dataManager.save()
         } else {
             // Bước 2: Tạo đối tượng Sách mới
             let sachMoi = Sach(
@@ -205,11 +303,10 @@ struct ThemSuaSachView: View {
                 phanLoaiGiaTri: phanLoaiGiaTri,
                 tienCoc: tienCocInt,
                 phiMuon: phiMuonInt,
-                theLoai: selectedTheLoai,
-                nhaXuatBan: selectedNXB,
-                tacGia: selectedTacGia
+                theLoai: finalTheLoai,
+                nhaXuatBan: finalNXB,
+                tacGia: finalTacGia
             )
-            modelContext.insert(sachMoi)
             
             // Bước 3: Tạo tiền tố mã định danh từ 2 từ đầu (VD: "Lập trình" -> "LT")
             let words = tenSach.split(separator: " ").prefix(2)
@@ -225,12 +322,11 @@ struct ThemSuaSachView: View {
                     tinhTrang: "SanSang",
                     sach: sachMoi
                 )
-                modelContext.insert(banSao)
                 sachMoi.dsBanSao.append(banSao)
             }
+            dataManager.themSach(sachMoi)
         }
         
-        try? modelContext.save()
         dismiss()
     }
 }

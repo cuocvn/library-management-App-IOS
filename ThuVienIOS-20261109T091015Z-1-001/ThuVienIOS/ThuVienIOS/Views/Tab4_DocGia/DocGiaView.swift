@@ -12,14 +12,13 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct DocGiaView: View {
-    @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject private var dataManager: DataManager
     
-    // Truy vấn danh sách độc giả chưa bị ẩn, sắp xếp theo tên A-Z
-    @Query(filter: #Predicate<DocGia> { !$0.daAn }, sort: \DocGia.hoTen)
-    private var dsDocGia: [DocGia]
+    private var dsDocGia: [DocGia] {
+        dataManager.dsDocGia.filter { !$0.daAn }.sorted { $0.hoTen < $1.hoTen }
+    }
     
     @State private var searchText: String = ""
     @State private var showingAddSheet: Bool = false
@@ -75,7 +74,7 @@ struct DocGiaView: View {
             .navigationTitle("Quản Lý Độc Giả")
             .searchable(text: $searchText, prompt: "Tìm theo tên, SĐT, lớp...")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showingAddSheet = true
                     } label: {
@@ -98,7 +97,7 @@ struct DocGiaView: View {
             let dg = filteredDocGia[index]
             dg.daAn = true
         }
-        try? modelContext.save()
+        dataManager.save()
     }
 }
 
