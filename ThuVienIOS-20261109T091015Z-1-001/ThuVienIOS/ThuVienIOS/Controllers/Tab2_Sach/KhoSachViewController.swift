@@ -127,7 +127,7 @@ class KhoSachViewController: UIViewController {
         btn.layer.cornerRadius = 16
         btn.layer.borderWidth = isSelected ? 0 : 0.5
         btn.layer.borderColor = UIColor.separator.cgColor
-        btn.contentEdgeInsets = UIEdgeInsets(top: 6, left: 10, bottom: 6, right: 10)
+        btn.heightAnchor.constraint(equalToConstant: 32).isActive = true
         return btn
     }
 

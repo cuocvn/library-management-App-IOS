@@ -167,7 +167,8 @@ extension ChiTietDocGiaViewController: UITableViewDataSource, UITableViewDelegat
             btnNap.backgroundColor = .appPrimary
             btnNap.setTitleColor(.white, for: .normal)
             btnNap.layer.cornerRadius = 8
-            btnNap.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+            btnNap.heightAnchor.constraint(equalToConstant: 36).isActive = true
+            btnNap.widthAnchor.constraint(greaterThanOrEqualToConstant: 100).isActive = true
             btnNap.addTarget(self, action: #selector(napTienTapped), for: .touchUpInside)
 
             let textStack = UIStackView(arrangedSubviews: [lblTitle, lblBalance])

@@ -168,14 +168,14 @@ class TaoPhieuMuonViewController: UIViewController {
     }
 
     private func configurePickerButton(_ btn: UIButton, title: String, action: Selector) {
-        btn.setTitle(title, for: .normal)
+        btn.setTitle("  \(title)", for: .normal)
         btn.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         btn.contentHorizontalAlignment = .left
         btn.backgroundColor = .systemBackground
         btn.layer.cornerRadius = 8
         btn.layer.borderWidth = 0.5
         btn.layer.borderColor = UIColor.separator.cgColor
-        btn.contentEdgeInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+        btn.heightAnchor.constraint(greaterThanOrEqualToConstant: 44).isActive = true
         btn.addTarget(self, action: action, for: .touchUpInside)
     }
 
