@@ -62,3 +62,30 @@ Tương thích: **iOS 16.0+ / Xcode 14.2+ (macOS 13 Ventura) & Xcode 15/16 (iOS 
    - Cấu hình hạn mượn mặc định, mức phạt trễ hạn mỗi ngày, tiền cọc cơ bản lưu trữ qua `UserDefaults`.
    - Quản lý danh mục Thể loại, Nhà xuất bản, Tác giả: Thêm mới bằng nút `+`, vuốt để xóa an toàn.
    - Nạp lại dữ liệu mẫu 10 cuốn sách hoặc xóa trắng dữ liệu để khởi động lại.
+
+
+---
+
+## 🎓 ĐỐI CHIẾU CHUẨN 4 CHƯƠNG GIẢNG DẠY CỦA THẦY
+
+1. **Chương 1 (Mô hình MVC & Swift OOP)**:
+   - Tách biệt rõ ràng 3 tầng: `Models/` (Dữ liệu), `Views/` (`Main.storyboard`), `Controllers/` (Điều khiển).
+   - Áp dụng Protocol, Delegate, Closure (`getBackData`), Optional unwrap an toàn.
+
+2. **Chương 2 (Giao diện Storyboard, Auto Layout, UITableView & Sự kiện)**:
+   - Giao diện thiết kế 100% bằng **`Main.storyboard`** với Auto Layout constraints chuẩn xác.
+   - Các danh sách sử dụng `UITableView`, `UITableViewDelegate`, `UITableViewDataSource`, vuốt xóa bằng `commit editingStyle`.
+   - **Tích hợp `UIImagePickerController` & `UITapGestureRecognizer`**: Cho phép chạm vào ảnh bìa trong màn hình Thêm/Sửa sách (`ThemSuaSachViewController`) để tải ảnh từ thư viện máy ảnh (Photo Library).
+
+3. **Chương 3 (Cơ sở dữ liệu trên iOS & DAL / DAO)**:
+   - Tổ chức nhóm **`DAL/`** với file `LibraryDAO.swift` đóng vai trò là tầng truy xuất cơ sở dữ liệu (Database Access Layer) theo đúng bài giảng.
+   - Hỗ trợ đầy đủ các hàm CRUD: `initDatabase`, `openDatabase`, `insertSach`, `updateSach`, `deleteSach`, `getAllDocGia`, `insertPhieuMuon`, `saveDatabase`.
+   - Kiểm thử đơn vị **Unit Test** với framework `XCTest` trong `ThuVienIOSTests.swift` kiểm tra tính hợp lệ của Data Model và quy tắc tính cọc/phạt.
+
+4. **Chương 4 (Bản đồ trực tuyến MapKit & CoreLocation)**:
+   - Tích hợp màn hình **`MapController.swift`**:
+     - Hiển thị bản đồ `MKMapView` và vị trí hiện tại của người dùng (`showsUserLocation = true`).
+     - Đánh dấu các cơ sở thư viện bằng `MKPointAnnotation` (Thư viện Trung Tâm TDC - 53 Võ Văn Ngân, Thủ Đức và các chi nhánh).
+     - Bắt sự kiện nhấn giữ `UILongPressGestureRecognizer` để ghim thêm điểm hẹn nhận sách mới.
+     - Tính toán lộ trình và chỉ đường bằng `MKDirections` từ vị trí người dùng đến thư viện.
+   - Khai báo quyền vị trí `NSLocationWhenInUseUsageDescription` trong `Info.plist`.

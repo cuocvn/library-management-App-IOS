@@ -365,6 +365,36 @@
             </objects>
             <point key="canvasLocation" x="2600" y="800"/>
         </scene>
+        <!--Map Controller (Chuong 4: MapKit)-->
+        <scene sceneID="scene-vc-map">
+            <objects>
+                <viewController storyboardIdentifier="MapController" id="vc-map" customClass="MapController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-map">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sub-mapview">
+                                <rect key="frame" x="0.0" y="59" width="393" height="759"/>
+                                <standardMapConfiguration key="preferredConfiguration"/>
+                            </mapView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="guide-map"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="sub-mapview" firstAttribute="top" secondItem="guide-map" secondAttribute="top" id="c-map-top"/>
+                            <constraint firstItem="sub-mapview" firstAttribute="leading" secondItem="guide-map" secondAttribute="leading" id="c-map-lead"/>
+                            <constraint firstItem="sub-mapview" firstAttribute="trailing" secondItem="guide-map" secondAttribute="trailing" id="c-map-trail"/>
+                            <constraint firstItem="sub-mapview" firstAttribute="bottom" secondItem="guide-map" secondAttribute="bottom" id="c-map-bot"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="mapView" destination="sub-mapview" id="out-mapview"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-map" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3300" y="800"/>
+        </scene>
     </scenes>
     <resources>
         <image name="arrow.left.arrow.right" catalog="system" width="120" height="128"/>

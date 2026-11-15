@@ -124,6 +124,9 @@
 				CE21A0009930A1C4F100FB8283 /* DataManager.swift */,
 				CE21A000D230A1C4F100FB8283 /* SampleDataService.swift */,
 				CE21A000D330A1C4F100FB8283 /* AppTheme.swift */,
+				CE31A0000018000000000001 /* MapController.swift */,
+				CE31A0000019000000000001 /* LibraryDAO.swift */,
+
 				CE31A0000001000000000001 /* AppDelegate.swift */,
 				CE31A0000002000000000001 /* SceneDelegate.swift */,
 				CE31A0000003000000000001 /* DashboardViewController.swift */,
@@ -309,6 +312,9 @@
 				CE21B0019930A1C4F100FB8283 /* DataManager.swift in Sources */,
 				CE21B0013630A1C4F100FB8283 /* SampleDataService.swift in Sources */,
 				CE21B0013730A1C4F100FB8283 /* AppTheme.swift in Sources */,
+				CE31B0010018000000000001 /* MapController.swift in Sources */,
+				CE31B0010019000000000001 /* LibraryDAO.swift in Sources */,
+
 				CE31B0010001000000000001 /* AppDelegate.swift in Sources */,
 				CE31B0010002000000000001 /* SceneDelegate.swift in Sources */,
 				CE31B0010003000000000001 /* DashboardViewController.swift in Sources */,

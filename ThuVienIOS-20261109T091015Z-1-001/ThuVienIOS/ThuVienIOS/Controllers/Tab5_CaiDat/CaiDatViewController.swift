@@ -72,7 +72,7 @@ extension CaiDatViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return 5 // Quy định thư viện
+        case 0: return 6 // Quy định thư viện + Bản đồ MapKit
         case 1: return 3 // Danh mục (Thể loại, NXB, Tác giả)
         case 2: return 2 // Quản lý dữ liệu (Nạp mẫu, Reset)
         default: return 0
@@ -112,6 +112,11 @@ extension CaiDatViewController: UITableViewDataSource, UITableViewDelegate {
             case 4:
                 cell.textLabel?.text = "Phí mượn cơ bản"
                 cell.detailTextLabel?.text = AppTheme.formatVND(settings.phiMuonMacDinh)
+            case 5:
+                cell.textLabel?.text = "📍 Bản Đồ Chi Nhánh Thư Viện (MapKit)"
+                cell.textLabel?.textColor = .appPrimary
+                cell.textLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
+                cell.detailTextLabel?.text = "Chỉ đường"
             default: break
             }
             return cell
@@ -183,6 +188,9 @@ extension CaiDatViewController: UITableViewDataSource, UITableViewDelegate {
                     if let n = Int(val), n >= 0 { settings.phiMuonMacDinh = n }
                     self?.tableView.reloadData()
                 }
+            case 5:
+                let mapVC = MapController()
+                navigationController?.pushViewController(mapVC, animated: true)
             default: break
             }
 

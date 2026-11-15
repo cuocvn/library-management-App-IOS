@@ -25,5 +25,9 @@
 	<string>Main</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Ứng dụng cần sử dụng vị trí của bạn để hiển thị và chỉ đường đến chi nhánh thư viện gần nhất.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Ứng dụng cần truy cập thư viện ảnh để bạn có thể chọn ảnh bìa cho sách.</string>
 </dict>
 </plist>

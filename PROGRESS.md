@@ -109,3 +109,12 @@
 - [x] Chuyển đổi toàn bộ 14 màn hình từ SwiftUI sang các `UIViewController` UIKit hiện đại (`DashboardViewController`, `KhoSachViewController`, `ChiTietSachViewController`, `ThemSuaSachViewController`, `MuonTraViewController`, `TaoPhieuMuonViewController`, `TraSachViewController`, `DocGiaViewController`, `ChiTietDocGiaViewController`, `NapTienViewController`, `ThemSuaDocGiaViewController`, `CaiDatViewController`, `QuanLyTheLoaiViewController`, `QuanLyNXBViewController`, `QuanLyTacGiaViewController`).
 - [x] Triển khai vòng đời UIKit chuẩn gồm `AppDelegate.swift` và `SceneDelegate.swift`, thiết lập `UIMainStoryboardFile` = `Main`.
 - [x] Tối ưu hóa hiệu năng, Auto Layout linh hoạt, giao diện Inset Grouped sắc nét, giữ nguyên 100% nghiệp vụ quản lý tài chính, VIP miễn cọc và quản lý bản sao vật lý.
+
+
+---
+
+### ✅ GIAI ĐOẠN 9 (ĐÃ HOÀN THÀNH 100%): Tối Ưu Hóa & Khớp 100% Bộ 4 Chương Slide Thầy Dạy
+- [x] **Chương 1**: Áp dụng chuẩn mô hình MVC, tách biệt Model, View, Controller và Protocol/Delegate.
+- [x] **Chương 2**: Tích hợp `UIImagePickerController` và `UITapGestureRecognizer` chọn ảnh bìa sách trong `ThemSuaSachViewController`.
+- [x] **Chương 3**: Xây dựng tầng `DAL/LibraryDAO.swift` với đầy đủ các API CRUD, kèm bộ Unit Test hoàn chỉnh `ThuVienIOSTests.swift` (XCTest).
+- [x] **Chương 4**: Tích hợp màn hình `MapController.swift` (MapKit + CoreLocation), đánh dấu `MKPointAnnotation` Thư viện TDC, nhấn giữ `UILongPressGestureRecognizer` ghim điểm hẹn và chỉ đường `MKDirections`.

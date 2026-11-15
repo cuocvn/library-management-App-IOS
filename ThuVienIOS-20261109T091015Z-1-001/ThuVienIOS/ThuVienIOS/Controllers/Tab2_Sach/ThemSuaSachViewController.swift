@@ -2,8 +2,8 @@
 //  ThemSuaSachViewController.swift
 //  ThuVienIOS
 //
-//  MÔ TẢ: Màn hình 2.2 - Form Thêm Mới / Chỉnh Sửa Đầu Sách & Tự Động Sinh Bản Sao
-//  CÔNG NGHỆ: UIKit, Storyboard, UITableView Form Style, UIPickerView
+//  MÔ TẢ: Màn hình 2.2 - Form Thêm Mới / Sửa Đầu Sách, Chọn Ảnh Bìa (UIImagePickerController)
+//  GIẢNG VIÊN: Tiêu Kim Cương - Lập trình Di động trên iOS (Chương 2)
 //
 
 import UIKit
@@ -13,9 +13,14 @@ enum SachFormMode {
     case sua(Sach)
 }
 
-class ThemSuaSachViewController: UIViewController {
+class ThemSuaSachViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
+    // MARK: - Properties
     private let mode: SachFormMode
+
+    // Ảnh bìa sách và Gesture chọn ảnh (Chương 2 - Slide 34)
+    private let imgCover = UIImageView()
+    private var selectedImage: UIImage?
 
     // Form inputs
     private let txtTenSach = UITextField()
@@ -32,6 +37,9 @@ class ThemSuaSachViewController: UIViewController {
 
     private let phanLoaiValues = ["Truyện tranh", "Sách thường", "Giáo trình", "Sách quý"]
 
+    // Callback trả dữ liệu về màn hình trước (chuẩn getBackData trong slide thầy)
+    var getBackData: ((Sach) -> Void)?
+
     init(mode: SachFormMode) {
         self.mode = mode
         super.init(nibName: nil, bundle: nil)
@@ -42,6 +50,7 @@ class ThemSuaSachViewController: UIViewController {
         super.init(coder: coder)
     }
 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -49,6 +58,7 @@ class ThemSuaSachViewController: UIViewController {
         updateGiaTri()
     }
 
+    // MARK: - Setup UI
     private func setupUI() {
         switch mode {
         case .them: title = "Thêm Sách Mới"
@@ -56,8 +66,8 @@ class ThemSuaSachViewController: UIViewController {
         }
         view.backgroundColor = .appBackground
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Hủy", style: .plain, target: self, action: #selector(huyTapped))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Lưu", style: .done, target: self, action: #selector(luuTapped))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Hủy", style: .plain, target: self, action: #selector(cancelTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Lưu", style: .done, target: self, action: #selector(saveTapped))
 
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -82,21 +92,24 @@ class ThemSuaSachViewController: UIViewController {
             stack.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -32)
         ])
 
-        // Form Fields
-        stack.addArrangedSubview(createCard(title: "TÊN ĐẦU SÁCH", view: setupTextField(txtTenSach, placeholder: "VD: Lập trình iOS với Swift")))
-        stack.addArrangedSubview(createCard(title: "THỂ LOẠI (Gõ để chọn hoặc thêm mới)", view: setupTextField(txtTheLoai, placeholder: "VD: Công nghệ, Văn học...")))
-        stack.addArrangedSubview(createCard(title: "TÁC GIẢ (Gõ để chọn hoặc thêm mới)", view: setupTextField(txtTacGia, placeholder: "VD: Nguyễn Nhật Ánh")))
+        // 1. Thẻ chọn ảnh bìa sách (UITapGestureRecognizer + UIImagePickerController)
+        setupCoverImageCard(stack: stack)
+
+        // 2. Form Fields
+        stack.addArrangedSubview(createCard(title: "TÊN ĐẦU SÁCH (*)", view: setupTextField(txtTenSach, placeholder: "VD: Lập trình iOS với Swift")))
+        stack.addArrangedSubview(createCard(title: "THỂ LOẠI (Gõ để chọn hoặc thêm mới)", view: setupTextField(txtTheLoai, placeholder: "VD: Công nghệ thông tin, Kinh tế...")))
+        stack.addArrangedSubview(createCard(title: "TÁC GIẢ (Gõ để chọn hoặc thêm mới)", view: setupTextField(txtTacGia, placeholder: "VD: Robert C. Martin, Nguyễn Nhật Ánh...")))
         stack.addArrangedSubview(createCard(title: "NHÀ XUẤT BẢN", view: setupTextField(txtNXB, placeholder: "VD: NXB Trẻ, NXB Kim Đồng...")))
 
         txtNamXB.keyboardType = .numberPad
         stack.addArrangedSubview(createCard(title: "NĂM XUẤT BẢN", view: setupTextField(txtNamXB, placeholder: "VD: 2024")))
 
-        // Phân loại giá trị
+        // 3. Phân loại giá trị
         segPhanLoai.selectedSegmentIndex = 1
         segPhanLoai.addTarget(self, action: #selector(phanLoaiChanged), for: .valueChanged)
         stack.addArrangedSubview(createCard(title: "PHÂN LOẠI GIÁ TRỊ (TỰ ĐỘNG TÍNH CỌC & PHÍ)", view: segPhanLoai))
 
-        // Giá cọc và phí hiển thị
+        // 4. Bảng giá cọc & phí
         let pricingStack = UIStackView(arrangedSubviews: [lblTienCoc, lblPhiMuon])
         pricingStack.axis = .horizontal
         pricingStack.distribution = .fillEqually
@@ -107,7 +120,7 @@ class ThemSuaSachViewController: UIViewController {
         lblPhiMuon.textAlignment = .right
         stack.addArrangedSubview(createCard(title: "BẢNG GIÁ DỰ TÍNH", view: pricingStack))
 
-        // Số lượng & Kệ sách
+        // 5. Số lượng bản sao (khi thêm mới)
         if case .them = mode {
             txtSoLuong.keyboardType = .numberPad
             txtSoLuong.text = "3"
@@ -116,6 +129,89 @@ class ThemSuaSachViewController: UIViewController {
             txtViTriKe.text = "Kệ A1"
             stack.addArrangedSubview(createCard(title: "VỊ TRÍ KỆ MẶC ĐỊNH", view: setupTextField(txtViTriKe, placeholder: "VD: Kệ A1, Tủ B2...")))
         }
+    }
+
+    // MARK: - Thiết kế Card Ảnh Bìa (Chương 2 - Slide 34)
+    private func setupCoverImageCard(stack: UIStackView) {
+        let card = UIView()
+        AppTheme.applyCardStyle(to: card)
+
+        let titleLabel = UILabel()
+        titleLabel.text = "ẢNH BÌA SÁCH (CHẠM ĐỂ CHỌN TỪ THƯ VIỆN ẢNH)"
+        titleLabel.font = .systemFont(ofSize: 12, weight: .bold)
+        titleLabel.textColor = .secondaryLabel
+
+        imgCover.image = UIImage(systemName: "book.closed.fill")
+        imgCover.tintColor = .appPrimary
+        imgCover.contentMode = .scaleAspectFit
+        imgCover.backgroundColor = .systemGray6
+        imgCover.layer.cornerRadius = 8
+        imgCover.layer.masksToBounds = true
+        imgCover.isUserInteractionEnabled = true
+        imgCover.translatesAutoresizingMaskIntoConstraints = false
+        imgCover.heightAnchor.constraint(equalToConstant: 140).isActive = true
+
+        // Gắn UITapGestureRecognizer vào UIImageView (Slide Chương 2)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(imagePickerTapped(_:)))
+        imgCover.addGestureRecognizer(tapGesture)
+
+        let hintLabel = UILabel()
+        hintLabel.text = "📷 Nhấn vào đây để tải ảnh bìa lên"
+        hintLabel.font = .systemFont(ofSize: 12)
+        hintLabel.textColor = .secondaryLabel
+        hintLabel.textAlignment = .center
+
+        let cStack = UIStackView(arrangedSubviews: [titleLabel, imgCover, hintLabel])
+        cStack.axis = .vertical
+        cStack.spacing = 8
+        cStack.translatesAutoresizingMaskIntoConstraints = false
+        card.addSubview(cStack)
+
+        NSLayoutConstraint.activate([
+            cStack.topAnchor.constraint(equalTo: card.topAnchor, constant: 12),
+            cStack.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 12),
+            cStack.trailingAnchor.constraint(equalTo: card.trailingAnchor, constant: -12),
+            cStack.bottomAnchor.constraint(equalTo: card.bottomAnchor, constant: -12)
+        ])
+
+        stack.addArrangedSubview(card)
+    }
+
+    // MARK: - Hàm Xử Lý Chọn Ảnh (UIImagePickerController - Slide Chương 2)
+    @objc private func imagePickerTapped(_ sender: UITapGestureRecognizer) {
+        // Ẩn bàn phím nếu đang mở
+        view.endEditing(true)
+
+        // Tạo đối tượng UIImagePickerController (Slide Chương 2 - Slide 34)
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.delegate = self
+        picker.allowsEditing = true
+        present(picker, animated: true)
+    }
+
+    // MARK: - Các hàm ủy quyền ImagePicker (UIImagePickerControllerDelegate)
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let edited = info[.editedImage] as? UIImage {
+            imgCover.image = edited
+            imgCover.contentMode = .scaleAspectFill
+            selectedImage = edited
+        } else if let original = info[.originalImage] as? UIImage {
+            imgCover.image = original
+            imgCover.contentMode = .scaleAspectFill
+            selectedImage = original
+        }
+        dismiss(animated: true)
+    }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true)
+    }
+
+    // MARK: - Các hàm ủy quyền TextField (UITextFieldDelegate - Slide Chương 2)
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 
     private func createCard(title: String, view: UIView) -> UIView {
@@ -147,6 +243,7 @@ class ThemSuaSachViewController: UIViewController {
         tf.borderStyle = .roundedRect
         tf.font = .systemFont(ofSize: 15)
         tf.backgroundColor = .systemBackground
+        tf.delegate = self
         return tf
     }
 
@@ -186,23 +283,26 @@ class ThemSuaSachViewController: UIViewController {
         }
     }
 
-    @objc private func huyTapped() {
+    // MARK: - Navigation Actions
+    @objc private func cancelTapped() {
         dismiss(animated: true)
     }
 
-    @objc private func luuTapped() {
+    @objc private func saveTapped() {
         let ten = txtTenSach.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         if ten.isEmpty {
-            showAlert(message: "Vui lòng nhập tên sách")
+            let alert = UIAlertController(title: "Thông báo", message: "Vui lòng nhập tên sách", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
             return
         }
 
+        let dao = LibraryDAO.shared
         let dm = DataManager.shared
         let phanLoai = phanLoaiValues[segPhanLoai.selectedSegmentIndex]
         let (coc, phi) = tinhTienCocVaPhi(phanLoai: phanLoai)
         let namXB = Int(txtNamXB.text ?? "") ?? 2024
 
-        // Tìm hoặc tạo Thể loại, Tác giả, NXB
         let tenTL = txtTheLoai.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let theLoai = !tenTL.isEmpty ? dm.layHoacTaoTheLoai(tenTL) : nil
 
@@ -225,7 +325,6 @@ class ThemSuaSachViewController: UIViewController {
                 tacGia: tacGia
             )
 
-            // Tự động sinh bản sao vật lý
             let count = max(1, Int(txtSoLuong.text ?? "3") ?? 3)
             let ke = txtViTriKe.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "Kệ A1"
             let prefix = ten.split(separator: " ").compactMap { $0.first }.prefix(3).map { String($0).uppercased() }.joined()
@@ -237,7 +336,9 @@ class ThemSuaSachViewController: UIViewController {
                 moi.dsBanSao.append(bs)
             }
 
-            dm.themSach(moi)
+            // Ghi vào cơ sở dữ liệu thông qua tầng DAL (Slide Chương 3)
+            dao.insertSach(moi)
+            getBackData?(moi)
 
         case let .sua(sach):
             sach.tenSach = ten
@@ -248,15 +349,10 @@ class ThemSuaSachViewController: UIViewController {
             sach.theLoai = theLoai
             sach.tacGia = tacGia
             sach.nhaXuatBan = nxb
-            dm.save()
+            dao.updateSach(sach)
+            getBackData?(sach)
         }
 
         dismiss(animated: true)
-    }
-
-    private func showAlert(message: String) {
-        let alert = UIAlertController(title: "Thông báo", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 }

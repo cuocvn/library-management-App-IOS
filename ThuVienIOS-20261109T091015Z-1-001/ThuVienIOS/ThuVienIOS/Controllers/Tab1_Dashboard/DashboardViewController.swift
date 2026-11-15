@@ -54,6 +54,17 @@ class DashboardViewController: UIViewController {
     private func setupNavigation() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.title = "Trang Chủ"
+
+        // Nút Bản đồ MapKit (Chương 4)
+        let mapBtn = UIBarButtonItem(image: UIImage(systemName: "map.fill"), style: .plain, target: self, action: #selector(openMapTapped))
+        navigationItem.rightBarButtonItem = mapBtn
+    }
+
+    @objc private func openMapTapped() {
+        let mapVC = MapController()
+        let nav = UINavigationController(rootViewController: mapVC)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true)
     }
 
     // MARK: - Setup UI
