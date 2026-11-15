@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 final class NhaXuatBan: Identifiable, ObservableObject, Hashable {
     var maNXB: UUID

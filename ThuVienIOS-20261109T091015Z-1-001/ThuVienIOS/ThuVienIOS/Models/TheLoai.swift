@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 final class TheLoai: Identifiable, ObservableObject, Hashable {
     var maTheLoai: UUID

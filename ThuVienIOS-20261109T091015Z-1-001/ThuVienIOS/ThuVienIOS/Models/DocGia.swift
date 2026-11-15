@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 final class DocGia: Identifiable, ObservableObject, Hashable {
     var maDocGia: UUID

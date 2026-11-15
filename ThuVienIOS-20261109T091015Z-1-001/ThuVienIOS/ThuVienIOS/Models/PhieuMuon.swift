@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 final class PhieuMuon: Identifiable, ObservableObject, Hashable {
     var maPhieu: UUID

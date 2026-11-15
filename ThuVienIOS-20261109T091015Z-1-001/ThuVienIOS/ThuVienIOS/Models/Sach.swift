@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Combine
 
 final class Sach: Identifiable, ObservableObject, Hashable {
     var maSach: UUID
