@@ -9,6 +9,7 @@
 import XCTest
 @testable import ThuVienIOS
 
+@MainActor
 final class ThuVienIOSTests: XCTestCase {
 
     override func setUpWithError() throws {

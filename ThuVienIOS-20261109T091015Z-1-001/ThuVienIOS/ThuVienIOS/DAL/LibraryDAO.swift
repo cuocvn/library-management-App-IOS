@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 
 // MARK: - Database Access Layer (DAL)
+@MainActor
 final class LibraryDAO {
     
     // Singleton pattern cho Data Access Object
