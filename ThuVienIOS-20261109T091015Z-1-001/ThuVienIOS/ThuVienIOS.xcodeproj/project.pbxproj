@@ -23,6 +23,26 @@
 		CE21C05330A1C4F400FB8283 /* ThuVienIOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21C05230A1C4F400FB8283 /* ThuVienIOSTests.swift */; };
 		CE21C05D30A1C4F400FB8283 /* ThuVienIOSUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21C05C30A1C4F400FB8283 /* ThuVienIOSUITests.swift */; };
 		CE21C05F30A1C4F400FB8283 /* ThuVienIOSUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE21C05E30A1C4F400FB8283 /* ThuVienIOSUITestsLaunchTests.swift */; };
+		CE31B0000001000000000001 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE31V0000001000000000001 /* Main.storyboard */; };
+		CE31B0010001000000000001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000001000000000001 /* AppDelegate.swift */; };
+		CE31B0010002000000000001 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000002000000000001 /* SceneDelegate.swift */; };
+		CE31B0010003000000000001 /* DashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000003000000000001 /* DashboardViewController.swift */; };
+		CE31B0010004000000000001 /* KhoSachViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000004000000000001 /* KhoSachViewController.swift */; };
+		CE31B0010005000000000001 /* ChiTietSachViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000005000000000001 /* ChiTietSachViewController.swift */; };
+		CE31B0010006000000000001 /* ThemSuaSachViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000006000000000001 /* ThemSuaSachViewController.swift */; };
+		CE31B0010007000000000001 /* MuonTraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000007000000000001 /* MuonTraViewController.swift */; };
+		CE31B0010008000000000001 /* TaoPhieuMuonViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000008000000000001 /* TaoPhieuMuonViewController.swift */; };
+		CE31B0010009000000000001 /* TraSachViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000009000000000001 /* TraSachViewController.swift */; };
+		CE31B0010010000000000001 /* DocGiaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000010000000000001 /* DocGiaViewController.swift */; };
+		CE31B0010011000000000001 /* ChiTietDocGiaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000011000000000001 /* ChiTietDocGiaViewController.swift */; };
+		CE31B0010012000000000001 /* ThemSuaDocGiaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000012000000000001 /* ThemSuaDocGiaViewController.swift */; };
+		CE31B0010013000000000001 /* NapTienViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000013000000000001 /* NapTienViewController.swift */; };
+		CE31B0010014000000000001 /* CaiDatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000014000000000001 /* CaiDatViewController.swift */; };
+		CE31B0010015000000000001 /* QuanLyTheLoaiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000015000000000001 /* QuanLyTheLoaiViewController.swift */; };
+		CE31B0010016000000000001 /* QuanLyNXBViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000016000000000001 /* QuanLyNXBViewController.swift */; };
+		CE31B0010017000000000001 /* QuanLyTacGiaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000017000000000001 /* QuanLyTacGiaViewController.swift */; };
+		CE31B0010018000000000001 /* MapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000018000000000001 /* MapController.swift */; };
+		CE31B0010019000000000001 /* LibraryDAO.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE31A0000019000000000001 /* LibraryDAO.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +83,26 @@
 		CE21C05830A1C4F400FB8283 /* ThuVienIOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ThuVienIOSUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE21C05C30A1C4F400FB8283 /* ThuVienIOSUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThuVienIOSUITests.swift; sourceTree = "<group>"; };
 		CE21C05E30A1C4F400FB8283 /* ThuVienIOSUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThuVienIOSUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		CE31A0000001000000000001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		CE31A0000002000000000001 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		CE31A0000003000000000001 /* DashboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab1_Dashboard/DashboardViewController.swift; sourceTree = "<group>"; };
+		CE31A0000004000000000001 /* KhoSachViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab2_Sach/KhoSachViewController.swift; sourceTree = "<group>"; };
+		CE31A0000005000000000001 /* ChiTietSachViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab2_Sach/ChiTietSachViewController.swift; sourceTree = "<group>"; };
+		CE31A0000006000000000001 /* ThemSuaSachViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab2_Sach/ThemSuaSachViewController.swift; sourceTree = "<group>"; };
+		CE31A0000007000000000001 /* MuonTraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab3_MuonTra/MuonTraViewController.swift; sourceTree = "<group>"; };
+		CE31A0000008000000000001 /* TaoPhieuMuonViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab3_MuonTra/TaoPhieuMuonViewController.swift; sourceTree = "<group>"; };
+		CE31A0000009000000000001 /* TraSachViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab3_MuonTra/TraSachViewController.swift; sourceTree = "<group>"; };
+		CE31A0000010000000000001 /* DocGiaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab4_DocGia/DocGiaViewController.swift; sourceTree = "<group>"; };
+		CE31A0000011000000000001 /* ChiTietDocGiaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab4_DocGia/ChiTietDocGiaViewController.swift; sourceTree = "<group>"; };
+		CE31A0000012000000000001 /* ThemSuaDocGiaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab4_DocGia/ThemSuaDocGiaViewController.swift; sourceTree = "<group>"; };
+		CE31A0000013000000000001 /* NapTienViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab4_DocGia/NapTienViewController.swift; sourceTree = "<group>"; };
+		CE31A0000014000000000001 /* CaiDatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab5_CaiDat/CaiDatViewController.swift; sourceTree = "<group>"; };
+		CE31A0000015000000000001 /* QuanLyTheLoaiViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab5_CaiDat/QuanLyTheLoaiViewController.swift; sourceTree = "<group>"; };
+		CE31A0000016000000000001 /* QuanLyNXBViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab5_CaiDat/QuanLyNXBViewController.swift; sourceTree = "<group>"; };
+		CE31A0000017000000000001 /* QuanLyTacGiaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/Tab5_CaiDat/QuanLyTacGiaViewController.swift; sourceTree = "<group>"; };
+		CE31A0000018000000000001 /* MapController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Controllers/MapController.swift; sourceTree = "<group>"; };
+		CE31A0000019000000000001 /* LibraryDAO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAL/LibraryDAO.swift; sourceTree = "<group>"; };
+		CE31A0000020000000000001 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -377,6 +417,14 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
+		CE31V0000001000000000001 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CE31A0000020000000000001 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -505,7 +553,7 @@
 				INFOPLIST_FILE = ThuVienIOS/Info.plist;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -532,7 +580,7 @@
 				INFOPLIST_FILE = ThuVienIOS/Info.plist;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
