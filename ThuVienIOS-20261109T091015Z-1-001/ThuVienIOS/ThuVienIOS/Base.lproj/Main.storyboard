@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="mainTabBar">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Tab Bar Controller-->
+        <scene sceneID="tab-bar-scene">
+            <objects>
+                <tabBarController storyboardIdentifier="mainTabBar" id="mainTabBar" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="tabBar-id">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="nav-dashboard" kind="relationship" relationship="viewControllers" id="seg-nav-dash"/>
+                        <segue destination="nav-khosach" kind="relationship" relationship="viewControllers" id="seg-nav-sach"/>
+                        <segue destination="nav-muontra" kind="relationship" relationship="viewControllers" id="seg-nav-muon"/>
+                        <segue destination="nav-docgia" kind="relationship" relationship="viewControllers" id="seg-nav-dg"/>
+                        <segue destination="nav-caidat" kind="relationship" relationship="viewControllers" id="seg-nav-cd"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tab-first-resp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1000" y="0.0"/>
+        </scene>
+
+        <!--Tab 1: Navigation Trang Chu-->
+        <scene sceneID="scene-nav-dash">
+            <objects>
+                <navigationController id="nav-dashboard" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Trang chủ" image="chart.bar.fill" catalog="system" id="item-dash"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bar-dash">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="vc-dashboard" kind="relationship" relationship="rootViewController" id="seg-root-dash"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-nav-dash" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-300" y="-800"/>
+        </scene>
+
+        <!--Dashboard View Controller-->
+        <scene sceneID="scene-vc-dash">
+            <objects>
+                <viewController storyboardIdentifier="DashboardVC" id="vc-dashboard" customClass="DashboardViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-dash">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-dash"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Trang Chủ" id="item-title-dash"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-dash" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="450" y="-800"/>
+        </scene>
+
+        <!--Tab 2: Navigation Kho Sach-->
+        <scene sceneID="scene-nav-sach">
+            <objects>
+                <navigationController id="nav-khosach" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Kho Sách" image="book.fill" catalog="system" id="item-sach"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bar-sach">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="vc-khosach" kind="relationship" relationship="rootViewController" id="seg-root-sach"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-nav-sach" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-300" y="-400"/>
+        </scene>
+
+        <!--Kho Sach View Controller-->
+        <scene sceneID="scene-vc-sach">
+            <objects>
+                <viewController storyboardIdentifier="KhoSachVC" id="vc-khosach" customClass="KhoSachViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-sach">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-sach"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Kho Sách" id="item-title-sach"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-sach" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="450" y="-400"/>
+        </scene>
+
+        <!--Tab 3: Navigation Muon Tra-->
+        <scene sceneID="scene-nav-muon">
+            <objects>
+                <navigationController id="nav-muontra" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Mượn &amp; Trả" image="arrow.left.arrow.right" catalog="system" id="item-muon"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bar-muon">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="vc-muontra" kind="relationship" relationship="rootViewController" id="seg-root-muon"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-nav-muon" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-300" y="0.0"/>
+        </scene>
+
+        <!--Muon Tra View Controller-->
+        <scene sceneID="scene-vc-muon">
+            <objects>
+                <viewController storyboardIdentifier="MuonTraVC" id="vc-muontra" customClass="MuonTraViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-muon">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-muon"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Mượn &amp; Trả" id="item-title-muon"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-muon" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="450" y="0.0"/>
+        </scene>
+
+        <!--Tab 4: Navigation Doc Gia-->
+        <scene sceneID="scene-nav-dg">
+            <objects>
+                <navigationController id="nav-docgia" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Độc Giả" image="person.2.fill" catalog="system" id="item-dg"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bar-dg">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="vc-docgia" kind="relationship" relationship="rootViewController" id="seg-root-dg"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-nav-dg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-300" y="400"/>
+        </scene>
+
+        <!--Doc Gia View Controller-->
+        <scene sceneID="scene-vc-dg">
+            <objects>
+                <viewController storyboardIdentifier="DocGiaVC" id="vc-docgia" customClass="DocGiaViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-dg">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-dg"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Độc Giả" id="item-title-dg"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-dg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="450" y="400"/>
+        </scene>
+
+        <!--Tab 5: Navigation Cai Dat-->
+        <scene sceneID="scene-nav-cd">
+            <objects>
+                <navigationController id="nav-caidat" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Cài Đặt" image="gearshape.fill" catalog="system" id="item-cd"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bar-cd">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="vc-caidat" kind="relationship" relationship="rootViewController" id="seg-root-cd"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-nav-cd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-300" y="800"/>
+        </scene>
+
+        <!--Cai Dat View Controller-->
+        <scene sceneID="scene-vc-cd">
+            <objects>
+                <viewController storyboardIdentifier="CaiDatVC" id="vc-caidat" customClass="CaiDatViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-cd">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-cd"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Cài Đặt" id="item-title-cd"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-cd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="450" y="800"/>
+        </scene>
+
+        <!--Chi Tiet Sach View Controller-->
+        <scene sceneID="scene-vc-chitietsach">
+            <objects>
+                <viewController storyboardIdentifier="ChiTietSachVC" id="vc-chitietsach" customClass="ChiTietSachViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-cts">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-cts"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-cts" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1200" y="-400"/>
+        </scene>
+
+        <!--Them Sua Sach View Controller-->
+        <scene sceneID="scene-vc-themsuasach">
+            <objects>
+                <viewController storyboardIdentifier="ThemSuaSachVC" id="vc-themsuasach" customClass="ThemSuaSachViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-tss">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-tss"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-tss" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1900" y="-400"/>
+        </scene>
+
+        <!--Tao Phieu Muon View Controller-->
+        <scene sceneID="scene-vc-taophieu">
+            <objects>
+                <viewController storyboardIdentifier="TaoPhieuMuonVC" id="vc-taophieu" customClass="TaoPhieuMuonViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-tpm">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-tpm"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-tpm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1200" y="0.0"/>
+        </scene>
+
+        <!--Tra Sach View Controller-->
+        <scene sceneID="scene-vc-trasach">
+            <objects>
+                <viewController storyboardIdentifier="TraSachVC" id="vc-trasach" customClass="TraSachViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-ts">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-ts"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-ts" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1900" y="0.0"/>
+        </scene>
+
+        <!--Chi Tiet Doc Gia View Controller-->
+        <scene sceneID="scene-vc-chitietdg">
+            <objects>
+                <viewController storyboardIdentifier="ChiTietDocGiaVC" id="vc-chitietdg" customClass="ChiTietDocGiaViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-ctdg">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-ctdg"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-ctdg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1200" y="400"/>
+        </scene>
+
+        <!--Nap Tien View Controller-->
+        <scene sceneID="scene-vc-naptien">
+            <objects>
+                <viewController storyboardIdentifier="NapTienVC" id="vc-naptien" customClass="NapTienViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-nt">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-nt"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-nt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1900" y="400"/>
+        </scene>
+
+        <!--Them Sua Doc Gia View Controller-->
+        <scene sceneID="scene-vc-themsuadg">
+            <objects>
+                <viewController storyboardIdentifier="ThemSuaDocGiaVC" id="vc-themsuadg" customClass="ThemSuaDocGiaViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-tsdg">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-tsdg"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-tsdg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2600" y="400"/>
+        </scene>
+
+        <!--Quan Ly The Loai View Controller-->
+        <scene sceneID="scene-vc-theloai">
+            <objects>
+                <viewController storyboardIdentifier="QuanLyTheLoaiVC" id="vc-theloai" customClass="QuanLyTheLoaiViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-tl">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-tl"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-tl" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1200" y="800"/>
+        </scene>
+
+        <!--Quan Ly NXB View Controller-->
+        <scene sceneID="scene-vc-nxb">
+            <objects>
+                <viewController storyboardIdentifier="QuanLyNXBVC" id="vc-nxb" customClass="QuanLyNXBViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-nxb">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-nxb"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-nxb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1900" y="800"/>
+        </scene>
+
+        <!--Quan Ly Tac Gia View Controller-->
+        <scene sceneID="scene-vc-tacgia">
+            <objects>
+                <viewController storyboardIdentifier="QuanLyTacGiaVC" id="vc-tacgia" customClass="QuanLyTacGiaViewController" customModule="ThuVienIOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="view-tg">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="guide-tg"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="resp-vc-tg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2600" y="800"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="arrow.left.arrow.right" catalog="system" width="120" height="128"/>
+        <image name="book.fill" catalog="system" width="128" height="95"/>
+        <image name="chart.bar.fill" catalog="system" width="128" height="90"/>
+        <image name="gearshape.fill" catalog="system" width="128" height="123"/>
+        <image name="person.2.fill" catalog="system" width="128" height="86"/>
+        <systemColor name="systemGroupedBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

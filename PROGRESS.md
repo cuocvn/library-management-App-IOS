@@ -100,3 +100,12 @@
 - [x] Khắc phục triệt để lỗi UIKit Storyboard (`Main.storyboard`, `LaunchScreen.storyboard`) và lỗi `SceneDelegate` khi chạy Xcode 14.2.
 - [x] Cập nhật tính năng: Thêm nhanh Thể loại, Tác giả, Nhà xuất bản bằng cách gõ tên trực tiếp trong màn hình Thêm/Sửa Sách (`ThemSuaSachView`), tự động lưu vào cơ sở dữ liệu để chọn lại ở các lần sau.
 - [x] Đóng gói và đẩy phiên bản hoàn chỉnh lên GitHub.
+
+
+---
+
+### ✅ GIAI ĐOẠN 8 (ĐÃ HOÀN THÀNH 100%): Chuyển Đổi Toàn Bộ Ứng Dụng Sang UIKit + Storyboard Tối Ưu
+- [x] Thiết kế file giao diện `Main.storyboard` chuẩn Apple HIG gồm `UITabBarController` liên kết 5 `UINavigationController` và 14 scenes `UIViewController` liên kết chặt chẽ.
+- [x] Chuyển đổi toàn bộ 14 màn hình từ SwiftUI sang các `UIViewController` UIKit hiện đại (`DashboardViewController`, `KhoSachViewController`, `ChiTietSachViewController`, `ThemSuaSachViewController`, `MuonTraViewController`, `TaoPhieuMuonViewController`, `TraSachViewController`, `DocGiaViewController`, `ChiTietDocGiaViewController`, `NapTienViewController`, `ThemSuaDocGiaViewController`, `CaiDatViewController`, `QuanLyTheLoaiViewController`, `QuanLyNXBViewController`, `QuanLyTacGiaViewController`).
+- [x] Triển khai vòng đời UIKit chuẩn gồm `AppDelegate.swift` và `SceneDelegate.swift`, thiết lập `UIMainStoryboardFile` = `Main`.
+- [x] Tối ưu hóa hiệu năng, Auto Layout linh hoạt, giao diện Inset Grouped sắc nét, giữ nguyên 100% nghiệp vụ quản lý tài chính, VIP miễn cọc và quản lý bản sao vật lý.
